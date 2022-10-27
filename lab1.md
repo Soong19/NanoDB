@@ -43,3 +43,7 @@ High-level Architectures:
 2. Mark the tuple as deleted via making tuple to NULL
 3. Check the end of slots to find out whether it is NULL.
    If is, decrement the number of slots. (Use `while`)
+
+To implement tuple updating, we need to implement two methods below:
+
+TODO:

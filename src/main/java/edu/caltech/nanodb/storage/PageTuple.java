@@ -2,13 +2,9 @@ package edu.caltech.nanodb.storage;
 
 
 import edu.caltech.nanodb.expressions.TypeConverter;
+import edu.caltech.nanodb.relations.*;
 
-import edu.caltech.nanodb.relations.ColumnInfo;
-import edu.caltech.nanodb.relations.ColumnType;
-import edu.caltech.nanodb.relations.Schema;
-import edu.caltech.nanodb.relations.SQLDataType;
-import edu.caltech.nanodb.relations.Tuple;
-
+// TODO: Refactor all the code
 
 /**
  * <p>
@@ -494,8 +490,7 @@ public abstract class PageTuple implements Tuple {
      * @param iCol the index of the column to set to <tt>NULL</tt>
      */
     private void setNullColumnValue(int iCol) {
-        /* TODO:  Implement!
-         *
+        /*
          * The column's flag in the tuple's null-bitmap must be set to true.
          * Also, the data occupied by the column's value must be removed.
          * There are many helpful methods that can be used for this method:
@@ -516,7 +511,22 @@ public abstract class PageTuple implements Tuple {
          * properly as well.  (Note that columns whose value is NULL will have
          * the special NULL_OFFSET constant as their offset in the tuple.)
          */
-        throw new UnsupportedOperationException("TODO:  Implement!");
+        checkColumnIndex(iCol);
+
+        /* 1. set null-bitmap to true */
+        if (isNullValue(iCol)) {
+            // nothing to do here, it's already NULL
+            return;
+        }
+        setNullFlag(iCol, true);
+
+        /* 2. remove the space that the old value used to occupy */
+        var colType = schema.getColumnInfo(iCol).getType();
+        var offset = valueOffsets[iCol];
+        var length = getColumnValueSize(colType, offset);
+        deleteTupleDataRange(offset, length);
+
+        computeValueOffsets();
     }
 
 
@@ -533,8 +543,7 @@ public abstract class PageTuple implements Tuple {
         if (value == null)
             throw new IllegalArgumentException("value cannot be null");
 
-        /* TODO:  Implement!
-         *
+        /*
          * This time, the column's flag in the tuple's null-bitmap must be set
          * to false (if it was true before).
          *
@@ -559,7 +568,27 @@ public abstract class PageTuple implements Tuple {
          * Finally, once you have made space for the new column value, you can
          * write the value itself using the writeNonNullValue() method.
          */
-        throw new UnsupportedOperationException("TODO:  Implement!");
+        checkColumnIndex(iCol);
+
+        /* 1. set null-bitmap to false */
+        if (isNullValue(iCol)) {
+            setNullFlag(iCol, false);
+        }
+
+        /* 2. replace any existing value for the column with a new value */
+        var colType = schema.getColumnInfo(iCol).getType();
+        var offset = valueOffsets[iCol];
+        var length = getColumnValueSize(colType, offset);
+        if (colType.getBaseType() != SQLDataType.VARCHAR) {
+            // fixed-size type
+            setColumnValue(iCol, value);
+        } else {
+            // variable-size type
+            // TODO: [maybe] Allocate new space for the tuple
+            //       Think over it
+        }
+
+        computeValueOffsets();
     }
 
 
