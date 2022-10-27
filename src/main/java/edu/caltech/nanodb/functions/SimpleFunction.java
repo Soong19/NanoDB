@@ -14,14 +14,12 @@ import edu.caltech.nanodb.expressions.ExpressionException;
 public abstract class SimpleFunction extends ScalarFunction {
     /**
      * Evaluates the function.
-     *
+     * <p>
      * Should be called at runtime for every function call.
      *
-     * @param env Environment, in which the arguments are evaluated
+     * @param env  Environment, in which the arguments are evaluated
      * @param args Arguments for this function
-     *
      * @return The value of the function
-     *
      * @throws ExpressionException when there is a problem with the evaluation
      *                             like wrong number of arguments.
      */

@@ -12,7 +12,8 @@ public class TupleHasher {
      * Collects tuple values according to colIndexes into an ArrayList
      * and returns the hash of the list. Order matters here, so
      * hash(tuple, [1,2,3]) != hash(tuple, [3,2,1]).
-     * @param tuple the tuple to be hashed
+     *
+     * @param tuple      the tuple to be hashed
      * @param colIndexes the indices of the columns to be hashed.
      * @return the hash value for the tuple given the passed column indices
      */

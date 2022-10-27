@@ -73,7 +73,9 @@ import edu.caltech.nanodb.relations.TableConstraintType;
  */
 public class NanoSQLTranslator extends NanoSQLBaseVisitor<Object> {
 
-    /** A function directory for resolving function calls. */
+    /**
+     * A function directory for resolving function calls.
+     */
     private FunctionDirectory functionDirectory;
 
 
@@ -713,8 +715,7 @@ public class NanoSQLTranslator extends NanoSQLBaseVisitor<Object> {
             ArrayList<Expression> exprs =
                 (ArrayList<Expression>) visit(ctx.expressionList());
             cmd = new InsertCommand(tableName, colNames, exprs);
-        }
-        else {
+        } else {
             SelectCommand selectCmd = (SelectCommand) visit(ctx.selectStmt());
             SelectClause selectClause = selectCmd.getSelectClause();
             cmd = new InsertCommand(tableName, colNames, selectClause);
@@ -803,15 +804,13 @@ public class NanoSQLTranslator extends NanoSQLBaseVisitor<Object> {
         BigInteger bigInt = new BigInteger(s);
         try {
             return bigInt.intValueExact();
-        }
-        catch (ArithmeticException e) {
+        } catch (ArithmeticException e) {
             // Too big to fit in an integer.
         }
 
         try {
             return bigInt.longValueExact();
-        }
-        catch (ArithmeticException e) {
+        } catch (ArithmeticException e) {
             // Too big to fit in a long.
         }
 

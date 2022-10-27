@@ -23,7 +23,6 @@ import edu.caltech.nanodb.server.CommandState;
 
 /**
  * This class represents
- *
  */
 public class SharedClientState {
     private static Logger logger = LogManager.getLogger(SharedClientState.class);
@@ -89,19 +88,15 @@ public class SharedClientState {
                     if (obj instanceof String) {
                         // Just print strings to the console
                         System.out.print(obj);
-                    }
-                    else if (obj instanceof Schema) {
+                    } else if (obj instanceof Schema) {
                         tuplePrinter = new PrettyTuplePrinter(out);
                         tuplePrinter.setSchema((Schema) obj);
-                    }
-                    else if (obj instanceof Tuple) {
+                    } else if (obj instanceof Tuple) {
                         tuplePrinter.process((Tuple) obj);
-                    }
-                    else if (obj instanceof Throwable) {
+                    } else if (obj instanceof Throwable) {
                         Throwable t = (Throwable) obj;
                         t.printStackTrace(System.out);
-                    }
-                    else if (obj instanceof CommandState) {
+                    } else if (obj instanceof CommandState) {
                         CommandState state = (CommandState) obj;
                         if (state == CommandState.COMMAND_COMPLETED) {
                             if (tuplePrinter != null) {
@@ -112,8 +107,7 @@ public class SharedClientState {
                             // Signal that the command is completed.
                             semCommandDone.release();
                         }
-                    }
-                    else {
+                    } else {
                         // TODO:  Try to print...
                         System.out.println(obj);
                     }

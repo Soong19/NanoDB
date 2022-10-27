@@ -10,27 +10,33 @@ import java.util.ArrayList;
 
 
 /**
-* Various methods to use for pretty-printing, such as delimiters, padding, and
-* such.
-*
-* @author Angela Gong
-*/
+ * Various methods to use for pretty-printing, such as delimiters, padding, and
+ * such.
+ *
+ * @author Angela Gong
+ */
 public class PrettyPrintTools {
 
     private PrintStream out;
 
-    /** Stores the maximum column widths for each column **/
+    /**
+     * Stores the maximum column widths for each column
+     **/
     private ArrayList<Integer> colWidths;
 
-    /** Stores the column type for each column **/
+    /**
+     * Stores the column type for each column
+     **/
     private ArrayList<ColumnType> colTypes;
 
-    /** The number of columns to print **/
+    /**
+     * The number of columns to print
+     **/
     private int numColumns;
 
 
     public PrettyPrintTools(PrintStream out, ArrayList<Integer> colWidths,
-        ArrayList<ColumnType> colTypes, int numColumns) {
+                            ArrayList<ColumnType> colTypes, int numColumns) {
         this.out = out;
         this.colWidths = colWidths;
         this.colTypes = colTypes;
@@ -70,7 +76,7 @@ public class PrettyPrintTools {
      * Pads a string with the spaces on either end necessary when printing.
      *
      * @param colWidth the width of the column the string will be printed in
-     * @param str the string to be printed
+     * @param str      the string to be printed
      * @return the newly-padded string
      */
     public String padString(Integer colWidth, String str) {
@@ -91,8 +97,8 @@ public class PrettyPrintTools {
      * right instead of left
      *
      * @param colWidth the width of the column the string will be printed in
-     * @param str the string to be printed
-     * @param index the index of the column being printed
+     * @param str      the string to be printed
+     * @param index    the index of the column being printed
      * @return the newly-padded string
      */
     public String padString(Integer colWidth, String str, int index) {
@@ -117,7 +123,8 @@ public class PrettyPrintTools {
                 return paddedString.toString();
 
             // Otherwise, pad normally
-            default: return padString(colWidth, str);
+            default:
+                return padString(colWidth, str);
         }
     }
 
@@ -130,6 +137,6 @@ public class PrettyPrintTools {
      */
     public void checkColumnWidths(String str, int col) {
         if (colWidths.get(col) < str.length())
-                colWidths.set(col, str.length());
+            colWidths.set(col, str.length());
     }
 }

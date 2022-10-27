@@ -22,8 +22,7 @@ public class CommitTransactionCommand extends Command {
         try {
             StorageManager storageManager = server.getStorageManager();
             storageManager.getTransactionManager().commitTransaction();
-        }
-        catch (TransactionException e) {
+        } catch (TransactionException e) {
             throw new ExecutionException(e);
         }
     }

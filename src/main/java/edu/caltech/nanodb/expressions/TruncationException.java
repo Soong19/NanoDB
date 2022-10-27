@@ -7,7 +7,9 @@ package edu.caltech.nanodb.expressions;
  */
 public class TruncationException extends TypeCastException {
 
-    /** Create a new <tt>TruncationException</tt> with no message or cause. */
+    /**
+     * Create a new <tt>TruncationException</tt> with no message or cause.
+     */
     public TruncationException() {
         super();
     }

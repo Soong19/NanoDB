@@ -50,7 +50,7 @@ public abstract class SubqueryOperator extends Expression {
      * operator.
      *
      * @return the parsed representation of the subquery that is used by this
-     *         operator.
+     * operator.
      */
     public SelectClause getSubquery() {
         return subquery;

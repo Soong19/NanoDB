@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
  * and so forth.  Since the <tt>CREATE TABLE</tt> command is so involved,
  * it is exercised in a separate test class.
  */
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserTableUtils {
     public void testParseDropTable() {
         DropTableCommand cmd;

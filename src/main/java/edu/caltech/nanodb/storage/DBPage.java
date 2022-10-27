@@ -33,19 +33,20 @@ import edu.caltech.nanodb.storage.writeahead.LogSequenceNumber;
  * stored at the highest index.  (This is also the network byte order specified
  * by the Internet Protocol.)
  *
+ * @design (Donnie) It is very important that the page is marked dirty
+ * <em>before</em> any changes are made, because this is the point
+ * when the old version of the page data is copied before changes
+ * are made.  Additionally, the page's data must not be manipulated
+ * separately from the methods provided by this class, or else the
+ * old version of the page won't be recorded properly.
  * @see PageReader
  * @see PageWriter
- *
- * @design (Donnie) It is very important that the page is marked dirty
- *         <em>before</em> any changes are made, because this is the point
- *         when the old version of the page data is copied before changes
- *         are made.  Additionally, the page's data must not be manipulated
- *         separately from the methods provided by this class, or else the
- *         old version of the page won't be recorded properly.
  */
 public class DBPage implements Pinnable, AutoCloseable {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(DBPage.class);
 
 
@@ -56,7 +57,9 @@ public class DBPage implements Pinnable, AutoCloseable {
     private BufferManager bufferManager;
 
 
-    /** A reference to the database file that this page is from. */
+    /**
+     * A reference to the database file that this page is from.
+     */
     private DBFile dbFile;
 
     /**
@@ -74,7 +77,9 @@ public class DBPage implements Pinnable, AutoCloseable {
     private AtomicInteger pinCount;
 
 
-    /** This flag is true if this page has been modified in memory. */
+    /**
+     * This flag is true if this page has been modified in memory.
+     */
     private boolean dirty;
 
 
@@ -88,7 +93,9 @@ public class DBPage implements Pinnable, AutoCloseable {
     private LogSequenceNumber pageLSN;
 
 
-    /** The actual data for the table-page. */
+    /**
+     * The actual data for the table-page.
+     */
     private byte[] pageData;
 
 
@@ -105,11 +112,8 @@ public class DBPage implements Pinnable, AutoCloseable {
      * done in a separate step.
      *
      * @param dbFile The database file that this page is contained within.
-     *
      * @param pageNo The page number within the database file.
-     *
-     * @throws NullPointerException if <tt>dbFile</tt> is <tt>null</tt>
-     *
+     * @throws NullPointerException     if <tt>dbFile</tt> is <tt>null</tt>
      * @throws IllegalArgumentException if <tt>pageNo</tt> is negative
      */
     public DBPage(BufferManager bufferManager, DBFile dbFile, int pageNo) {
@@ -158,7 +162,6 @@ public class DBPage implements Pinnable, AutoCloseable {
      * function simply uses {@link DBFile#equals} for the comparison.
      *
      * @param databaseFile the database file to examine this page for membership
-     *
      * @return true if the specified database file is the same as this DB file.
      */
     public boolean isFromDBFile(DBFile databaseFile) {
@@ -243,7 +246,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * became dirty, or <tt>null</tt> if the page is currently clean.
      *
      * @return a byte-array containing the last "clean" version of the page's
-     *         data
+     * data
      */
     public byte[] getOldPageData() {
         return oldPageData;
@@ -281,7 +284,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * has or has not been changed in memory.
      *
      * @param dirty the dirty flag; true if the page's data is dirty, or false
-     *        otherwise
+     *              otherwise
      */
     public void setDirty(boolean dirty) {
         if (!this.dirty && dirty) {
@@ -289,8 +292,7 @@ public class DBPage implements Pinnable, AutoCloseable {
             // data so that we have it when updating the write-ahead log.
             oldPageData = bufferManager.allocBuffer(pageData.length);
             System.arraycopy(pageData, 0, oldPageData, 0, pageData.length);
-        }
-        else if (this.dirty && !dirty) {
+        } else if (this.dirty && !dirty) {
             // Page is being changed from dirty to clean.  Clear out the old
             // page data since we don't need it anymore.
             bufferManager.releaseBuffer(oldPageData);
@@ -348,12 +350,9 @@ public class DBPage implements Pinnable, AutoCloseable {
      * the specified offset, and reading the specified number of bytes.
      *
      * @param position the starting index within the page to start reading data
-     *
-     * @param b the destination buffer to save the data into
-     *
-     * @param off the starting offset to save data to in the destination buffer
-     *
-     * @param len the number of bytes to transfer to the destination buffer
+     * @param b        the destination buffer to save the data into
+     * @param off      the starting offset to save data to in the destination buffer
+     * @param len      the number of bytes to transfer to the destination buffer
      */
     public void read(int position, byte[] b, int off, int len) {
         System.arraycopy(pageData, position, b, off, len);
@@ -365,8 +364,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * array is filled from start to end.
      *
      * @param position the starting index within the page to start reading data
-     *
-     * @param b the destination buffer to save the data into
+     * @param b        the destination buffer to save the data into
      */
     public void read(int position, byte[] b) {
         read(position, b, 0, b.length);
@@ -379,12 +377,9 @@ public class DBPage implements Pinnable, AutoCloseable {
      * bytes.
      *
      * @param position the starting index within the page to start writing data
-     *
-     * @param b the source buffer to read the data from
-     *
-     * @param off the starting offset to read data from the source buffer
-     *
-     * @param len the number of bytes to transfer from the source buffer
+     * @param b        the source buffer to read the data from
+     * @param off      the starting offset to read data from the source buffer
+     * @param len      the number of bytes to transfer from the source buffer
      */
     public void write(int position, byte[] b, int off, int len) {
         setDirty(true);
@@ -397,8 +392,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * contents of the array is written to the page.
      *
      * @param position the starting index within the page to start writing data
-     *
-     * @param b the source buffer to read the data from
+     * @param b        the source buffer to read the data from
      */
     public void write(int position, byte[] b) {
         // Use the version of write() with extra args.
@@ -411,7 +405,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      *
      * @param srcPosition The source offset to copy data from.
      * @param dstPosition The destination offset to copy data to.
-     * @param length The number of bytes of data to move.
+     * @param length      The number of bytes of data to move.
      */
     public void moveDataRange(int srcPosition, int dstPosition, int length) {
         setDirty(true);
@@ -423,8 +417,8 @@ public class DBPage implements Pinnable, AutoCloseable {
      * Write the specified alueMove the specified data region in the page.
      *
      * @param position The starting position to write the value to.
-     * @param length The number of bytes of data to set.
-     * @param value The byte-value to write to the entire range.
+     * @param length   The number of bytes of data to set.
+     * @param value    The byte-value to write to the entire range.
      */
     public void setDataRange(int position, int length, byte value) {
         setDirty(true);
@@ -433,15 +427,13 @@ public class DBPage implements Pinnable, AutoCloseable {
     }
 
 
-
     /**
      * Reads and returns a Boolean value from the specified position.  The
      * Boolean value is encoded as a single byte; a zero value is interpreted
      * as <tt>false</tt>, and a nonzero value is interpreted as <tt>true</tt>.
      *
      * @param position the starting location in the page to start reading the
-     *        value from
-     *
+     *                 value from
      * @return the Boolean value
      */
     public boolean readBoolean(int position) {
@@ -454,8 +446,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * <tt>true</tt> is written as 1.
      *
      * @param position the location in the page to write the value to
-     *
-     * @param value the Boolean value
+     * @param value    the Boolean value
      */
     public void writeBoolean(int position, boolean value) {
         setDirty(true);
@@ -467,7 +458,6 @@ public class DBPage implements Pinnable, AutoCloseable {
      * Reads and returns a signed byte from the specified position.
      *
      * @param position the location in the page to read the value from
-     *
      * @return the signed byte value
      */
     public byte readByte(int position) {
@@ -481,8 +471,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * the input is also truncated down to the low 8 bits.
      *
      * @param position the location in the page to write the value to
-     *
-     * @param value the byte value
+     * @param value    the byte value
      */
     public void writeByte(int position, int value) {
         setDirty(true);
@@ -496,7 +485,6 @@ public class DBPage implements Pinnable, AutoCloseable {
      * 0 and 255, inclusive.
      *
      * @param position the location in the page to read the value from
-     *
      * @return the unsigned byte value, as an integer
      */
     public int readUnsignedByte(int position) {
@@ -510,12 +498,11 @@ public class DBPage implements Pinnable, AutoCloseable {
      * 0 and 65535, inclusive.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return the unsigned short value, as an integer
      */
     public int readUnsignedShort(int position) {
-        int value = ((pageData[position++] & 0xFF) <<  8)
-                  | ((pageData[position  ] & 0xFF)      );
+        int value = ((pageData[position++] & 0xFF) << 8)
+            | ((pageData[position] & 0xFF));
 
         return value;
     }
@@ -525,15 +512,14 @@ public class DBPage implements Pinnable, AutoCloseable {
      * value is returned as a <tt>short</tt>.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return the signed short value
      */
     public short readShort(int position) {
         // Don't chop off high-order bits.  When byte is cast to int, the sign
         // will be extended, so if original byte is negative, the resulting
         // int will be too.
-        int value = ((pageData[position++]       ) <<  8)
-                  | ((pageData[position  ] & 0xFF)      );
+        int value = ((pageData[position++]) << 8)
+            | ((pageData[position] & 0xFF));
 
         return (short) value;
     }
@@ -545,14 +531,13 @@ public class DBPage implements Pinnable, AutoCloseable {
      * the input is also truncated down to the low 16 bits.
      *
      * @param position the location in the page to write the value to
-     *
-     * @param value the byte value
+     * @param value    the byte value
      */
     public void writeShort(int position, int value) {
         setDirty(true);
 
         pageData[position++] = (byte) (0xFF & (value >> 8));
-        pageData[position  ] = (byte) (0xFF &  value);
+        pageData[position] = (byte) (0xFF & value);
     }
 
 
@@ -560,18 +545,16 @@ public class DBPage implements Pinnable, AutoCloseable {
      * Reads and returns a two-byte char value from the specified position.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return the char value
      */
-    public char readChar(int position)
-    {
+    public char readChar(int position) {
         // NOTE:  Exactly like readShort(), but result is cast to a different
         // type.
 
         // Don't chop off high-order bits.  When byte is cast to int, the sign will
         // be extended, so if original byte is negative, so will resulting int.
-        int value = ((pageData[position++]       ) <<  8)
-                  | ((pageData[position  ] & 0xFF)      );
+        int value = ((pageData[position++]) << 8)
+            | ((pageData[position] & 0xFF));
 
         return (char) value;
     }
@@ -583,8 +566,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * to the low 16 bits.
      *
      * @param position the location in the page to write the value to
-     *
-     * @param value the char value
+     * @param value    the char value
      */
     public void writeChar(int position, int value) {
         // Implementation is identical to writeShort()...
@@ -597,14 +579,13 @@ public class DBPage implements Pinnable, AutoCloseable {
      * position.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return the unsigned integer value, as a long
      */
     public long readUnsignedInt(int position) {
         long value = ((pageData[position++] & 0xFF) << 24)
-                   | ((pageData[position++] & 0xFF) << 16)
-                   | ((pageData[position++] & 0xFF) <<  8)
-                   | ((pageData[position  ] & 0xFF)      );
+            | ((pageData[position++] & 0xFF) << 16)
+            | ((pageData[position++] & 0xFF) << 8)
+            | ((pageData[position] & 0xFF));
 
         return value;
     }
@@ -614,14 +595,13 @@ public class DBPage implements Pinnable, AutoCloseable {
      * Reads and returns a 4-byte integer value from the specified position.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return the signed int value
      */
     public int readInt(int position) {
         int value = ((pageData[position++] & 0xFF) << 24)
-                  | ((pageData[position++] & 0xFF) << 16)
-                  | ((pageData[position++] & 0xFF) <<  8)
-                  | ((pageData[position  ] & 0xFF)      );
+            | ((pageData[position++] & 0xFF) << 16)
+            | ((pageData[position++] & 0xFF) << 8)
+            | ((pageData[position] & 0xFF));
 
         return value;
     }
@@ -630,16 +610,15 @@ public class DBPage implements Pinnable, AutoCloseable {
      * Writes a 4-byte integer to the specified position.
      *
      * @param position the location in the page to write the value to
-     *
-     * @param value the 4-byte integer value
+     * @param value    the 4-byte integer value
      */
     public void writeInt(int position, int value) {
         setDirty(true);
 
         pageData[position++] = (byte) (0xFF & (value >> 24));
         pageData[position++] = (byte) (0xFF & (value >> 16));
-        pageData[position++] = (byte) (0xFF & (value >>  8));
-        pageData[position  ] = (byte) (0xFF &  value);
+        pageData[position++] = (byte) (0xFF & (value >> 8));
+        pageData[position] = (byte) (0xFF & value);
     }
 
 
@@ -648,18 +627,17 @@ public class DBPage implements Pinnable, AutoCloseable {
      * position.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return the signed long value
      */
     public long readLong(int position) {
         long value = ((long) (pageData[position++] & 0xFF) << 56)
-                   | ((long) (pageData[position++] & 0xFF) << 48)
-                   | ((long) (pageData[position++] & 0xFF) << 40)
-                   | ((long) (pageData[position++] & 0xFF) << 32)
-                   | ((long) (pageData[position++] & 0xFF) << 24)
-                   | ((long) (pageData[position++] & 0xFF) << 16)
-                   | ((long) (pageData[position++] & 0xFF) <<  8)
-                   | ((long) (pageData[position  ] & 0xFF)      );
+            | ((long) (pageData[position++] & 0xFF) << 48)
+            | ((long) (pageData[position++] & 0xFF) << 40)
+            | ((long) (pageData[position++] & 0xFF) << 32)
+            | ((long) (pageData[position++] & 0xFF) << 24)
+            | ((long) (pageData[position++] & 0xFF) << 16)
+            | ((long) (pageData[position++] & 0xFF) << 8)
+            | ((long) (pageData[position] & 0xFF));
 
         return value;
     }
@@ -668,8 +646,7 @@ public class DBPage implements Pinnable, AutoCloseable {
      * Writes an 8-byte long integer to the specified position.
      *
      * @param position the location in the page to write the value to
-     *
-     * @param value the 8-byte long integer value
+     * @param value    the 8-byte long integer value
      */
     public void writeLong(int position, long value) {
         setDirty(true);
@@ -680,8 +657,8 @@ public class DBPage implements Pinnable, AutoCloseable {
         pageData[position++] = (byte) (0xFF & (value >> 32));
         pageData[position++] = (byte) (0xFF & (value >> 24));
         pageData[position++] = (byte) (0xFF & (value >> 16));
-        pageData[position++] = (byte) (0xFF & (value >>  8));
-        pageData[position  ] = (byte) (0xFF &  value);
+        pageData[position++] = (byte) (0xFF & (value >> 8));
+        pageData[position] = (byte) (0xFF & value);
     }
 
 
@@ -715,9 +692,8 @@ public class DBPage implements Pinnable, AutoCloseable {
      * bytes consisting of the string value itself.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return a string object containing the stored value, up to a maximum of
-     *         255 characters in length
+     * 255 characters in length
      */
     public String readVarString255(int position) {
         int len = readUnsignedByte(position++);
@@ -726,8 +702,7 @@ public class DBPage implements Pinnable, AutoCloseable {
 
         try {
             str = new String(pageData, position, len, "US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.
@@ -747,21 +722,17 @@ public class DBPage implements Pinnable, AutoCloseable {
      * string value itself.
      *
      * @param position the location in the page to start writing the value to
-     *
-     * @param value the string object containing the data to store
-     *
-     * @throws NullPointerException if <tt>value</tt> is <tt>null</tt>
-     *
+     * @param value    the string object containing the data to store
+     * @throws NullPointerException     if <tt>value</tt> is <tt>null</tt>
      * @throws IllegalArgumentException if the input string is longer than
-     *         255 characters
+     *                                  255 characters
      */
     public void writeVarString255(int position, String value) {
         byte[] bytes;
 
         try {
             bytes = value.getBytes("US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.
@@ -788,9 +759,8 @@ public class DBPage implements Pinnable, AutoCloseable {
      * more bytes consisting of the string value itself.
      *
      * @param position the location in the page to start reading the value from
-     *
      * @return a string object containing the stored value, up to a maximum of
-     *         65535 characters in length
+     * 65535 characters in length
      */
     public String readVarString65535(int position) {
         int len = readUnsignedShort(position);
@@ -800,8 +770,7 @@ public class DBPage implements Pinnable, AutoCloseable {
 
         try {
             str = new String(pageData, position, len, "US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.
@@ -821,21 +790,17 @@ public class DBPage implements Pinnable, AutoCloseable {
      * string value itself.
      *
      * @param position the location in the page to start writing the value to
-     *
-     * @param value the string object containing the data to store
-     *
-     * @throws NullPointerException if <tt>value</tt> is <tt>null</tt>
-     *
+     * @param value    the string object containing the data to store
+     * @throws NullPointerException     if <tt>value</tt> is <tt>null</tt>
      * @throws IllegalArgumentException if the input string is longer than
-     *         65535 characters
+     *                                  65535 characters
      */
     public void writeVarString65535(int position, String value) {
         byte[] bytes;
 
         try {
             bytes = value.getBytes("US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.
@@ -859,8 +824,8 @@ public class DBPage implements Pinnable, AutoCloseable {
      * <p>
      * Strings shorter than the specified length are padded with 0 bytes at the end of the string, and
      * this padding is removed when the string is read.
-     *
-     *
+     * <p>
+     * <p>
      * The string's characters are stored starting with the specified position.
      * If the string is shorter than the fixed length then the data is expected
      * to be terminated with a <tt>\\u0000</tt> (i.e. <tt>NUL</tt>) value.  (If
@@ -869,11 +834,9 @@ public class DBPage implements Pinnable, AutoCloseable {
      * <tt>NUL</tt> characters are not allowed with this storage format.</b>
      *
      * @param position the location in the page to start reading the value from
-     *
-     * @param len the length of the fixed-size string
-     *
+     * @param len      the length of the fixed-size string
      * @return a string object containing the stored value, up to a maximum of
-     *         <tt>len</tt> characters in length
+     * <tt>len</tt> characters in length
      */
     public String readFixedSizeString(int position, int len) {
         String str = null;
@@ -885,8 +848,7 @@ public class DBPage implements Pinnable, AutoCloseable {
 
         try {
             str = new String(pageData, position, len, "US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.
@@ -909,23 +871,18 @@ public class DBPage implements Pinnable, AutoCloseable {
      * characters are not allowed with this storage format.</b>
      *
      * @param position the location in the page to start writing the value to
-     *
-     * @param value the string object containing the data to store
-     *
-     * @param len the number of bytes used to store the string field
-     *
-     * @throws NullPointerException if <tt>value</tt> is <tt>null</tt>
-     *
+     * @param value    the string object containing the data to store
+     * @param len      the number of bytes used to store the string field
+     * @throws NullPointerException     if <tt>value</tt> is <tt>null</tt>
      * @throws IllegalArgumentException if the input string is longer than
-     *         <tt>len</tt> characters
+     *                                  <tt>len</tt> characters
      */
     public void writeFixedSizeString(int position, String value, int len) {
         byte[] bytes;
 
         try {
             bytes = value.getBytes("US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // happen.
@@ -976,8 +933,7 @@ public class DBPage implements Pinnable, AutoCloseable {
         if (data.length > 15) {
             throw new IllegalArgumentException("Cannot handle BigDecimals " +
                 "with data encoding length > 255 bytes; is " + data.length);
-        }
-        else if (data.length < 15) {
+        } else if (data.length < 15) {
             // The array is not 15 bytes, so create a version of the array
             // that is 15 bytes.
             byte[] data15 = new byte[15];
@@ -1046,79 +1002,75 @@ public class DBPage implements Pinnable, AutoCloseable {
      * as the data-type is provided along with the object.
      *
      * @param position the location in the page to start reading the value from
-     *
-     * @param colType the type of the value being read
-     *
+     * @param colType  the type of the value being read
      * @return the object read from the data
-     *
-     * @throws NullPointerException if <tt>colType</tt> or <tt>value</tt> is
-     *         <tt>null</tt>
-     *
+     * @throws NullPointerException     if <tt>colType</tt> or <tt>value</tt> is
+     *                                  <tt>null</tt>
      * @throws IllegalArgumentException if the input string is longer than
-     *         <tt>len</tt> characters
+     *                                  <tt>len</tt> characters
      */
     public Object readObject(int position, ColumnType colType) {
         Object value = null;
 
         switch (colType.getBaseType()) {
 
-        case INTEGER:
-            value = readInt(position);
-            break;
+            case INTEGER:
+                value = readInt(position);
+                break;
 
-        case SMALLINT:
-            value = readShort(position);
-            break;
+            case SMALLINT:
+                value = readShort(position);
+                break;
 
-        case BIGINT:
-            value = readLong(position);
-            break;
+            case BIGINT:
+                value = readLong(position);
+                break;
 
-        case TINYINT:
-            value = readByte(position);
-            break;
+            case TINYINT:
+                value = readByte(position);
+                break;
 
-        case FLOAT:
-            value = readFloat(position);
-            break;
+            case FLOAT:
+                value = readFloat(position);
+                break;
 
-        case DOUBLE:
-            value = readDouble(position);
-            break;
+            case DOUBLE:
+                value = readDouble(position);
+                break;
 
-        case NUMERIC:
-            value = readNumeric(position);
-            break;
+            case NUMERIC:
+                value = readNumeric(position);
+                break;
 
-        case CHAR:
-            value = readFixedSizeString(position, colType.getLength());
-            break;
+            case CHAR:
+                value = readFixedSizeString(position, colType.getLength());
+                break;
 
-        case VARCHAR:
-            value = readVarString65535(position);
-            break;
+            case VARCHAR:
+                value = readVarString65535(position);
+                break;
 
-        case DATE:
-            value = readDate(position);
-            break;
+            case DATE:
+                value = readDate(position);
+                break;
 
-        case TIME:
-            value = readTime(position);
-            break;
+            case TIME:
+                value = readTime(position);
+                break;
 
-        case DATETIME:
-        case TIMESTAMP:
-            value = readDateTime(position);
-            break;
+            case DATETIME:
+            case TIMESTAMP:
+                value = readDateTime(position);
+                break;
 
-        case FILE_POINTER:
-            value = new FilePointer(readUnsignedShort(position),
-                                    readUnsignedShort(position + 2));
-            break;
+            case FILE_POINTER:
+                value = new FilePointer(readUnsignedShort(position),
+                    readUnsignedShort(position + 2));
+                break;
 
-        default:
-            throw new UnsupportedOperationException(
-                "Cannot currently read type " + colType.getBaseType());
+            default:
+                throw new UnsupportedOperationException(
+                    "Cannot currently read type " + colType.getBaseType());
         }
 
         return value;
@@ -1132,19 +1084,14 @@ public class DBPage implements Pinnable, AutoCloseable {
      * with the object.
      *
      * @param position the location in the page to start writing the value to
-     *
-     * @param colType the type of the value being stored
-     *
-     * @param value the object containing the data to store
-     *
+     * @param colType  the type of the value being stored
+     * @param value    the object containing the data to store
      * @return the total number of bytes written in the operation; i.e. this is
-     *         the amount that the position is advanced.
-     *
-     * @throws NullPointerException if <tt>colType</tt> or <tt>value</tt> is
-     *         <tt>null</tt>
-     *
+     * the amount that the position is advanced.
+     * @throws NullPointerException     if <tt>colType</tt> or <tt>value</tt> is
+     *                                  <tt>null</tt>
      * @throws IllegalArgumentException if the input string is longer than
-     *         <tt>len</tt> characters
+     *                                  <tt>len</tt> characters
      */
     public int writeObject(int position, ColumnType colType, Object value) {
 
@@ -1159,97 +1106,85 @@ public class DBPage implements Pinnable, AutoCloseable {
         // This code relies on Java autoboxing.  Go, syntactic sugar.
         switch (colType.getBaseType()) {
 
-        case INTEGER:
-            {
+            case INTEGER: {
                 int iVal = TypeConverter.getIntegerValue(value);
                 writeInt(position, iVal);
                 dataSize = 4;
                 break;
             }
 
-        case SMALLINT:
-            {
+            case SMALLINT: {
                 short sVal = TypeConverter.getShortValue(value);
                 writeShort(position, sVal);
                 dataSize = 2;
                 break;
             }
 
-        case BIGINT:
-            {
+            case BIGINT: {
                 long lVal = TypeConverter.getLongValue(value);
                 writeLong(position, lVal);
                 dataSize = 8;
                 break;
             }
 
-        case TINYINT:
-            {
+            case TINYINT: {
                 byte bVal = TypeConverter.getByteValue(value);
                 writeByte(position, bVal);
                 dataSize = 1;
                 break;
             }
 
-        case FLOAT:
-            {
+            case FLOAT: {
                 float fVal = TypeConverter.getFloatValue(value);
                 writeFloat(position, fVal);
                 dataSize = 4;
                 break;
             }
 
-        case DOUBLE:
-            {
+            case DOUBLE: {
                 double dVal = TypeConverter.getDoubleValue(value);
                 writeDouble(position, dVal);
                 dataSize = 8;
                 break;
             }
 
-        case NUMERIC:
-            {
+            case NUMERIC: {
                 BigDecimal val = TypeConverter.getBigDecimalValue(value);
                 writeNumeric(position, val);
                 dataSize = 16;
                 break;
             }
 
-        case CHAR:
-            {
+            case CHAR: {
                 String strVal = TypeConverter.getStringValue(value);
                 writeFixedSizeString(position, strVal, colType.getLength());
                 dataSize = colType.getLength();
                 break;
             }
 
-        case VARCHAR:
-            {
+            case VARCHAR: {
                 String strVal = TypeConverter.getStringValue(value);
                 writeVarString65535(position, strVal);
                 dataSize = 2 + strVal.length();
                 break;
             }
 
-        case DATE:
-            {
+            case DATE: {
                 LocalDate dateVal = TypeConverter.getDateValue(value);
                 writeDate(position, dateVal);
                 dataSize = 4;
                 break;
             }
 
-        case TIME:
-            {
+            case TIME: {
                 LocalTime timeVal = TypeConverter.getTimeValue(value);
                 writeTime(position, timeVal);
                 dataSize = 4;
                 break;
             }
 
-        case DATETIME:
-        case TIMESTAMP:
-            {
+            case DATETIME:
+            case TIMESTAMP: {
                 LocalDateTime dateTimeVal =
                     TypeConverter.getDateTimeValue(value);
                 writeDateTime(position, dateTimeVal);
@@ -1257,8 +1192,7 @@ public class DBPage implements Pinnable, AutoCloseable {
                 break;
             }
 
-        case FILE_POINTER:
-            {
+            case FILE_POINTER: {
                 FilePointer fptr = (FilePointer) value;
                 writeShort(position, fptr.getPageNo());
                 writeShort(position + 2, fptr.getOffset());
@@ -1266,9 +1200,9 @@ public class DBPage implements Pinnable, AutoCloseable {
                 break;
             }
 
-        default:
-            throw new UnsupportedOperationException(
-                "Cannot currently store type " + colType.getBaseType());
+            default:
+                throw new UnsupportedOperationException(
+                    "Cannot currently store type " + colType.getBaseType());
         }
 
         return dataSize;
@@ -1323,10 +1257,9 @@ public class DBPage implements Pinnable, AutoCloseable {
      * the data between old and new pages are actually different.
      *
      * @return a formatted string describing all changes made to the page's
-     *         contents
-     *
+     * contents
      * @throws IllegalStateException if the method is called on a non-dirty
-     *         page
+     *                               page
      */
     public String getChangesAsString() {
         if (!dirty)

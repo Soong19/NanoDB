@@ -2,6 +2,7 @@ package edu.caltech.nanodb.server;
 
 
 /**
+ *
  */
 public class EventDispatchException extends NanoDBException {
     public EventDispatchException() {

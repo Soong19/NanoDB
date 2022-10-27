@@ -13,10 +13,14 @@ import edu.caltech.nanodb.relations.ColumnInfo;
  * TABLE</tt> command.
  */
 public class TableColumnDecl {
-    /** Basic details about the column, including its name and type. */
+    /**
+     * Basic details about the column, including its name and type.
+     */
     private ColumnInfo columnInfo;
 
-    /** Any constraints specified on the column. */
+    /**
+     * Any constraints specified on the column.
+     */
     private ArrayList<ConstraintDecl> constraints = new ArrayList<>();
 
 

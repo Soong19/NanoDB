@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the arc-tangent of two arguments.  Returns <tt>NULL</tt> if
  * arguments are <tt>NULL</tt>.
- * 
+ *
  * @author emil
  */
 public class ArcTan2 extends SimpleFunction {
@@ -39,6 +39,6 @@ public class ArcTan2 extends SimpleFunction {
             return null;
 
         return Math.atan2(TypeConverter.getDoubleValue(argVal1),
-                          TypeConverter.getDoubleValue(argVal2));
+            TypeConverter.getDoubleValue(argVal2));
     }
 }

@@ -43,21 +43,21 @@ public class TestIndexOps extends SqlTestCase {
         // Get the IndexInfo corresponding to the created index
 
         StorageManager storageManager = server.getStorageManager();
-	    TableManager tableManager = storageManager.getTableManager();
+        TableManager tableManager = storageManager.getTableManager();
         IndexManager indexManager = storageManager.getIndexManager();
 
         TableInfo tableInfo = tableManager.openTable("TEST_INDEX_OPS");
         IndexInfo indexInfo = indexManager.openIndex(tableInfo, "IDX_TEST1");
 
         // Check that the index criteria are appropriate
-        assert(indexInfo.getIndexName().equals("IDX_TEST1"));
-        assert(indexInfo.getTableName().equals("TEST_INDEX_OPS"));
+        assert (indexInfo.getIndexName().equals("IDX_TEST1"));
+        assert (indexInfo.getTableName().equals("TEST_INDEX_OPS"));
 
         // Check tblFileInfo has the schemas stored
         Schema schema = tableInfo.getSchema();
 
         Set<String> indexNames = schema.getIndexNames();
-        assert(indexNames.contains("IDX_TEST1"));
+        assert (indexNames.contains("IDX_TEST1"));
     }
 
 
@@ -70,12 +70,12 @@ public class TestIndexOps extends SqlTestCase {
         // Perform the result to create the index. Table is test_index_ops
         CommandResult result;
         result = server.doCommand(
-                "CREATE INDEX idx_test2 ON test_index_ops (a, a)", false);
+            "CREATE INDEX idx_test2 ON test_index_ops (a, a)", false);
         assert result.failed();
     }
 
 
-   	/**
+    /**
      * This test checks to make sure that nanodb throws an error if
      * the user tries to create an index with the same name as
      * another index.
@@ -90,7 +90,7 @@ public class TestIndexOps extends SqlTestCase {
         if (!result.failed()) {
             // Drop the original index
             StorageManager storageManager = server.getStorageManager();
-	        TableManager tableManager = storageManager.getTableManager();
+            TableManager tableManager = storageManager.getTableManager();
             IndexManager indexManager = storageManager.getIndexManager();
 
             TableInfo tableInfo = tableManager.openTable("TEST_INDEX_OPS");
@@ -102,7 +102,7 @@ public class TestIndexOps extends SqlTestCase {
     }
 
 
-	 /**
+    /**
      * This test makes sure that the DROP INDEX command works properly.
      * In particular it runs the create index command, and then the
      * drop index command, and checks to see that the table schema

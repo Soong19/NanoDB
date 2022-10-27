@@ -139,15 +139,16 @@ import edu.caltech.nanodb.relations.TableConstraintType;
  * </dl>
  */
 public class SchemaWriter {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(SchemaWriter.class);
 
 
     /**
-     *
-     * @param schema the schema to write to the page
+     * @param schema   the schema to write to the page
      * @param pgWriter the {@code PageWriter} that can be used to write to the
-     *        data page
+     *                 data page
      */
     public void writeSchema(Schema schema, PageWriter pgWriter) {
         // Write out the schema details now.
@@ -182,6 +183,7 @@ public class SchemaWriter {
     /**
      * This helper writes out the column details of the schema.  For each
      * column, the function writes: the column's type (1 byte), plus any
+     *
      * @param schema
      * @param pgWriter
      */
@@ -295,27 +297,22 @@ public class SchemaWriter {
      * schema representation.
      *
      * @param pgWriter the writer being used to write the table's schema to its
-     *        header page
-     *
-     * @param type the constraint type, either
-     *        {@link TableConstraintType#PRIMARY_KEY} or
-     *        {@link TableConstraintType#FOREIGN_KEY}.
-     *
-     * @param key a specification of what columns appear in the key
-     *
+     *                 header page
+     * @param type     the constraint type, either
+     *                 {@link TableConstraintType#PRIMARY_KEY} or
+     *                 {@link TableConstraintType#FOREIGN_KEY}.
+     * @param key      a specification of what columns appear in the key
      * @throws IllegalArgumentException if the <tt>type</tt> argument is
-     *         <tt>null</tt>, or is not one of the accepted values
+     *                                  <tt>null</tt>, or is not one of the accepted values
      */
     protected void writeKey(PageWriter pgWriter, TableConstraintType type,
                             KeyColumnRefs key) {
 
         if (type == TableConstraintType.PRIMARY_KEY) {
             logger.debug(String.format(" * Primary key %s", key));
-        }
-        else if (type == TableConstraintType.UNIQUE) {
+        } else if (type == TableConstraintType.UNIQUE) {
             logger.debug(String.format(" * Candidate key %s", key));
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Invalid TableConstraintType value " + type);
         }
@@ -417,17 +414,15 @@ public class SchemaWriter {
      * header page.
      *
      * @param hpWriter the writer being used to write the table's schema to its
-     *        header page
-     *
-     * @param idx a specification of what columns appear in the index
-     *
+     *                 header page
+     * @param idx      a specification of what columns appear in the index
      * @throws IllegalArgumentException if the <tt>type</tt> argument is
-     *         <tt>null</tt>, or is not one of the accepted values
+     *                                  <tt>null</tt>, or is not one of the accepted values
      */
     protected void writeIndex(PageWriter hpWriter, IndexColumnRefs idx) {
 
         logger.debug(String.format(" * Index %s, enforced with index %s",
-                                       idx, idx.getIndexName()));
+            idx, idx.getIndexName()));
 
         hpWriter.writeByte(idx.size());
         for (int i = 0; i < idx.size(); i++)
@@ -606,33 +601,27 @@ public class SchemaWriter {
      * schema stored in the header page.
      *
      * @param pgReader the writer being used to write the table's schema to its
-     *        header page
-     *
-     * @param typeID the unsigned-byte value read from the table's header page,
-     *        corresponding to this key's type.  Although this value is already
-     *        parsed before calling this method, it also contains flags that
-     *        this method handles, so it must be passed in as well.
-     *
-     * @param type the constraint type, either
-     *        {@link TableConstraintType#PRIMARY_KEY} or
-     *        {@link TableConstraintType#FOREIGN_KEY}.
-     *
+     *                 header page
+     * @param typeID   the unsigned-byte value read from the table's header page,
+     *                 corresponding to this key's type.  Although this value is already
+     *                 parsed before calling this method, it also contains flags that
+     *                 this method handles, so it must be passed in as well.
+     * @param type     the constraint type, either
+     *                 {@link TableConstraintType#PRIMARY_KEY} or
+     *                 {@link TableConstraintType#FOREIGN_KEY}.
      * @return a specification of the key, including its name, what columns
-     *         appear in the key, and what index is used to enforce the key
-     *
+     * appear in the key, and what index is used to enforce the key
      * @throws IllegalArgumentException if the <tt>type</tt> argument is
-     *         <tt>null</tt>, or is not one of the accepted values
+     *                                  <tt>null</tt>, or is not one of the accepted values
      */
     protected KeyColumnRefs readKey(PageReader pgReader, int typeID,
                                     TableConstraintType type) {
 
         if (type == TableConstraintType.PRIMARY_KEY) {
             logger.debug(" * Reading primary key");
-        }
-        else if (type == TableConstraintType.UNIQUE) {
+        } else if (type == TableConstraintType.UNIQUE) {
             logger.debug(" * Reading candidate key");
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Unhandled TableConstraintType value " + type);
         }
@@ -694,7 +683,7 @@ public class SchemaWriter {
         logger.debug("Reading " + numTables + " referencing tables");
         for (int i = 0; i < numTables; i++)
             schema.addReferencingTable(pgReader.readVarString255());
-     }
+    }
 
 
     protected void readIndexes(PageReader pgReader, Schema schema) {
@@ -710,13 +699,11 @@ public class SchemaWriter {
      * in the header page.
      *
      * @param pgReader the reader being used to read the table's schema to its
-     *        header page
-     *
+     *                 header page
      * @return a specification of the index, including its name, what columns
-     *         appear in the index
-     *
+     * appear in the index
      * @throws IllegalArgumentException if the <tt>type</tt> argument is
-     *         <tt>null</tt>, or is not one of the accepted values
+     *                                  <tt>null</tt>, or is not one of the accepted values
      */
     protected IndexColumnRefs readIndex(PageReader pgReader) {
 

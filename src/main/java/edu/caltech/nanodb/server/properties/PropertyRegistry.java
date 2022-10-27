@@ -19,10 +19,14 @@ import edu.caltech.nanodb.storage.DBFile;
 public class PropertyRegistry implements ServerProperties {
 
     private class PropertyDescriptor {
-        /** The name of the property. */
+        /**
+         * The name of the property.
+         */
         String name;
 
-        /** The current value of the property. */
+        /**
+         * The current value of the property.
+         */
         Object value;
 
         /**
@@ -30,7 +34,9 @@ public class PropertyRegistry implements ServerProperties {
          */
         boolean readonly;
 
-        /** A validator to ensure the property's values are correct. */
+        /**
+         * A validator to ensure the property's values are correct.
+         */
         PropertyValidator validator;
 
 
@@ -100,8 +106,8 @@ public class PropertyRegistry implements ServerProperties {
      * occur.
      *
      * @review (donnie) It's not great that this configuration is in here.
-     *         Someday, should probably migrate it back into
-     *         {@code NanoDBServer}.
+     * Someday, should probably migrate it back into
+     * {@code NanoDBServer}.
      */
     private void initProperties() {
         addProperty(PROP_BASE_DIRECTORY,
@@ -183,11 +189,11 @@ public class PropertyRegistry implements ServerProperties {
      * Add a read-only or read-write property to the registry, along with a
      * type and an initial value.
      *
-     * @param name the name of the property
-     * @param validator a validator for the property
+     * @param name         the name of the property
+     * @param validator    a validator for the property
      * @param initialValue an initial value for the property
-     * @param readonly a flag indicating whether the property is read-only
-     *        ({@code true}) or read-write ({@code false})
+     * @param readonly     a flag indicating whether the property is read-only
+     *                     ({@code true}) or read-write ({@code false})
      */
     public void addProperty(String name, PropertyValidator validator,
                             Object initialValue, boolean readonly) {
@@ -200,8 +206,8 @@ public class PropertyRegistry implements ServerProperties {
      * Add a read-write property to the registry, along with a
      * type and an initial value.
      *
-     * @param name the name of the property
-     * @param validator a validator for the property
+     * @param name         the name of the property
+     * @param validator    a validator for the property
      * @param initialValue an initial value for the property
      */
     public void addProperty(String name, PropertyValidator validator,
@@ -216,7 +222,7 @@ public class PropertyRegistry implements ServerProperties {
      *
      * @param name the non-null name of the property
      * @return {@code true} if the server has a property of the specified
-     *         name, {@code false} otherwise.
+     * name, {@code false} otherwise.
      */
     public boolean hasProperty(String name) {
         if (name == null)
@@ -272,7 +278,6 @@ public class PropertyRegistry implements ServerProperties {
      * not a Boolean then an exception is reported.
      *
      * @param name the name of the property to fetch
-     *
      * @return a Boolean true or false value for the property
      */
     public boolean getBooleanProperty(String name) {
@@ -285,7 +290,6 @@ public class PropertyRegistry implements ServerProperties {
      * not a String then an exception is reported.
      *
      * @param name the name of the property to fetch
-     *
      * @return a String value for the property
      */
     public String getStringProperty(String name) {
@@ -298,7 +302,6 @@ public class PropertyRegistry implements ServerProperties {
      * not an integer then an exception is reported.
      *
      * @param name the name of the property to fetch
-     *
      * @return an integer value for the property
      */
     public int getIntProperty(String name) {

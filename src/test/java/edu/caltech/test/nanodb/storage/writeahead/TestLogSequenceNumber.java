@@ -28,33 +28,27 @@ public class TestLogSequenceNumber {
         try {
             new LogSequenceNumber(-1, 1234);
             assert false : "Invalid WAL file number didn't generate any exception.";
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Success!
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             assert false : "Invalid WAL file number generated wrong exception";
         }
 
         try {
             new LogSequenceNumber(WALManager.MAX_WAL_FILE_NUMBER + 1, 1234);
             assert false : "Invalid WAL file number didn't generate any exception.";
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Success!
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             assert false : "Invalid WAL file number generated wrong exception";
         }
 
         try {
             new LogSequenceNumber(1234, -1);
             assert false : "Invalid file offset didn't generate any exception.";
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Success!
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             assert false : "Invalid file offset generated wrong exception";
         }
     }

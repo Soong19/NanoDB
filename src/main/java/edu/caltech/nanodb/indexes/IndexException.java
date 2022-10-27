@@ -8,7 +8,9 @@ import edu.caltech.nanodb.storage.StorageException;
  */
 public class IndexException extends StorageException {
 
-    /** Construct an index exception with no message. */
+    /**
+     * Construct an index exception with no message.
+     */
     public IndexException() {
         super();
     }
@@ -36,4 +38,3 @@ public class IndexException extends StorageException {
         super(msg, cause);
     }
 }
-

@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the arc-cosine of a single argument.  Returns NULL if argument
  * is NULL.
- * 
+ *
  * @author emil
  */
 public class ArcCos extends SimpleFunction {
@@ -29,8 +29,8 @@ public class ArcCos extends SimpleFunction {
     @Override
     public Object evaluate(Environment env, List<Expression> args) {
         if (args.size() != 1) {
-            throw new ExpressionException("Cannot call ACOS on " + args.size() 
-                    + " arguments");
+            throw new ExpressionException("Cannot call ACOS on " + args.size()
+                + " arguments");
         }
 
         Object argVal = args.get(0).evaluate(env);

@@ -32,7 +32,9 @@ import edu.caltech.nanodb.relations.Schema;
  */
 public abstract class GroupAggregateNode extends PlanNode {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(GroupAggregateNode.class);
 
 
@@ -66,7 +68,7 @@ public abstract class GroupAggregateNode extends PlanNode {
 
 
     protected GroupAggregateNode(PlanNode subplan,
-        List<Expression> groupByExprs, Map<String, FunctionCall> aggregates) {
+                                 List<Expression> groupByExprs, Map<String, FunctionCall> aggregates) {
 
         super(subplan);
 
@@ -121,8 +123,7 @@ public abstract class GroupAggregateNode extends PlanNode {
                 colStat.setNumNullValues(
                     (int) Math.signum(colStat.getNumNullValues()));
                 stats.add(colStat);
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("NanoDB does not " +
                     "yet support GROUP BY expressions that are not simple " +
                     "column references; got " + expr);
@@ -161,8 +162,7 @@ public abstract class GroupAggregateNode extends PlanNode {
                 int numUniqueValues = inputStats.get(colIndex).getNumUniqueValues();
 
                 colStat.setNumUniqueValues(Math.min(numUniqueValues, numTuples));
-            }
-            else {
+            } else {
                 // For anything else, just guess that the aggregate function
                 // will produces a different value for each group.
                 colStat.setNumUniqueValues(numTuples);
@@ -177,7 +177,7 @@ public abstract class GroupAggregateNode extends PlanNode {
         logger.info("Grouping/aggregate node schema:  " + schema);
         logger.info("Grouping/aggregate node stats:  " + stats);
         logger.info("Grouping/aggregate node estimated tuples:  " +
-                    estimatedNumTuples);
+            estimatedNumTuples);
     }
 
 
@@ -195,8 +195,8 @@ public abstract class GroupAggregateNode extends PlanNode {
      * </p>
      *
      * @return a {@code TupleLiteral} object containing the results of
-     *         evaluating the group-by expressions, or {@code null} if there
-     *         are no group-by expressions for this node.
+     * evaluating the group-by expressions, or {@code null} if there
+     * are no group-by expressions for this node.
      */
     protected TupleLiteral evaluateGroupByExprs() {
         if (groupByExprs.isEmpty())
@@ -233,9 +233,8 @@ public abstract class GroupAggregateNode extends PlanNode {
      * environment has already been properly initialized before it is called.
      *
      * @param groupAggregates the collection of aggregates to update
-     *
      * @throws ExpressionException if an error is encountered while evaluating
-     *         expressions for the aggregate operations.
+     *                             expressions for the aggregate operations.
      */
     protected void updateAggregates(Map<String, FunctionCall> groupAggregates)
         throws ExpressionException {
@@ -260,7 +259,7 @@ public abstract class GroupAggregateNode extends PlanNode {
 
 
     protected TupleLiteral generateOutputTuple(TupleLiteral groupValues,
-        Map<String, FunctionCall> groupAggregates) {
+                                               Map<String, FunctionCall> groupAggregates) {
 
         // logger.info("Group values:  " + groupValues);
 

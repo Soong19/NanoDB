@@ -22,7 +22,9 @@ import edu.caltech.nanodb.storage.DBPage;
  * </ul>
  */
 public class HeaderPage {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(HeaderPage.class);
 
 
@@ -76,9 +78,8 @@ public class HeaderPage {
      * data file).
      *
      * @param dbPage the page to check
-     *
      * @throws IllegalArgumentException if <tt>dbPage</tt> is <tt>null</tt>, or
-     *         if it's not actually page 0 in the table file
+     *                                  if it's not actually page 0 in the table file
      */
     private static void verifyIsHeaderPage(DBPage dbPage) {
         if (dbPage == null)
@@ -97,7 +98,7 @@ public class HeaderPage {
      *
      * @param dbPage the header page of the index file
      * @return the page-number of the root page, or 0 if the index file doesn't
-     *         contain a root page.
+     * contain a root page.
      */
     public static int getRootPageNo(DBPage dbPage) {
         verifyIsHeaderPage(dbPage);
@@ -109,9 +110,9 @@ public class HeaderPage {
      * Sets the page-number of the root page in the header page of the index
      * file.
      *
-     * @param dbPage the header page of the heap table file
+     * @param dbPage     the header page of the heap table file
      * @param rootPageNo the page-number of the root page, or 0 if the index
-     *        file doesn't contain a root page.
+     *                   file doesn't contain a root page.
      */
     public static void setRootPageNo(DBPage dbPage, int rootPageNo) {
         verifyIsHeaderPage(dbPage);
@@ -130,7 +131,7 @@ public class HeaderPage {
      *
      * @param dbPage the header page of the index file
      * @return the page-number of the first leaf page in the index file, or 0
-     *         if the index file doesn't contain any leaf pages.
+     * if the index file doesn't contain any leaf pages.
      */
     public static int getFirstLeafPageNo(DBPage dbPage) {
         verifyIsHeaderPage(dbPage);
@@ -142,9 +143,9 @@ public class HeaderPage {
      * Sets the page-number of the first leaf page in the header page of the
      * index file.
      *
-     * @param dbPage the header page of the heap table file
+     * @param dbPage          the header page of the heap table file
      * @param firstLeafPageNo the page-number of the first leaf page in the
-     *        index file, or 0 if the index file doesn't contain any leaf pages.
+     *                        index file, or 0 if the index file doesn't contain any leaf pages.
      */
     public static void setFirstLeafPageNo(DBPage dbPage, int firstLeafPageNo) {
         verifyIsHeaderPage(dbPage);
@@ -177,7 +178,7 @@ public class HeaderPage {
      * index file.  Empty pages form a linked chain in the index file, so that
      * they are easy to locate.
      *
-     * @param dbPage the header page of the heap table file
+     * @param dbPage           the header page of the heap table file
      * @param firstEmptyPageNo the page-number of the first empty page
      */
     public static void setFirstEmptyPageNo(DBPage dbPage, int firstEmptyPageNo) {
@@ -209,7 +210,7 @@ public class HeaderPage {
      * Sets the number of bytes that the table's schema occupies for storage
      * in the header page.
      *
-     * @param dbPage the header page of the heap table file
+     * @param dbPage   the header page of the heap table file
      * @param numBytes the number of bytes that the table's schema occupies
      */
     public static void setSchemaSize(DBPage dbPage, int numBytes) {
@@ -241,7 +242,7 @@ public class HeaderPage {
      * Sets the number of bytes that the table's statistics occupy for storage
      * in the header page.
      *
-     * @param dbPage the header page of the heap table file
+     * @param dbPage   the header page of the heap table file
      * @param numBytes the number of bytes that the table's statistics occupy
      */
     public static void setStatsSize(DBPage dbPage, int numBytes) {
@@ -263,7 +264,7 @@ public class HeaderPage {
      *
      * @param dbPage the header page of the heap table file
      * @return the offset within the header page that the table statistics
-     *         reside at
+     * reside at
      */
     public static int getStatsOffset(DBPage dbPage) {
         verifyIsHeaderPage(dbPage);

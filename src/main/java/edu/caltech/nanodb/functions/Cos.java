@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the cosine of a single argument.  Returns NULL if argument
  * is NULL.
- * 
+ *
  * @author emil
  */
 public class Cos extends SimpleFunction {
@@ -33,7 +33,7 @@ public class Cos extends SimpleFunction {
         }
 
         Object argVal = args.get(0).evaluate(env);
-        
+
         if (argVal == null)
             return null;
 

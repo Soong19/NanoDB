@@ -30,16 +30,22 @@ import edu.caltech.nanodb.storage.StorageManager;
  */
 public class CostBasedJoinPlanner implements Planner {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(
         CostBasedJoinPlanner.class);
 
 
-    /** The storage manager used during query planning. */
+    /**
+     * The storage manager used during query planning.
+     */
     protected StorageManager storageManager;
 
 
-    /** Sets the server to be used during query planning. */
+    /**
+     * Sets the server to be used during query planning.
+     */
     public void setStorageManager(StorageManager storageManager) {
         if (storageManager == null)
             throw new IllegalArgumentException("storageManager cannot be null");
@@ -85,12 +91,11 @@ public class CostBasedJoinPlanner implements Planner {
          * constructor simply adds the leaf-plan into the {@link #leavesUsed}
          * collection.
          *
-         * @param leafPlan the query plan for this leaf of the query.
-         *
+         * @param leafPlan      the query plan for this leaf of the query.
          * @param conjunctsUsed the set of conjuncts used by the leaf plan.
-         *        This may be an empty set if no conjuncts apply solely to
-         *        this leaf, or it may be nonempty if some conjuncts apply
-         *        solely to this leaf.
+         *                      This may be an empty set if no conjuncts apply solely to
+         *                      this leaf, or it may be nonempty if some conjuncts apply
+         *                      solely to this leaf.
          */
         public JoinComponent(PlanNode leafPlan, HashSet<Expression> conjunctsUsed) {
             leavesUsed = new HashSet<>();
@@ -105,15 +110,13 @@ public class CostBasedJoinPlanner implements Planner {
          * Constructs a new instance for a <em>non-leaf node</em>.  It should
          * not be used for leaf plans!
          *
-         * @param joinPlan the query plan that joins together all leaves
-         *        specified in the <tt>leavesUsed</tt> argument.
-         *
-         * @param leavesUsed the set of two or more leaf plans that are joined
-         *        together by the join plan.
-         *
+         * @param joinPlan      the query plan that joins together all leaves
+         *                      specified in the <tt>leavesUsed</tt> argument.
+         * @param leavesUsed    the set of two or more leaf plans that are joined
+         *                      together by the join plan.
          * @param conjunctsUsed the set of conjuncts used by the join plan.
-         *        Obviously, it is expected that all conjuncts specified here
-         *        can actually be evaluated against the join plan.
+         *                      Obviously, it is expected that all conjuncts specified here
+         *                      can actually be evaluated against the join plan.
          */
         public JoinComponent(PlanNode joinPlan, HashSet<PlanNode> leavesUsed,
                              HashSet<Expression> conjunctsUsed) {
@@ -129,11 +132,10 @@ public class CostBasedJoinPlanner implements Planner {
      * query.
      *
      * @param selClause an object describing the query to be performed
-     *
      * @return a plan tree for executing the specified query
      */
     public PlanNode makePlan(SelectClause selClause,
-        List<SelectClause> enclosingSelects) {
+                             List<SelectClause> enclosingSelects) {
 
         // TODO:  Implement!
         //
@@ -165,15 +167,15 @@ public class CostBasedJoinPlanner implements Planner {
      * Given the top-level {@code FromClause} for a SELECT-FROM-WHERE block,
      * this helper generates an optimal join plan for the {@code FromClause}.
      *
-     * @param fromClause the top-level {@code FromClause} of a
-     *        SELECT-FROM-WHERE block.
+     * @param fromClause     the top-level {@code FromClause} of a
+     *                       SELECT-FROM-WHERE block.
      * @param extraConjuncts any extra conjuncts (e.g. from the WHERE clause,
-     *        or HAVING clause)
+     *                       or HAVING clause)
      * @return a {@code JoinComponent} object that represents the optimal plan
-     *         corresponding to the FROM-clause
+     * corresponding to the FROM-clause
      */
     private JoinComponent makeJoinPlan(FromClause fromClause,
-        Collection<Expression> extraConjuncts) {
+                                       Collection<Expression> extraConjuncts) {
 
         // These variables receive the leaf-clauses and join conjuncts found
         // from scanning the sub-clauses.  Initially, we put the extra conjuncts
@@ -226,17 +228,15 @@ public class CostBasedJoinPlanner implements Planner {
     /**
      * This helper method pulls the essential details for join optimization
      * out of a <tt>FROM</tt> clause.
-     *
+     * <p>
      * TODO:  FILL IN DETAILS.
      *
-     * @param fromClause the from-clause to collect details from
-     *
-     * @param conjuncts the collection to add all conjuncts to
-     *
+     * @param fromClause      the from-clause to collect details from
+     * @param conjuncts       the collection to add all conjuncts to
      * @param leafFromClauses the collection to add all leaf from-clauses to
      */
     private void collectDetails(FromClause fromClause,
-        HashSet<Expression> conjuncts, ArrayList<FromClause> leafFromClauses) {
+                                HashSet<Expression> conjuncts, ArrayList<FromClause> leafFromClauses) {
 
         // TODO:  IMPLEMENT
     }
@@ -255,12 +255,10 @@ public class CostBasedJoinPlanner implements Planner {
      * indexes or other plan optimizations.
      *
      * @param leafFromClauses the collection of from-clauses found in the query
-     *
-     * @param conjuncts the collection of conjuncts that can be applied at this
-     *                  level
-     *
+     * @param conjuncts       the collection of conjuncts that can be applied at this
+     *                        level
      * @return a collection of {@link JoinComponent} object containing the plans
-     *         and other details for each leaf from-clause
+     * and other details for each leaf from-clause
      */
     private ArrayList<JoinComponent> generateLeafJoinComponents(
         Collection<FromClause> leafFromClauses, Collection<Expression> conjuncts) {
@@ -286,23 +284,19 @@ public class CostBasedJoinPlanner implements Planner {
      * Constructs a plan tree for evaluating the specified from-clause.
      * TODO:  COMPLETE THE DOCUMENTATION
      *
-     * @param fromClause the select nodes that need to be joined.
-     *
-     * @param conjuncts additional conjuncts that can be applied when
-     *        constructing the from-clause plan.
-     *
+     * @param fromClause    the select nodes that need to be joined.
+     * @param conjuncts     additional conjuncts that can be applied when
+     *                      constructing the from-clause plan.
      * @param leafConjuncts this is an output-parameter.  Any conjuncts
-     *        applied in this plan from the <tt>conjuncts</tt> collection
-     *        should be added to this out-param.
-     *
+     *                      applied in this plan from the <tt>conjuncts</tt> collection
+     *                      should be added to this out-param.
      * @return a plan tree for evaluating the specified from-clause
-     *
      * @throws IllegalArgumentException if the specified from-clause is a join
-     *         expression that isn't an outer join, or has some other
-     *         unrecognized type.
+     *                                  expression that isn't an outer join, or has some other
+     *                                  unrecognized type.
      */
     private PlanNode makeLeafPlan(FromClause fromClause,
-        Collection<Expression> conjuncts, HashSet<Expression> leafConjuncts) {
+                                  Collection<Expression> conjuncts, HashSet<Expression> leafConjuncts) {
 
         // TODO:  IMPLEMENT.
         //        If you apply any conjuncts then make sure to add them to the
@@ -329,12 +323,10 @@ public class CostBasedJoinPlanner implements Planner {
      * join plan (as far as our limited estimates can determine, anyway).
      *
      * @param leafComponents the collection of leaf join-components, generated
-     *        by the {@link #generateLeafJoinComponents} method.
-     *
-     * @param conjuncts the collection of all conjuncts found in the query
-     *
+     *                       by the {@link #generateLeafJoinComponents} method.
+     * @param conjuncts      the collection of all conjuncts found in the query
      * @return a single {@link JoinComponent} object that joins all leaf
-     *         components together in an optimal way.
+     * components together in an optimal way.
      */
     private JoinComponent generateOptimalJoin(
         ArrayList<JoinComponent> leafComponents, Set<Expression> conjuncts) {
@@ -394,14 +386,12 @@ public class CostBasedJoinPlanner implements Planner {
      * page data.
      *
      * @param tableName The name of the table that is being selected from.
-     *
      * @param predicate An optional selection predicate, or {@code null} if
-     *        no filtering is desired.
-     *
+     *                  no filtering is desired.
      * @return A new plan-node for evaluating the select operation.
      */
     public SelectNode makeSimpleSelect(String tableName, Expression predicate,
-        List<SelectClause> enclosingSelects) {
+                                       List<SelectClause> enclosingSelects) {
         if (tableName == null)
             throw new IllegalArgumentException("tableName cannot be null");
 

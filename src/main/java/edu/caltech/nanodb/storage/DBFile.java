@@ -41,21 +41,31 @@ import java.io.RandomAccessFile;
  * @see RandomAccessFile
  */
 public class DBFile {
-    /** The minimum page size is 512 bytes. */
+    /**
+     * The minimum page size is 512 bytes.
+     */
     public static final int MIN_PAGESIZE = 512;
 
-    /** The maximum page size is 64K bytes. */
+    /**
+     * The maximum page size is 64K bytes.
+     */
     public static final int MAX_PAGESIZE = 65536;
 
-    /** The default page size is 8K bytes. */
+    /**
+     * The default page size is 8K bytes.
+     */
     public static final int DEFAULT_PAGESIZE = 8192;
 
 
-    /** The actual data file on disk. */
+    /**
+     * The actual data file on disk.
+     */
     private File dataFile;
 
 
-    /** The type of the data file. */
+    /**
+     * The type of the data file.
+     */
     private DBFileType type;
 
 
@@ -67,7 +77,9 @@ public class DBFile {
     private int pageSize;
 
 
-    /** The file data is accessed via this variable. */
+    /**
+     * The file data is accessed via this variable.
+     */
     private RandomAccessFile fileContents;
 
 
@@ -77,14 +89,13 @@ public class DBFile {
      * it must be a power of two.
      *
      * @param pageSize the page-size to test for validity
-     *
      * @return true if the specified page-size is valid, or false otherwise.
      */
     public static boolean isValidPageSize(int pageSize) {
-      // The first line ensures that the page size is in the proper range,
-      // and the second line ensures that it is a power of two.
-      return (pageSize >= MIN_PAGESIZE && pageSize <= MAX_PAGESIZE) &&
-             ((pageSize & (pageSize - 1)) == 0);
+        // The first line ensures that the page size is in the proper range,
+        // and the second line ensures that it is a power of two.
+        return (pageSize >= MIN_PAGESIZE && pageSize <= MAX_PAGESIZE) &&
+            ((pageSize & (pageSize - 1)) == 0);
     }
 
 
@@ -95,7 +106,6 @@ public class DBFile {
      * is intended for checking arguments.
      *
      * @param pageSize the page-size to test for validity
-     *
      * @throws IllegalArgumentException if the specified page-size is invalid.
      */
     public static void checkValidPageSize(int pageSize) {
@@ -113,9 +123,7 @@ public class DBFile {
      * <tt>encodePageSize(512)</tt> will return 9.
      *
      * @param pageSize the page-size to encode
-     *
      * @return the base-2 logarithm of the page size
-     *
      * @throws IllegalArgumentException if the specified page-size is invalid.
      */
     public static int encodePageSize(int pageSize) {
@@ -136,9 +144,7 @@ public class DBFile {
      * page size.  For example, <tt>decodePageSize(9)</tt> will return 512.
      *
      * @param encoded the encoded page-size
-     *
      * @return the actual page size, computed as 2<sup><em>encoded</em></sup>.
-     *
      * @throws IllegalArgumentException if the resulting page-size is invalid.
      */
     public static int decodePageSize(int encoded) {
@@ -153,20 +159,18 @@ public class DBFile {
     }
 
 
-
     /**
      * Constructs a new object from the specified information, and opens the
      * backing data-file as well.
      *
      * @param dataFile the actual file containing the data
-     * @param type the type of the data file
+     * @param type     the type of the data file
      * @param pageSize the page-size of the data file
-     *
      * @throws IllegalArgumentException if the page size is not valid.
-     * @throws IOException if some other IO error occurs
+     * @throws IOException              if some other IO error occurs
      */
     public DBFile(File dataFile, DBFileType type, int pageSize)
-            throws IOException {
+        throws IOException {
         this(dataFile, type, pageSize, new RandomAccessFile(dataFile, "rw"));
 
     }
@@ -176,16 +180,15 @@ public class DBFile {
      * Constructs a new object from the specified information and the previously
      * opened data-file.
      *
-     * @param dataFile the actual file containing the data
-     * @param type the type of the data file
-     * @param pageSize the page-size of the data file
+     * @param dataFile     the actual file containing the data
+     * @param type         the type of the data file
+     * @param pageSize     the page-size of the data file
      * @param fileContents an already opened {@link RandomAccessFile} to use for
-     *        accessing the data file's contents
-     *
+     *                     accessing the data file's contents
      * @throws IllegalArgumentException if the page size is not valid.
      */
     public DBFile(File dataFile, DBFileType type, int pageSize,
-        RandomAccessFile fileContents) {
+                  RandomAccessFile fileContents) {
 
         if (dataFile == null || type == null || fileContents == null)
             throw new NullPointerException();
@@ -228,10 +231,12 @@ public class DBFile {
     }
 
 
-    /** Returns a hash-code based on the filename of the backing file. */
+    /**
+     * Returns a hash-code based on the filename of the backing file.
+     */
     @Override
     public int hashCode() {
-      return dataFile.hashCode();
+        return dataFile.hashCode();
     }
 
 
@@ -284,8 +289,7 @@ public class DBFile {
     public long getFileSize() {
         try {
             return fileContents.length();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException("IO error while getting size of file " +
                 dataFile, e);
         }
@@ -311,7 +315,7 @@ public class DBFile {
      * contents.
      *
      * @return the {@link RandomAccessFile} for accessing the data file's
-     *         contents.
+     * contents.
      */
     public RandomAccessFile getFileContents() {
         return fileContents;

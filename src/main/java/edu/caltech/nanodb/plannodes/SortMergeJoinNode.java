@@ -22,19 +22,27 @@ import edu.caltech.nanodb.relations.Tuple;
  */
 public class SortMergeJoinNode extends ThetaJoinNode {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(SortMergeJoinNode.class);
 
 
-    /** Most recently retrieved tuple of the left relation. */
+    /**
+     * Most recently retrieved tuple of the left relation.
+     */
     private Tuple leftTuple;
 
 
-    /** Most recently retrieved tuple of the right relation. */
+    /**
+     * Most recently retrieved tuple of the right relation.
+     */
     private Tuple rightTuple;
 
 
-    /** Set to true when we have exhausted all tuples from our subplans. */
+    /**
+     * Set to true when we have exhausted all tuples from our subplans.
+     */
     private boolean done;
 
 
@@ -75,7 +83,9 @@ public class SortMergeJoinNode extends ThetaJoinNode {
     }
 
 
-    /** Computes the hash-code of the sort-merge join plan node. */
+    /**
+     * Computes the hash-code of the sort-merge join plan node.
+     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -109,7 +119,9 @@ public class SortMergeJoinNode extends ThetaJoinNode {
     }
 
 
-    /** Creates a copy of this plan node and its subtrees. */
+    /**
+     * Creates a copy of this plan node and its subtrees.
+     */
     @Override
     protected PlanNode clone() throws CloneNotSupportedException {
         SortMergeJoinNode node = (SortMergeJoinNode) super.clone();
@@ -133,21 +145,27 @@ public class SortMergeJoinNode extends ThetaJoinNode {
     }
 
 
-    /** This plan-node does not support marking. */
+    /**
+     * This plan-node does not support marking.
+     */
     @Override
     public boolean supportsMarking() {
         return false;
     }
 
 
-    /** This plan-node does not require marking on the left child-plan. */
+    /**
+     * This plan-node does not require marking on the left child-plan.
+     */
     @Override
     public boolean requiresLeftMarking() {
         return false;
     }
 
 
-    /** This plan-node requires marking on the right child-plan. */
+    /**
+     * This plan-node requires marking on the right child-plan.
+     */
     @Override
     public boolean requiresRightMarking() {
         return true;

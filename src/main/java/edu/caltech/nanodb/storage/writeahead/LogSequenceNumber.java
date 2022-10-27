@@ -13,21 +13,27 @@ package edu.caltech.nanodb.storage.writeahead;
  *   <li>The offset of the log record from the start of the file
  *       (range:  0..2<sup>31</sup>-1)</li>
  * </ul>
- *
+ * <p>
  * This class is immutable so that it can be used in multithreaded code more
  * easily.
  */
 public class LogSequenceNumber
     implements Comparable<LogSequenceNumber>, Cloneable {
 
-    /** The number of the write-ahead log file that the record is stored in. */
+    /**
+     * The number of the write-ahead log file that the record is stored in.
+     */
     private int logFileNo;
 
-    /** The offset of the log record from the start of the file. */
+    /**
+     * The offset of the log record from the start of the file.
+     */
     private int fileOffset;
 
 
-    /** The size of the record that this LSN points to, in bytes. */
+    /**
+     * The size of the record that this LSN points to, in bytes.
+     */
     private int recordSize;
 
 
@@ -79,7 +85,9 @@ public class LogSequenceNumber
     }
 
 
-    /** Calculate a hash-code for this log-sequence number object. */
+    /**
+     * Calculate a hash-code for this log-sequence number object.
+     */
     @Override
     public int hashCode() {
         int hashCode;
@@ -96,8 +104,7 @@ public class LogSequenceNumber
     public LogSequenceNumber clone() {
         try {
             return (LogSequenceNumber) super.clone();
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             // Should never happen.
             throw new RuntimeException(e);
         }
@@ -119,7 +126,7 @@ public class LogSequenceNumber
      * appears at.
      *
      * @return the offset from the start of the WAL file that this record
-     *         appears at.
+     * appears at.
      */
     public int getFileOffset() {
         return fileOffset;

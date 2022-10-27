@@ -24,8 +24,7 @@ public class BeginTransactionCommand extends Command {
             // user issued the command to do it!
             StorageManager storageManager = server.getStorageManager();
             storageManager.getTransactionManager().startTransaction(true);
-        }
-        catch (TransactionException e) {
+        } catch (TransactionException e) {
             throw new ExecutionException(e);
         }
     }

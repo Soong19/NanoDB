@@ -20,7 +20,7 @@ import edu.caltech.nanodb.expressions.LiteralValue;
  * This test class exercises the functionality of the {@link BooleanOperator}
  * class.
  */
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestBooleanOperator {
 
     /**
@@ -47,7 +47,9 @@ public class TestBooleanOperator {
     }
 
 
-    /** This method exercises the AND functionality of the Boolean operator. */
+    /**
+     * This method exercises the AND functionality of the Boolean operator.
+     */
     public void testAndOper() {
         BooleanOperator andOp;
 
@@ -71,8 +73,8 @@ public class TestBooleanOperator {
         andOp.addTerm(new EvalTracker(Boolean.FALSE));
 
         assert Boolean.FALSE.equals(andOp.evaluate());
-        assert  ((EvalTracker) andOp.getTerm(0)).evaluated;
-        assert  ((EvalTracker) andOp.getTerm(1)).evaluated;
+        assert ((EvalTracker) andOp.getTerm(0)).evaluated;
+        assert ((EvalTracker) andOp.getTerm(1)).evaluated;
         assert !((EvalTracker) andOp.getTerm(2)).evaluated;
 
         // FALSE && TRUE && TRUE = FALSE
@@ -83,13 +85,15 @@ public class TestBooleanOperator {
         andOp.addTerm(new EvalTracker(Boolean.TRUE));
 
         assert Boolean.FALSE.equals(andOp.evaluate());
-        assert  ((EvalTracker) andOp.getTerm(0)).evaluated;
+        assert ((EvalTracker) andOp.getTerm(0)).evaluated;
         assert !((EvalTracker) andOp.getTerm(1)).evaluated;
         assert !((EvalTracker) andOp.getTerm(2)).evaluated;
     }
 
 
-    /** This method exercises the OR functionality of the Boolean operator. */
+    /**
+     * This method exercises the OR functionality of the Boolean operator.
+     */
     public void testOrOper() {
         BooleanOperator orOp;
 
@@ -113,8 +117,8 @@ public class TestBooleanOperator {
         orOp.addTerm(new EvalTracker(Boolean.FALSE));
 
         assert Boolean.TRUE.equals(orOp.evaluate());
-        assert  ((EvalTracker) orOp.getTerm(0)).evaluated;
-        assert  ((EvalTracker) orOp.getTerm(1)).evaluated;
+        assert ((EvalTracker) orOp.getTerm(0)).evaluated;
+        assert ((EvalTracker) orOp.getTerm(1)).evaluated;
         assert !((EvalTracker) orOp.getTerm(2)).evaluated;
 
         // TRUE && FALSE && FALSE = TRUE
@@ -125,13 +129,15 @@ public class TestBooleanOperator {
         orOp.addTerm(new EvalTracker(Boolean.FALSE));
 
         assert Boolean.TRUE.equals(orOp.evaluate());
-        assert  ((EvalTracker) orOp.getTerm(0)).evaluated;
+        assert ((EvalTracker) orOp.getTerm(0)).evaluated;
         assert !((EvalTracker) orOp.getTerm(1)).evaluated;
         assert !((EvalTracker) orOp.getTerm(2)).evaluated;
     }
 
 
-    /** This method exercises the NOT functionality of the Boolean operator. */
+    /**
+     * This method exercises the NOT functionality of the Boolean operator.
+     */
     public void testNotOper() {
         BooleanOperator notOp;
 
@@ -172,12 +178,12 @@ public class TestBooleanOperator {
         for (Expression term : terms)
             boolOp.addTerm(term);
 
-        assert  boolOp.hasTermsReferencingAllTables("t1");
-        assert  boolOp.hasTermsReferencingAllTables("t2");
-        assert  boolOp.hasTermsReferencingAllTables("t1", "t3");
+        assert boolOp.hasTermsReferencingAllTables("t1");
+        assert boolOp.hasTermsReferencingAllTables("t2");
+        assert boolOp.hasTermsReferencingAllTables("t1", "t3");
         assert !boolOp.hasTermsReferencingAllTables("t4");
         assert !boolOp.hasTermsReferencingAllTables("t1", "t3", "t4");
-        assert  boolOp.hasTermsReferencingAllTables("t1", "t2", "t3");
+        assert boolOp.hasTermsReferencingAllTables("t1", "t2", "t3");
     }
 
 
@@ -215,22 +221,22 @@ public class TestBooleanOperator {
         List<Expression> result;
 
         result = boolOp.getTermsReferencingAllTables("t1");
-        verifyFoundTerms(terms, result, new int[] {0, 2, 4});
+        verifyFoundTerms(terms, result, new int[]{0, 2, 4});
 
         result = boolOp.getTermsReferencingAllTables("t2");
-        verifyFoundTerms(terms, result, new int[] {1});
+        verifyFoundTerms(terms, result, new int[]{1});
 
         result = boolOp.getTermsReferencingAllTables("t1", "t3");
-        verifyFoundTerms(terms, result, new int[] {5});
+        verifyFoundTerms(terms, result, new int[]{5});
 
         result = boolOp.getTermsReferencingAllTables("t4");
-        verifyFoundTerms(terms, result, new int[] {});
+        verifyFoundTerms(terms, result, new int[]{});
 
         result = boolOp.getTermsReferencingAllTables("t1", "t3", "t4");
-        verifyFoundTerms(terms, result, new int[] {});
+        verifyFoundTerms(terms, result, new int[]{});
 
         result = boolOp.getTermsReferencingAllTables("t1", "t2", "t3");
-        verifyFoundTerms(terms, result, new int[] {6});
+        verifyFoundTerms(terms, result, new int[]{6});
     }
 
 
@@ -240,7 +246,7 @@ public class TestBooleanOperator {
      * to verify them against an expected set of results.
      */
     private void verifyFoundTerms(List<Expression> terms,
-        List<Expression> results, int[] expected) {
+                                  List<Expression> results, int[] expected) {
 
         Iterator<Expression> iter = results.iterator();
         for (int i = 0; i < expected.length; i++) {

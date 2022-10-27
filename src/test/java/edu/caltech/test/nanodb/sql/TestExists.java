@@ -11,7 +11,7 @@ import edu.caltech.nanodb.server.CommandResult;
  * This class exercises the database with some simple EXISTS operations, to
  * verify that the most basic functionality works.
  **/
-@Test(groups={"sql", "hw5"})
+@Test(groups = {"sql", "hw5"})
 public class TestExists extends SqlTestCase {
     public TestExists() {
         super("setup_testExists");
@@ -42,17 +42,17 @@ public class TestExists extends SqlTestCase {
             createTupleFromNum(3),
             createTupleFromNum(4)
         };
-        TupleLiteral[] expected2 = { };
+        TupleLiteral[] expected2 = {};
 
         result = server.doCommand(
             "SELECT a FROM test_exists_1 WHERE " +
-            "EXISTS (SELECT b FROM test_exists_2 WHERE b > 20)", true);
+                "EXISTS (SELECT b FROM test_exists_2 WHERE b > 20)", true);
         assert checkSizeResults(expected1, result);
         assert checkUnorderedResults(expected1, result);
 
         result = server.doCommand(
             "SELECT a FROM test_exists_1 WHERE " +
-            "NOT EXISTS (SELECT b FROM test_exists_2 WHERE b > 80)", true);
+                "NOT EXISTS (SELECT b FROM test_exists_2 WHERE b > 80)", true);
         assert checkSizeResults(expected1, result);
         assert checkUnorderedResults(expected1, result);
 
@@ -80,7 +80,7 @@ public class TestExists extends SqlTestCase {
             createTupleFromNum(1),
             createTupleFromNum(2)
         };
-        TupleLiteral[] expected3 = { };
+        TupleLiteral[] expected3 = {};
 
         //----------------------------------
         // Semi-join using EXISTS

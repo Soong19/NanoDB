@@ -57,7 +57,9 @@ public class SessionState {
      */
 
 
-    /** The unique session ID assigned to this client session. */
+    /**
+     * The unique session ID assigned to this client session.
+     */
     private int sessionID;
 
 
@@ -69,11 +71,15 @@ public class SessionState {
     private PrintStream outputStream;
 
 
-    /** The transaction state of this session. */
+    /**
+     * The transaction state of this session.
+     */
     private TransactionState txnState;
 
 
-    /** The command state of this session. */
+    /**
+     * The command state of this session.
+     */
     private CommandState cmdState;
 
 

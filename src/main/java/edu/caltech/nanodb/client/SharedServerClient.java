@@ -32,13 +32,16 @@ public class SharedServerClient extends InteractiveClient {
     private static Logger logger = LogManager.getLogger(SharedServerClient.class);
 
 
-    /** The socket used to communicate with the shared server. */
+    /**
+     * The socket used to communicate with the shared server.
+     */
     private Socket socket;
 
 
     /**
      * This stream is used to receive objects (tuples, messages, etc.) from
-     * the server. */
+     * the server.
+     */
     private ObjectInputStream objectInput;
 
 
@@ -77,11 +80,15 @@ public class SharedServerClient extends InteractiveClient {
      * server.  It is intended to run within a separate thread.
      */
     private class Receiver implements Runnable {
-        /** The print-stream to output server results on. */
+        /**
+         * The print-stream to output server results on.
+         */
         private PrintStream out;
 
 
-        /** A flag indicating when the receiver thread should shut down. */
+        /**
+         * A flag indicating when the receiver thread should shut down.
+         */
         private boolean done;
 
 
@@ -100,24 +107,19 @@ public class SharedServerClient extends InteractiveClient {
                     if (obj instanceof String) {
                         // Just print strings to the console
                         System.out.print(obj);
-                    }
-                    else if (obj instanceof Schema) {
+                    } else if (obj instanceof Schema) {
                         tuplePrinter = new PrettyTuplePrinter(out);
                         tuplePrinter.setSchema((Schema) obj);
-                    }
-                    else if (obj instanceof Tuple) {
+                    } else if (obj instanceof Tuple) {
                         tuplePrinter.process((Tuple) obj);
-                    }
-                    else if (obj instanceof Throwable) {
+                    } else if (obj instanceof Throwable) {
                         Throwable t = (Throwable) obj;
                         t.printStackTrace(System.out);
-                    }
-                    else if (obj instanceof CommandResult) {
+                    } else if (obj instanceof CommandResult) {
                         CommandResult result = (CommandResult) obj;
                         if (result.isExit())
                             done = true;
-                    }
-                    else if (obj instanceof CommandState) {
+                    } else if (obj instanceof CommandState) {
                         CommandState state = (CommandState) obj;
                         if (state == CommandState.COMMAND_COMPLETED) {
                             if (tuplePrinter != null) {
@@ -128,25 +130,20 @@ public class SharedServerClient extends InteractiveClient {
                             // Signal that the command is completed.
                             semCommandDone.release();
                         }
-                    }
-                    else {
+                    } else {
                         // TODO:  Try to print whatever came across the wire.
                         System.out.println(obj);
                     }
-                }
-                catch (EOFException e) {
+                } catch (EOFException e) {
                     System.out.println("Connection was closed by the server.");
                     break;
-                }
-                catch (SocketException e) {
+                } catch (SocketException e) {
                     System.out.println("Socket communication error.");
                     break;
-                }
-                catch (ClosedByInterruptException e) {
+                } catch (ClosedByInterruptException e) {
                     System.out.println("Thread was interrupted during an IO operation.");
                     break;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     System.out.println("Exception occurred:");
                     e.printStackTrace(System.out);
                 }
@@ -160,7 +157,6 @@ public class SharedServerClient extends InteractiveClient {
             done = true;
         }
     }
-
 
 
     public SharedServerClient(String hostname, int port) throws IOException {
@@ -185,8 +181,7 @@ public class SharedServerClient extends InteractiveClient {
     public CommandResult handleCommand(String command) {
         try {
             objectOutput.writeObject(command);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(
                 "Unexpected error while transmitting command", e);
         }
@@ -194,8 +189,7 @@ public class SharedServerClient extends InteractiveClient {
         // Wait for the command to be completed.
         try {
             semCommandDone.acquire();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(
                 "Interrupted while waiting for command to finish", e);
         }

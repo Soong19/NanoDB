@@ -14,13 +14,19 @@ import edu.caltech.nanodb.storage.StorageManager;
  * implementation, such as acquiring a new data page or releasing a data page.
  */
 class FileOperations {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(FileOperations.class);
 
-    /** The storage manager to use for loading pages. */
+    /**
+     * The storage manager to use for loading pages.
+     */
     private StorageManager storageManager;
 
-    /** The {@code DBFile} that the B<sup>+</sup> tree is stored in. */
+    /**
+     * The {@code DBFile} that the B<sup>+</sup> tree is stored in.
+     */
     private DBFile dbFile;
 
 
@@ -47,12 +53,11 @@ class FileOperations {
             // There are no empty pages.  Create a new page to use.
 
             logger.debug("No empty pages.  Extending BTree file " + dbFile +
-                             " by one page.");
+                " by one page.");
 
             int numPages = dbFile.getNumPages();
             newPage = storageManager.loadDBPage(dbFile, numPages, true);
-        }
-        else {
+        } else {
             // Load the empty page, and remove it from the chain of empty pages.
 
             logger.debug("First empty page number is " + pageNo);

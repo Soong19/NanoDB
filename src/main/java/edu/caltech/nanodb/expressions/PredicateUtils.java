@@ -13,7 +13,9 @@ import edu.caltech.nanodb.relations.Schema;
  * analyzing and manipulating predicates.
  */
 public class PredicateUtils {
-    /** This class should not be instantiated. */
+    /**
+     * This class should not be instantiated.
+     */
     private PredicateUtils() {
         throw new RuntimeException("This class should not be instantiated.");
     }
@@ -33,16 +35,14 @@ public class PredicateUtils {
      * </ul>
      *
      * @param conjuncts the collection of conjuncts to combine into a predicate.
-     *
      * @return a predicate for evaluating the conjuncts, or <tt>null</tt> if the
-     *         input collection contained no conjuncts.
+     * input collection contained no conjuncts.
      */
     public static Expression makePredicate(Collection<Expression> conjuncts) {
         Expression predicate = null;
         if (conjuncts.size() == 1) {
             predicate = conjuncts.iterator().next();
-        }
-        else if (conjuncts.size() > 1) {
+        } else if (conjuncts.size() > 1) {
             predicate = new BooleanOperator(
                 BooleanOperator.Type.AND_EXPR, conjuncts);
         }
@@ -76,10 +76,9 @@ public class PredicateUtils {
      * various conjuncts are simply collected into the specified collection.
      * </p>
      *
-     * @param expr the expression to pull the conjuncts out of
-     *
+     * @param expr      the expression to pull the conjuncts out of
      * @param conjuncts the collection of conjuncts to add the predicate (or its
-     *        components) to.
+     *                  components) to.
      */
     public static void collectConjuncts(Expression expr,
                                         Collection<Expression> conjuncts) {
@@ -93,14 +92,12 @@ public class PredicateUtils {
             if (boolExpr.getType() == BooleanOperator.Type.AND_EXPR) {
                 for (int iTerm = 0; iTerm < boolExpr.getNumTerms(); iTerm++)
                     conjuncts.add(boolExpr.getTerm(iTerm));
-            }
-            else {
+            } else {
                 // The Boolean expression is an OR or NOT, so we can't add the
                 // terms themselves.
                 conjuncts.add(expr);
             }
-        }
-        else {
+        } else {
             // The predicate is not a Boolean expression, so just store it.
             conjuncts.add(expr);
         }
@@ -135,22 +132,19 @@ public class PredicateUtils {
      * </pre>
      *
      * @param srcExprs the input collection of expressions to check against
-     *        the provided schemas.
-     *
-     * @param remove if {@code true}, the matching expressions will be
-     *        removed from the {@code srcExprs} collection.  Otherwise, the
-     *        {@code srcExprs} collection is left unchanged.
-     *
+     *                 the provided schemas.
+     * @param remove   if {@code true}, the matching expressions will be
+     *                 removed from the {@code srcExprs} collection.  Otherwise, the
+     *                 {@code srcExprs} collection is left unchanged.
      * @param dstExprs the collection to add the matching expressions to.
-     *        This collection is <u>not</u> cleared by this method; any
-     *        previous contents in the collection will be left unchanged.
-     *
-     * @param schemas an array of one or more schemas to check the input
-     *        expressions against.  If an expression can be evaluated solely
-     *        against these schemas then it will be added to the results.
+     *                 This collection is <u>not</u> cleared by this method; any
+     *                 previous contents in the collection will be left unchanged.
+     * @param schemas  an array of one or more schemas to check the input
+     *                 expressions against.  If an expression can be evaluated solely
+     *                 against these schemas then it will be added to the results.
      */
     public static void findExprsUsingSchemas(Collection<Expression> srcExprs,
-        boolean remove, Collection<Expression> dstExprs, Schema... schemas) {
+                                             boolean remove, Collection<Expression> dstExprs, Schema... schemas) {
 
         ArrayList<ColumnName> symbols = new ArrayList<ColumnName>();
 

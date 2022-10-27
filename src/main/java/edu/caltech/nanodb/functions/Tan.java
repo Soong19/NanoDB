@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the tangent of a single argument. Returns <tt>NULL</tt> if
  * argument is <tt>NULL</tt>.
- * 
+ *
  * @author emil
  */
 public class Tan extends SimpleFunction {

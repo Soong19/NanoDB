@@ -37,13 +37,11 @@ public class PlannerClassValidator implements PropertyValidator {
 
                 // If we got here, the value is valid.
                 return value;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new PropertyException(
                     "Couldn't instantiate Planner class \"" + s + "\"", e);
             }
-        }
-        else {
+        } else {
             throw new PropertyException(
                 "Planner classname must be a string value.");
         }

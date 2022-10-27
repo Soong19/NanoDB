@@ -29,7 +29,7 @@ public class TableUtils {
 
 
     public static Map<Integer, Object> makeValueMap(int[] colIndexes,
-        Tuple tup, int[] refColIndexes) {
+                                                    Tuple tup, int[] refColIndexes) {
 
         Map<Integer, Object> values = new HashMap<>();
 
@@ -59,7 +59,7 @@ public class TableUtils {
 
 
     public static Tuple findFirstTupleEquals(TupleFile tupleFile,
-        Map<Integer, Object> values) throws IOException {
+                                             Map<Integer, Object> values) throws IOException {
 
         Tuple tup = tupleFile.getFirstTuple();
         while (tup != null) {
@@ -73,7 +73,7 @@ public class TableUtils {
 
 
     public static Tuple findNextTupleEquals(TupleFile tupleFile, Tuple prevTup,
-        Map<Integer, Object> values) throws IOException {
+                                            Map<Integer, Object> values) throws IOException {
 
         Tuple tup = tupleFile.getNextTuple(prevTup);
         while (tup != null) {

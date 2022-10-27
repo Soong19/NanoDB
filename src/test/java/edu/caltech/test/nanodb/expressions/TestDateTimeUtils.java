@@ -16,9 +16,11 @@ import org.testng.annotations.Test;
  * Exercise the string-parsing functionality of the {@link DateTimeUtils}
  * class.
  */
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestDateTimeUtils {
-    /** Exercise the {@link DateTimeUtils#parseDate} function. */
+    /**
+     * Exercise the {@link DateTimeUtils#parseDate} function.
+     */
     public void testParseDate() {
         LocalDate v = LocalDate.of(2015, 10, 22);  // Oct 22, 2015
         LocalDate t;
@@ -34,7 +36,9 @@ public class TestDateTimeUtils {
     }
 
 
-    /** Exercise the {@link DateTimeUtils#parseTime} function. */
+    /**
+     * Exercise the {@link DateTimeUtils#parseTime} function.
+     */
     public void testParseTime() {
         LocalTime v = LocalTime.of(17, 43, 21);
         LocalTime t;
@@ -72,7 +76,9 @@ public class TestDateTimeUtils {
     }
 
 
-    /** Exercise the {@link DateTimeUtils#parseDateTime} function. */
+    /**
+     * Exercise the {@link DateTimeUtils#parseDateTime} function.
+     */
     public void testParseDateTime() {
         LocalDateTime t;
 
@@ -84,7 +90,9 @@ public class TestDateTimeUtils {
     }
 
 
-    /** Exercise the {@link DateTimeUtils#parseInterval} function. */
+    /**
+     * Exercise the {@link DateTimeUtils#parseInterval} function.
+     */
     public void testParseInterval() {
         TemporalAmount t;
 

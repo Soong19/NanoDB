@@ -20,7 +20,9 @@ import edu.caltech.nanodb.server.NanoDBServer;
  */
 public abstract class DumpCommand extends Command {
 
-    /** A tuple processor implementation used to dump each tuple. */
+    /**
+     * A tuple processor implementation used to dump each tuple.
+     */
     protected static class TupleExporter implements TupleProcessor {
         private PrintStream dumpOut;
 
@@ -34,7 +36,9 @@ public abstract class DumpCommand extends Command {
         }
 
 
-        /** The exporter can output the schema to the dump file. */
+        /**
+         * The exporter can output the schema to the dump file.
+         */
         public void setSchema(Schema schema) {
             dumpOut.print("{");
 
@@ -69,7 +73,9 @@ public abstract class DumpCommand extends Command {
             dumpOut.println("}");
         }
 
-        /** This implementation simply prints out each tuple it is handed. */
+        /**
+         * This implementation simply prints out each tuple it is handed.
+         */
         public void process(Tuple tuple) {
             dumpOut.print("[");
             boolean first = true;
@@ -94,11 +100,15 @@ public abstract class DumpCommand extends Command {
     }
 
 
-    /** The path and filename to dump the table data to, if desired. */
+    /**
+     * The path and filename to dump the table data to, if desired.
+     */
     protected String fileName;
 
 
-    /** The data format to use when dumping the table data. */
+    /**
+     * The data format to use when dumping the table data.
+     */
     protected String format;
 
 
@@ -127,8 +137,7 @@ public abstract class DumpCommand extends Command {
         if (fileName != null) {
             try {
                 dumpOut = new PrintStream(fileName);
-            }
-            catch (FileNotFoundException e) {
+            } catch (FileNotFoundException e) {
                 throw new ExecutionException(e);
             }
         }

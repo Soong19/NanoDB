@@ -13,13 +13,15 @@ import java.util.regex.Pattern;
  * to the constructor and is used to check files when retrieving directory
  * listings.  Note that only the file's name is tested; the path is not
  * considered in the check.
- * 
+ *
  * @see File#listFiles(java.io.FileFilter)
  * @see Pattern
  */
 public class RegexFileFilter implements FileFilter {
 
-    /** The regex pattern used for matching against filenames. */
+    /**
+     * The regex pattern used for matching against filenames.
+     */
     private Pattern pattern;
 
 

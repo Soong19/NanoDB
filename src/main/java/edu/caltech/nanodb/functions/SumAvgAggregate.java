@@ -24,19 +24,27 @@ public class SumAvgAggregate extends AggregateFunction {
     private boolean computeAverage;
 
 
-    /** Contains the actual value of the sum */
+    /**
+     * Contains the actual value of the sum
+     */
     private Object sum;
 
 
-    /** The current count of items that have been added */
+    /**
+     * The current count of items that have been added
+     */
     private int count;
 
 
-    /** Indicates whether we want distinct values or not */
+    /**
+     * Indicates whether we want distinct values or not
+     */
     private boolean distinct;
 
 
-    /** Set to keep track of distinct values */
+    /**
+     * Set to keep track of distinct values
+     */
     HashSet<Object> set;
 
 
@@ -73,8 +81,7 @@ public class SumAvgAggregate extends AggregateFunction {
         if (sum == null) {
             // This is the first value.  Store it.
             sum = value;
-        }
-        else {
+        } else {
             // Add in the new value.
             sum = ArithmeticOperator.evalObjects(ArithmeticOperator.Type.ADD,
                 sum, value);
@@ -89,14 +96,12 @@ public class SumAvgAggregate extends AggregateFunction {
     public Object getResult() {
         if (sum == null) {
             return null;
-        }
-        else if (computeAverage) {
+        } else if (computeAverage) {
             // TODO:  Need to generate NUMERIC result.  Using double right now.
             // Compute average from the sum and count.
             return ArithmeticOperator.evalObjects(
                 ArithmeticOperator.Type.DIVIDE, sum, (double) count);
-        }
-        else {
+        } else {
             // Just return the sum.
             return sum;
         }
@@ -108,7 +113,7 @@ public class SumAvgAggregate extends AggregateFunction {
         if (args.size() != 1) {
             throw new IllegalArgumentException(
                 "Sum/average aggregate function takes 1 argument; got " +
-                args.size());
+                    args.size());
         }
 
         // When finding the min or max, the resulting aggregate column is the

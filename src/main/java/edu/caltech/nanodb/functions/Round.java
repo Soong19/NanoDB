@@ -17,7 +17,7 @@ import edu.caltech.nanodb.expressions.TypeConverter;
 /**
  * Computes the whole number that is closest to the argument.  Returns NULL if
  * argument is NULL.
- * 
+ *
  * @author emil
  */
 public class Round extends SimpleFunction {
@@ -43,12 +43,12 @@ public class Round extends SimpleFunction {
     @Override
     public Object evaluate(Environment env, List<Expression> args) {
         if (args.size() != 1) {
-            throw new ExpressionException("Cannot call ROUND on " + args.size() 
-                    + " arguments");
+            throw new ExpressionException("Cannot call ROUND on " + args.size()
+                + " arguments");
         }
 
         Object argVal = args.get(0).evaluate(env);
-        
+
         if (argVal == null)
             return null;
 

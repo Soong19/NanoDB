@@ -41,13 +41,19 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * that we can do fast lookups based on table names and column names.
      */
     private static class IndexedColumnInfo implements Serializable {
-        /** The index in the schema that the column appears at. */
+        /**
+         * The index in the schema that the column appears at.
+         */
         public int colIndex;
 
-        /** The details of the column at the stored index. */
+        /**
+         * The details of the column at the stored index.
+         */
         public ColumnInfo colInfo;
 
-        /** Stores the specified index and column-info value. */
+        /**
+         * Stores the specified index and column-info value.
+         */
         IndexedColumnInfo(int colIndex, ColumnInfo colInfo) {
             if (colInfo == null)
                 throw new NullPointerException("colInfo cannot be null");
@@ -117,7 +123,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
     private ArrayList<ForeignKeyColumnRefs> foreignKeys = new ArrayList<>();
 
 
-    /** A set of the tables that reference this table. */
+    /**
+     * A set of the tables that reference this table.
+     */
     private HashSet<String> referencingTables = new HashSet<>();
 
 
@@ -132,7 +140,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
     // INSTANCE METHODS
 
 
-    /** Construct an empty schema. */
+    /**
+     * Construct an empty schema.
+     */
     public Schema() {
     }
 
@@ -191,9 +201,8 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * specified index.  Column indexes are numbered from 0.
      *
      * @param i the index to retrieve the column-info for
-     *
      * @return the <tt>ColumnInfo</tt> object describing the name and type of
-     *         the column
+     * the column
      */
     public ColumnInfo getColumnInfo(int i) {
         return columnInfos.get(i);
@@ -243,9 +252,8 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * Add a column to the schema.
      *
      * @param colInfo the name and type of the column being added to the
-     *        schema
+     *                schema
      * @return the zero-based index of the column in the schema
-     *
      * @throws IllegalArgumentException if {@code colInfo} is {@code null}
      */
     public int addColumnInfo(ColumnInfo colInfo) {
@@ -261,7 +269,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
         HashMap<String, IndexedColumnInfo> colMap = colsHashedByTable.get(tblName);
         if (colMap != null && colMap.containsKey(colName)) {
             throw new SchemaNameException("Specified column " + colInfo +
-            " is a duplicate of an existing column.");
+                " is a duplicate of an existing column.");
         }
 
         int colIndex = columnInfos.size();
@@ -291,11 +299,11 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * Append another schema to this schema.
      *
      * @throws SchemaNameException if any of the input column-info objects
-     *         overlap the names of columns already in the schema.
+     *                             overlap the names of columns already in the schema.
      */
     public void append(Schema s) throws SchemaNameException {
         for (ColumnInfo colInfo : s)
-             addColumnInfo(colInfo);
+            addColumnInfo(colInfo);
     }
 
 
@@ -318,7 +326,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      *
      * @param s the other schema to compare this schema to
      * @return a set containing the names of all tables that appear in both
-     *         schemas
+     * schemas
      */
     public Set<String> getCommonTableNames(Schema s) {
         HashSet<String> shared = new HashSet<>(colsHashedByTable.keySet());
@@ -382,7 +390,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * valid for use on one side of a <tt>NATURAL</tt> join.
      *
      * @return true if the schema has multiple columns with the same column name
-     *         but different table names, or false otherwise.
+     * but different table names, or false otherwise.
      */
     public boolean hasMultipleColumnsWithSameName() {
         for (String cName : colsHashedByColumn.keySet()) {
@@ -398,11 +406,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * returns the column information for that column name.
      *
      * @param colName the name of the column to retrieve the information for
-     *
      * @return the column information for the specified column
-     *
      * @throws SchemaNameException if the specified column name doesn't appear
-     *         in this schema, or if it appears multiple times
+     *                             in this schema, or if it appears multiple times
      */
     public ColumnInfo getColumnInfo(String colName) {
         ArrayList<IndexedColumnInfo> list = colsHashedByColumn.get(colName);
@@ -423,13 +429,12 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * this case, the schema object will remain unchanged.
      *
      * @throws SchemaNameException if the schema contains columns with the
-     *         same column name but different table names.  In this case,
-     *         resetting the table name will produce an invalid schema with
-     *         ambiguous column names.
-     *
+     *                             same column name but different table names.  In this case,
+     *                             resetting the table name will produce an invalid schema with
+     *                             ambiguous column names.
      * @design (donnie) At present, this method does this by replacing each
-     *         {@link ColumnInfo} object with a new object with updated
-     *         information.  This is because {@code ColumnInfo} is immutable.
+     * {@link ColumnInfo} object with a new object with updated
+     * information.  This is because {@code ColumnInfo} is immutable.
      */
     public void setTableName(String tableName) throws SchemaNameException {
         // First, verify that overriding the table names will not produce
@@ -437,7 +442,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
         ArrayList<String> duplicateNames = null;
 
         for (Map.Entry<String, ArrayList<IndexedColumnInfo>> entry :
-             colsHashedByColumn.entrySet()) {
+            colsHashedByColumn.entrySet()) {
 
             if (entry.getValue().size() > 1) {
                 if (duplicateNames == null)
@@ -483,14 +488,12 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * exception will be thrown.
      *
      * @param colName column-name object to use for looking up the column in
-     *        the schema
-     *
+     *                the schema
      * @return the zero-based index of the column, or -1 if the schema does
-     *         not contain a column of the specified name.
-     *
+     * not contain a column of the specified name.
      * @throws IllegalArgumentException if {@code colName} is {@code null}
-     * @throws SchemaNameException if {@code colName} doesn't specify a table
-     *         name, and multiple columns have the specified column name
+     * @throws SchemaNameException      if {@code colName} doesn't specify a table
+     *                                  name, and multiple columns have the specified column name
      */
     public int getColumnIndex(ColumnName colName) {
         if (colName == null)
@@ -511,14 +514,12 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * exception will be thrown.
      *
      * @param colInfo column-info object to use for looking up the column in
-     *        the schema
-     *
+     *                the schema
      * @return the zero-based index of the column, or -1 if the schema does
-     *         not contain a column of the specified name.
-     *
+     * not contain a column of the specified name.
      * @throws IllegalArgumentException if {@code colInfo} is {@code null}
-     * @throws SchemaNameException if {@code colInfo} doesn't specify a table
-     *         name, and multiple columns have the specified column name
+     * @throws SchemaNameException      if {@code colInfo} doesn't specify a table
+     *                                  name, and multiple columns have the specified column name
      */
     public int getColumnIndex(ColumnInfo colInfo) {
         if (colInfo == null)
@@ -535,13 +536,11 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * be thrown.
      *
      * @param colName the column name to look up
-     *
      * @return the zero-based index of the column, or -1 if the schema does
-     *         not contain a column of the specified name.
-     *
+     * not contain a column of the specified name.
      * @throws IllegalArgumentException if {@code colName} is {@code null}
-     * @throws SchemaNameException if multiple columns have the specified
-     *         column name
+     * @throws SchemaNameException      if multiple columns have the specified
+     *                                  column name
      */
     public int getColumnIndex(String colName) {
         return getColumnIndex(null, colName);
@@ -555,15 +554,13 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * column name is ambiguous then an exception will be thrown.
      *
      * @param tblName the table name, or {@code null} if the table name is not
-     *        known or unspecified
+     *                known or unspecified
      * @param colName the column name to look up
-     *
      * @return the zero-based index of the column, or -1 if the schema does
-     *         not contain a column of the specified name.
-     *
+     * not contain a column of the specified name.
      * @throws IllegalArgumentException if {@code colName} is {@code null}
-     * @throws SchemaNameException if {@code tblName} is {@code null} and
-     *         multiple columns have the specified column name
+     * @throws SchemaNameException      if {@code tblName} is {@code null} and
+     *                                  multiple columns have the specified column name
      */
     public int getColumnIndex(String tblName, String colName) {
         if (colName == null)
@@ -581,8 +578,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
             }
 
             return colList.get(0).colIndex;
-        }
-        else {
+        } else {
             // Table-name is specified.
 
             for (IndexedColumnInfo c : colList) {
@@ -600,13 +596,11 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * the indexes of the specified columns.
      *
      * @param columnNames a list of column names in the schema
-     *
      * @return an array containing the indexes of the columns specified in the
-     *         input
-     *
+     * input
      * @throws SchemaNameException if a column name is specified multiple
-     *         times in the input list, or if a column name doesn't appear in
-     *         the schema
+     *                             times in the input list, or if a column name doesn't appear in
+     *                             the schema
      */
     public int[] getColumnIndexes(List<String> columnNames) {
         int[] result = new int[columnNames.size()];
@@ -664,8 +658,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
 
                 for (int i = 0; i < columnInfos.size(); i++)
                     found.put(i, columnInfos.get(i));
-            }
-            else {
+            } else {
                 // Wildcard with a table name:  tbl.*
                 // Find the table info and add its columns to the result.
 
@@ -673,12 +666,11 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
                     colsHashedByTable.get(colName.getTableName());
 
                 if (tableCols != null) {
-                    for (IndexedColumnInfo indexedColInfo: tableCols.values())
+                    for (IndexedColumnInfo indexedColInfo : tableCols.values())
                         found.put(indexedColInfo.colIndex, indexedColInfo.colInfo);
                 }
             }
-        }
-        else {
+        } else {
             // A non-wildcard column-name object.
 
             if (!colName.isTableSpecified()) {
@@ -692,8 +684,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
                     for (IndexedColumnInfo indexedColInfo : colList)
                         found.put(indexedColInfo.colIndex, indexedColInfo.colInfo);
                 }
-            }
-            else {
+            } else {
                 // Column name with a table name:  tbl.col
                 // Find the table info and see if it has the specified column.
 
@@ -717,9 +708,8 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * Adds a column with given index to list of NOT NULL constrained columns.
      *
      * @param colIndex the integer index of the column to NOT NULL constrain.
-     *
      * @return true if the column previous was NULLable, or false if the
-     *         column already had a NOT NULL constraint on it before this call.
+     * column already had a NOT NULL constraint on it before this call.
      */
     public boolean addNotNull(int colIndex) {
         if (colIndex < 0 || colIndex >= numColumns()) {
@@ -735,7 +725,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * columns.
      *
      * @param colIndex the integer index of the column to remove the NOT NULL
-     *        constraint from.
+     *                 constraint from.
      */
     public boolean removeNotNull(int colIndex) {
         if (colIndex < 0 || colIndex >= numColumns()) {
@@ -767,7 +757,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * primary key.
      *
      * @return the primary key on this table, or {@code null} if there is no
-     *         primary key.
+     * primary key.
      */
     public KeyColumnRefs getPrimaryKey() {
         for (KeyColumnRefs ck : candidateKeys) {
@@ -783,10 +773,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * Adds another candidate key to the schema.
      *
      * @param ck the candidate key to add to the schema.
-     *
      * @throws IllegalArgumentException if {@code ck} is {@code null}, or if
-     *         {@code ck} is a primary key and the schema already contains a
-     *         primary key.
+     *                                  {@code ck} is a primary key and the schema already contains a
+     *                                  primary key.
      */
     public void addCandidateKey(KeyColumnRefs ck) {
         if (ck == null)
@@ -828,10 +817,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * array of zero-based indexes.
      *
      * @param colIndexes the set of columns to check against this table
-     *        to see if it's a candidate key
-     *
+     *                   to see if it's a candidate key
      * @return {@code true} if this table has a candidate key on the
-     *         specified columns; {@code false} otherwise
+     * specified columns; {@code false} otherwise
      */
     public boolean hasKeyOnColumns(int[] colIndexes) {
         return (getKeyOnColumns(colIndexes) != null);
@@ -844,10 +832,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * {@code ColumnRefs} object.
      *
      * @param colRefs the set of columns to check against this table to see if
-     *        it's a candidate key
-     *
+     *                it's a candidate key
      * @return {@code true} if this table has a candidate key on the
-     *         specified columns; {@code false} otherwise
+     * specified columns; {@code false} otherwise
      */
     public boolean hasKeyOnColumns(ColumnRefs colRefs) {
         return hasKeyOnColumns(colRefs.getCols());
@@ -860,10 +847,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * than those specified in the argument.
      *
      * @param colIndexes the set of columns to check against this table
-     *        to see if it's a candidate key
-     *
+     *                   to see if it's a candidate key
      * @return a candidate key on the specified columns, or {@code null}
-     *         if the schema contains no key on the specified columns
+     * if the schema contains no key on the specified columns
      */
     public KeyColumnRefs getKeyOnColumns(int[] colIndexes) {
         for (KeyColumnRefs ck : candidateKeys)
@@ -880,10 +866,9 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * than those specified in the argument.
      *
      * @param colRefs the set of columns to check against this table to see if
-     *        it's a candidate key
-     *
+     *                it's a candidate key
      * @return a candidate key on the specified columns, or {@code null}
-     *         if the schema contains no key on the specified columns
+     * if the schema contains no key on the specified columns
      */
     public KeyColumnRefs getKeyOnColumns(ColumnRefs colRefs) {
         return getKeyOnColumns(colRefs.getCols());
@@ -897,8 +882,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * specified columns, this method will return an empty list.
      *
      * @param colIndexes the set of columns to check against this table
-     *        to see if it's a candidate key
-     *
+     *                   to see if it's a candidate key
      * @return a list of candidate keys on the specified columns
      */
     public List<KeyColumnRefs> getAllKeysOnColumns(int[] colIndexes) {
@@ -920,8 +904,7 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * specified columns, this method will return an empty list.
      *
      * @param colRefs the set of columns to check against this table
-     *        to see if it's a candidate key
-     *
+     *                to see if it's a candidate key
      * @return a list of candidate keys on the specified columns
      */
     public List<KeyColumnRefs> getAllKeysOnColumns(ColumnRefs colRefs) {
@@ -934,10 +917,10 @@ public class Schema implements Serializable, Iterable<ColumnInfo> {
      * table.
      *
      * @param referencingTableName the name of the table that references this
-     *        table
+     *                             table
      * @return {@code true} if the table wasn't previously in this table's set
-     *         of referencing tables, or {@code false} if the table was
-     *         already in the set of referencing tables
+     * of referencing tables, or {@code false} if the table was
+     * already in the set of referencing tables
      */
     public boolean addReferencingTable(String referencingTableName) {
         return referencingTables.add(referencingTableName);

@@ -8,11 +8,15 @@ package edu.caltech.nanodb.queryeval;
  */
 public class EvalStats {
 
-    /** The total rows produced by the query evaluation. */
+    /**
+     * The total rows produced by the query evaluation.
+     */
     private int rowsProduced;
 
 
-    /** The total time elapsed for query evaluation, in nanoseconds. */
+    /**
+     * The total time elapsed for query evaluation, in nanoseconds.
+     */
     private long elapsedTimeNanos;
 
 

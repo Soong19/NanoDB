@@ -29,15 +29,21 @@ import edu.caltech.nanodb.storage.StorageManager;
  */
 public class CreateTableCommand extends Command {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(CreateTableCommand.class);
 
 
-    /** Name of the table to be created. */
+    /**
+     * Name of the table to be created.
+     */
     private String tableName;
 
 
-    /** If this flag is {@code true} then the table is a temporary table. */
+    /**
+     * If this flag is {@code true} then the table is a temporary table.
+     */
     private boolean temporary;
 
 
@@ -48,15 +54,21 @@ public class CreateTableCommand extends Command {
     private boolean ifNotExists;
 
 
-    /** List of column-declarations for the new table. */
+    /**
+     * List of column-declarations for the new table.
+     */
     private List<ColumnInfo> columnInfos = new ArrayList<>();
 
 
-    /** List of constraints for the new table. */
+    /**
+     * List of constraints for the new table.
+     */
     private List<ConstraintDecl> constraints = new ArrayList<>();
 
 
-    /** Any additional properties specified in the command. */
+    /**
+     * Any additional properties specified in the command.
+     */
     private CommandProperties properties;
 
 
@@ -80,7 +92,7 @@ public class CreateTableCommand extends Command {
      * otherwise.
      *
      * @return {@code true} if the table is a temporary table, {@code false}
-     *         otherwise.
+     * otherwise.
      */
     public boolean isTemporary() {
         return temporary;
@@ -91,7 +103,7 @@ public class CreateTableCommand extends Command {
      * Specifies whether the table is a temporary table or not.
      *
      * @param b {@code true} if the table is a temporary table, {@code false}
-     *        otherwise.
+     *          otherwise.
      */
     public void setTemporary(boolean b) {
         temporary = b;
@@ -104,8 +116,8 @@ public class CreateTableCommand extends Command {
      * be attempted.
      *
      * @return {@code true} if table creation should only be attempted if it
-     *         doesn't already exist, {@code false} if table creation should
-     *         always be attempted.
+     * doesn't already exist, {@code false} if table creation should
+     * always be attempted.
      */
     public boolean getIfNotExists() {
         return ifNotExists;
@@ -117,7 +129,7 @@ public class CreateTableCommand extends Command {
      * attempted if it doesn't already exist.
      *
      * @param b the flag indicating whether table creation should only be
-     *        attempted if it doesn't already exist.
+     *          attempted if it doesn't already exist.
      */
     public void setIfNotExists(boolean b) {
         ifNotExists = b;
@@ -129,7 +141,7 @@ public class CreateTableCommand extends Command {
      * value may be {@code null} to indicate no properties.
      *
      * @param properties any additional properties to associate with the
-     *        command.
+     *                   command.
      */
     public void setProperties(CommandProperties properties) {
         this.properties = properties;
@@ -141,7 +153,7 @@ public class CreateTableCommand extends Command {
      * {@code null} if no additional properties were specified.
      *
      * @return any additional properties specified for the command, or
-     *         {@code null} if no additional properties were specified.
+     * {@code null} if no additional properties were specified.
      */
     public CommandProperties getProperties() {
         return properties;
@@ -153,7 +165,6 @@ public class CreateTableCommand extends Command {
      * primarily used by the SQL parser.
      *
      * @param colDecl the details of the column to add
-     *
      * @throws NullPointerException if colDecl is null
      */
     public void addColumn(TableColumnDecl colDecl) {
@@ -182,7 +193,7 @@ public class CreateTableCommand extends Command {
      * this <tt>CREATE TABLE</tt> command.
      *
      * @return an immutable list of the column descriptions that are part of
-     *         this <tt>CREATE TABLE</tt> command.
+     * this <tt>CREATE TABLE</tt> command.
      */
     public List<ColumnInfo> getColumns() {
         return Collections.unmodifiableList(columnInfos);
@@ -194,7 +205,6 @@ public class CreateTableCommand extends Command {
      * used by the SQL parser.
      *
      * @param con the details of the table constraint to add
-     *
      * @throws NullPointerException if con is null
      */
     public void addConstraint(ConstraintDecl con) {
@@ -210,7 +220,7 @@ public class CreateTableCommand extends Command {
      * of this <tt>CREATE TABLE</tt> command.
      *
      * @return an immutable list of the constraint declarations that are part
-     *         of this <tt>CREATE TABLE</tt> command.
+     * of this <tt>CREATE TABLE</tt> command.
      */
     public List<ConstraintDecl> getConstraints() {
         return Collections.unmodifiableList(constraints);
@@ -243,8 +253,7 @@ public class CreateTableCommand extends Command {
         for (ColumnInfo colInfo : columnInfos) {
             try {
                 schema.addColumnInfo(colInfo);
-            }
-            catch (IllegalArgumentException iae) {
+            } catch (IllegalArgumentException iae) {
                 throw new ExecutionException("Duplicate or invalid column \"" +
                     colInfo.getName() + "\".", iae);
             }
@@ -256,7 +265,7 @@ public class CreateTableCommand extends Command {
         //    they exist.  (More verification will occur later.)
         HashSet<String> constraintNames = new HashSet<>();
         HashMap<String, TableInfo> referencedTables = new HashMap<>();
-        for (ConstraintDecl cd: constraints) {
+        for (ConstraintDecl cd : constraints) {
             String name = cd.getName();
             if (name != null && !constraintNames.add(name)) {
                 throw new ExecutionException("Constraint name " + name +
@@ -294,7 +303,7 @@ public class CreateTableCommand extends Command {
 
 
     private void initTableConstraints(StorageManager storageManager,
-        Schema schema, HashMap<String, TableInfo> referencedTables) {
+                                      Schema schema, HashMap<String, TableInfo> referencedTables) {
 
         if (constraints.isEmpty()) {
             logger.debug("No table constraints specified, our work is done.");
@@ -333,8 +342,7 @@ public class CreateTableCommand extends Command {
                 }
 
                 schema.addCandidateKey(ck);
-            }
-            else if (type == TableConstraintType.FOREIGN_KEY) {
+            } else if (type == TableConstraintType.FOREIGN_KEY) {
                 // Make a foreign key constraint and put it on the schema.
                 // This involves these steps:
                 // 1)  Create the foreign key on this table's schema.
@@ -358,12 +366,10 @@ public class CreateTableCommand extends Command {
                 // table has a foreign-key reference to the table.
                 if (refSchema.addReferencingTable(tableName))
                     tableManager.saveTableInfo(refTableInfo);
-            }
-            else if (type == TableConstraintType.NOT_NULL) {
+            } else if (type == TableConstraintType.NOT_NULL) {
                 int idx = schema.getColumnIndex(cd.getColumnNames().get(0));
                 schema.addNotNull(idx);
-            }
-            else {
+            } else {
                 throw new ExecutionException("Unexpected constraint type " +
                     cd.getType());
             }
@@ -387,8 +393,7 @@ public class CreateTableCommand extends Command {
                 // Make the index.  This also updates the table schema with
                 // the fact that there is another candidate key on the table.
                 indexManager.addIndexToTable(tableInfo, ck);
-            }
-            else if (type == TableConstraintType.FOREIGN_KEY) {
+            } else if (type == TableConstraintType.FOREIGN_KEY) {
 
                 // Check if there is already an index on the foreign-key
                 // columns.  If there is not, we will create a non-unique

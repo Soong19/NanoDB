@@ -1,23 +1,35 @@
 package edu.caltech.nanodb.relations;
 
 
-/** An enumeration specifying the constraint types allowed on tables. */
+/**
+ * An enumeration specifying the constraint types allowed on tables.
+ */
 public enum TableConstraintType {
 
-    /** Values in a column may not be null. */
+    /**
+     * Values in a column may not be null.
+     */
     NOT_NULL(1),
 
-    /** Values in a column or set of columns must be unique. */
+    /**
+     * Values in a column or set of columns must be unique.
+     */
     UNIQUE(2),
 
-    /** The column or set of columns is the table's primary key. */
+    /**
+     * The column or set of columns is the table's primary key.
+     */
     PRIMARY_KEY(3),
 
-    /** Values in the column or columns reference a key in another table. */
+    /**
+     * Values in the column or columns reference a key in another table.
+     */
     FOREIGN_KEY(4);
 
 
-    /** The ID of the constraint type. */
+    /**
+     * The ID of the constraint type.
+     */
     private final byte typeID;
 
 
@@ -32,7 +44,9 @@ public enum TableConstraintType {
     }
 
 
-    /** Returns the constraint type's unique ID. */
+    /**
+     * Returns the constraint type's unique ID.
+     */
     public byte getTypeID() {
         return typeID;
     }

@@ -11,6 +11,7 @@ import java.io.RandomAccessFile;
 public interface FileManager {
     /**
      * Returns an array of the files in the database.
+     *
      * @return list of database files
      */
     File[] getDBFiles();
@@ -19,7 +20,6 @@ public interface FileManager {
      * Returns true if the specified file exists, or false otherwise.
      *
      * @param filename the name of the file to check for existence
-     *
      * @return true if the file exists, or false otherwise
      */
     boolean fileExists(String filename);
@@ -29,13 +29,11 @@ public interface FileManager {
      * storage manager.  An exception is thrown if the file already exists.
      *
      * @param filename the name of the file to open to create the database file
-     * @param type the type of database file being created
+     * @param type     the type of database file being created
      * @param pageSize the page size to use when reading and writing the file
-     *
      * @return a new database file object for the newly created file
-     *
-     * @throws FileSystemException if the specified file already exists, or if
-     *         the file can't be created for some reason
+     * @throws FileSystemException      if the specified file already exists, or if
+     *                                  the file can't be created for some reason
      * @throws IllegalArgumentException if the page size is not valid
      */
     DBFile createDBFile(String filename, DBFileType type, int pageSize);
@@ -46,10 +44,8 @@ public interface FileManager {
      * {@link File} object reflecting the new name.  If failure, the
      * {@code DBFile} object is left untouched.
      *
-     * @param dbFile the database file to rename
-     *
+     * @param dbFile      the database file to rename
      * @param newFilename the new name to give to the database file
-     *
      * @return true if the rename succeeded, or false otherwise.
      */
     boolean renameDBFile(DBFile dbFile, String newFilename);
@@ -62,7 +58,7 @@ public interface FileManager {
      *
      * @param filename the name of the database file to open
      * @return the successfully opened database file, or {@code null} if the
-     *         file doesn't exist
+     * file doesn't exist
      */
     DBFile openDBFile(String filename);
 
@@ -81,13 +77,11 @@ public interface FileManager {
      * @param dbFile the database file to load the page from
      * @param pageNo the number of the page to load
      * @param create a flag specifying whether the page should be created if it
-     *        doesn't already exist
-     *
+     *               doesn't already exist
      * @return {@code true} if the page's contents were successfully loaded,
-     *         or {@code false} otherwise.
-     *
+     * or {@code false} otherwise.
      * @throws IllegalArgumentException if the page number is negative, or if
-     *         the buffer is not the same length as the file's page-size.
+     *                                  the buffer is not the same length as the file's page-size.
      */
     boolean loadPage(DBFile dbFile, int pageNo, byte[] buffer, boolean create);
 
@@ -107,12 +101,10 @@ public interface FileManager {
      *
      * @param dbFile the database file to load the page from
      * @param pageNo the number of the page to load
-     *
      * @return {@code true} if the page's contents were successfully loaded,
-     *         or {@code false} otherwise.
-     *
+     * or {@code false} otherwise.
      * @throws IllegalArgumentException if the page number is negative, or if
-     *         the buffer is not the same length as the file's page-size.
+     *                                  the buffer is not the same length as the file's page-size.
      */
     boolean loadPage(DBFile dbFile, int pageNo, byte[] buffer);
 
@@ -124,9 +116,8 @@ public interface FileManager {
      * @param dbFile the data file to write to
      * @param pageNo the page number to write the buffer to
      * @param buffer the data to write back to the page
-     *
      * @throws IllegalArgumentException if the page number is negative, or if
-     *         the buffer is not the same length as the file's page-size.
+     *                                  the buffer is not the same length as the file's page-size.
      */
     void savePage(DBFile dbFile, int pageNo, byte[] buffer);
 
@@ -139,9 +130,8 @@ public interface FileManager {
      * writes will actually be written to the disk.
      *
      * @param dbFile the database file to synchronize
-     *
      * @throws FileSystemException if the synchronization operation cannot be
-     *         guaranteed successful, if some other IO problem occurs
+     *                             guaranteed successful, if some other IO problem occurs
      */
     void syncDBFile(DBFile dbFile);
 
@@ -150,7 +140,6 @@ public interface FileManager {
      * attempts will fail after this method is called.
      *
      * @param dbFile the database file to close
-     *
      * @throws FileSystemException if the file cannot be closed for some reason
      */
     void closeDBFile(DBFile dbFile);
@@ -160,7 +149,6 @@ public interface FileManager {
      * manager's directory.
      *
      * @param filename the name of the file to delete
-     *
      * @throws FileSystemException if the file cannot be deleted for some reason
      */
     void deleteDBFile(String filename);
@@ -169,7 +157,6 @@ public interface FileManager {
      * Deletes the specified database file.
      *
      * @param f the file to delete
-     *
      * @throws FileSystemException if the file cannot be deleted for some reason
      */
     void deleteDBFile(File f);
@@ -179,7 +166,6 @@ public interface FileManager {
      * database file is closed and is going to be unused.
      *
      * @param dbFile the database file to delete
-     *
      * @throws FileSystemException if the file cannot be deleted for some reason
      */
     void deleteDBFile(DBFile dbFile);

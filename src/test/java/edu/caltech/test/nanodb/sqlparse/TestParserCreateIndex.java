@@ -10,7 +10,7 @@ import edu.caltech.nanodb.commands.CreateIndexCommand;
 import edu.caltech.nanodb.sqlparse.ParseUtil;
 
 
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserCreateIndex {
 
     public void testParseCreateNonUniqueIndex() {
@@ -112,7 +112,7 @@ public class TestParserCreateIndex {
 
         cmd = (CreateIndexCommand) ParseUtil.parseCommand(
             "create Unique index abc ON t (a, B) " +
-            "properties (foo = 'bar');");
+                "properties (foo = 'bar');");
 
         assert cmd.isUnique();
         assert !cmd.getIfNotExists();
@@ -129,7 +129,7 @@ public class TestParserCreateIndex {
 
         cmd = (CreateIndexCommand) ParseUtil.parseCommand(
             "create index ABC ON T (A, b) " +
-            "properties (FOO = 'Bar', n=500);");
+                "properties (FOO = 'Bar', n=500);");
 
         assert !cmd.isUnique();
         assert !cmd.getIfNotExists();

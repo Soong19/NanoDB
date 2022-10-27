@@ -16,7 +16,9 @@ import edu.caltech.nanodb.storage.TableManager;
  */
 public class ShowTableStatsCommand extends Command {
 
-    /** The name of the table whose statistics to print out. */
+    /**
+     * The name of the table whose statistics to print out.
+     */
     private String tableName;
 
 
@@ -44,7 +46,7 @@ public class ShowTableStatsCommand extends Command {
             ColumnStats colStat = stats.getColumnStats(i);
 
             out.printf("\tColumn %s:  %d unique values, %d null " +
-                "values, min = %s, max = %s%n", colName.getColumnName(),
+                    "values, min = %s, max = %s%n", colName.getColumnName(),
                 colStat.getNumUniqueValues(), colStat.getNumNullValues(),
                 colStat.getMinValue(), colStat.getMaxValue());
         }

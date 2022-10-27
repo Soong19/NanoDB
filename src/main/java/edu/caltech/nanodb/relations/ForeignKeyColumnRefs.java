@@ -7,7 +7,9 @@ package edu.caltech.nanodb.relations;
  * because this key will be a member of that table's schema.
  */
 public class ForeignKeyColumnRefs {
-    /** This is the optional name of the constraint specified in the DDL. */
+    /**
+     * This is the optional name of the constraint specified in the DDL.
+     */
     private String constraintName;
 
     /**
@@ -16,22 +18,30 @@ public class ForeignKeyColumnRefs {
      */
     private int[] colIndexes;
 
-    /** This is the name of the referenced table in the foreign key. */
+    /**
+     * This is the name of the referenced table in the foreign key.
+     */
     private String referencedTable;
 
-    /** These are the indexes of the columns in the referenced table. */
+    /**
+     * These are the indexes of the columns in the referenced table.
+     */
     private int[] referencedColIndexes;
 
-    /** This is the ON DELETE behavior */
+    /**
+     * This is the ON DELETE behavior
+     */
     private ForeignKeyValueChangeOption onDeleteOption;
 
-    /** This is the ON UPDATE behavior */
+    /**
+     * This is the ON UPDATE behavior
+     */
     private ForeignKeyValueChangeOption onUpdateOption;
 
 
     public ForeignKeyColumnRefs(int[] colIndexes, String referencedTable,
-        int[] referencedColIndexes, ForeignKeyValueChangeOption onDeleteOption,
-        ForeignKeyValueChangeOption onUpdateOption) {
+                                int[] referencedColIndexes, ForeignKeyValueChangeOption onDeleteOption,
+                                ForeignKeyValueChangeOption onUpdateOption) {
 
         if (colIndexes == null) {
             throw new IllegalArgumentException(
@@ -81,7 +91,9 @@ public class ForeignKeyColumnRefs {
     }
 
 
-    /** Returns the number of columns in the foreign key constraint. */
+    /**
+     * Returns the number of columns in the foreign key constraint.
+     */
     public int size() {
         return colIndexes.length;
     }

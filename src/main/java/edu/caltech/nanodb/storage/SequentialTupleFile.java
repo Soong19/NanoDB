@@ -21,7 +21,7 @@ public interface SequentialTupleFile extends TupleFile {
      * sequential file.
      *
      * @return the column(s) that are used to order the tuples in this
-     *         sequential file.
+     * sequential file.
      */
     List<OrderByExpression> getOrderSpec();
 
@@ -35,12 +35,11 @@ public interface SequentialTupleFile extends TupleFile {
      * in the parts of the search key that are actually specified.
      *
      * @param searchKey the tuple to search for
-     *
      * @return The first tuple in the file with the same hash-key values, or
-     *         {@code null} if the file contains no files with the specified
-     *         search key value.  This tuple will actually be backed by the
-     *         tuple file, so typically it will be a subclass of
-     *         {@link PageTuple}.
+     * {@code null} if the file contains no files with the specified
+     * search key value.  This tuple will actually be backed by the
+     * tuple file, so typically it will be a subclass of
+     * {@link PageTuple}.
      */
     Tuple findFirstTupleEquals(Tuple searchKey);
 

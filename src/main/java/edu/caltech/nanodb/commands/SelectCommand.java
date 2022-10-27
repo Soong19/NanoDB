@@ -26,7 +26,9 @@ import edu.caltech.nanodb.storage.StorageManager;
  */
 public class SelectCommand extends QueryCommand {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(SelectCommand.class);
 
 
@@ -103,4 +105,3 @@ public class SelectCommand extends QueryCommand {
         return "SelectCommand[" + selClause + "]";
     }
 }
-

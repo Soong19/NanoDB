@@ -20,10 +20,12 @@ import edu.caltech.nanodb.sqlparse.ParseUtil;
 /**
  * Exercise the parser's support of various simple utility commands.
  */
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserUtility {
 
-    /** Verifies that the CRASH command is parsed correctly. */
+    /**
+     * Verifies that the CRASH command is parsed correctly.
+     */
     public void testParseCrash() {
         CrashCommand cmd;
 
@@ -38,7 +40,9 @@ public class TestParserUtility {
     }
 
 
-    /** Verifies that the EXIT/QUIT command is parsed correctly. */
+    /**
+     * Verifies that the EXIT/QUIT command is parsed correctly.
+     */
     public void testParseExit() {
         ExitCommand cmd;
 
@@ -51,7 +55,9 @@ public class TestParserUtility {
     }
 
 
-    /** Verifies that the FLUSH command is parsed correctly. */
+    /**
+     * Verifies that the FLUSH command is parsed correctly.
+     */
     public void testParseFlush() {
         FlushCommand cmd;
 
@@ -61,7 +67,9 @@ public class TestParserUtility {
     }
 
 
-    /** Verifies that the ANALYZE command is parsed correctly. */
+    /**
+     * Verifies that the ANALYZE command is parsed correctly.
+     */
     public void testParseAnalyze() {
         AnalyzeCommand cmd;
         ArrayList<String> tableNames = new ArrayList<>();
@@ -104,7 +112,9 @@ public class TestParserUtility {
     }
 
 
-    /** Verifies that the OPTIMIZE command is parsed correctly. */
+    /**
+     * Verifies that the OPTIMIZE command is parsed correctly.
+     */
     public void testParseOptimize() {
         OptimizeCommand cmd;
         ArrayList<String> tableNames = new ArrayList<>();
@@ -147,7 +157,9 @@ public class TestParserUtility {
     }
 
 
-    /** Verifies that the VERIFY command is parsed correctly. */
+    /**
+     * Verifies that the VERIFY command is parsed correctly.
+     */
     public void testParseVerify() {
         VerifyCommand cmd;
         ArrayList<String> tableNames = new ArrayList<>();

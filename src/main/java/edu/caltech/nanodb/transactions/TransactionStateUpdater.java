@@ -21,7 +21,9 @@ import edu.caltech.nanodb.server.EventDispatchException;
  * user-initiated.
  */
 public class TransactionStateUpdater implements CommandEventListener {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(TransactionStateUpdater.class);
 
 
@@ -55,8 +57,7 @@ public class TransactionStateUpdater implements CommandEventListener {
             try {
                 logger.debug("No transaction is in progress; auto-starting one!");
                 transactionManager.startTransaction(false);
-            }
-            catch (TransactionException e) {
+            } catch (TransactionException e) {
                 throw new EventDispatchException(e);
             }
         }
@@ -84,8 +85,7 @@ public class TransactionStateUpdater implements CommandEventListener {
                     logger.debug("An auto-started transaction is in progress;" +
                         " committing it!");
                     transactionManager.commitTransaction();
-                }
-                catch (TransactionException e) {
+                } catch (TransactionException e) {
                     throw new EventDispatchException(e);
                 }
             }

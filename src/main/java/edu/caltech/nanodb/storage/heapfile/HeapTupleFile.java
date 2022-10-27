@@ -30,7 +30,9 @@ import edu.caltech.nanodb.storage.TupleFileManager;
  */
 public class HeapTupleFile implements TupleFile {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(HeapTupleFile.class);
 
 
@@ -49,15 +51,21 @@ public class HeapTupleFile implements TupleFile {
     private HeapTupleFileManager heapFileManager;
 
 
-    /** The schema of tuples in this tuple file. */
+    /**
+     * The schema of tuples in this tuple file.
+     */
     private Schema schema;
 
 
-    /** Statistics for this tuple file. */
+    /**
+     * Statistics for this tuple file.
+     */
     private TableStats stats;
 
 
-    /** The file that stores the tuples. */
+    /**
+     * The file that stores the tuples.
+     */
     private DBFile dbFile;
 
 
@@ -122,7 +130,8 @@ public class HeapTupleFile implements TupleFile {
         // looking until we hit the end of the file.
 
         // Header page is page 0, so first data page is page 1.
-page_scan:  // So we can break out of the outer loop from inside the inner one
+        page_scan:
+        // So we can break out of the outer loop from inside the inner one
         for (int iPage = 1; /* nothing */ ; iPage++) {
             // Try to load the page.  If it doesn't exist, exit the loop.
             DBPage dbPage = storageManager.loadDBPage(dbFile, iPage);
@@ -164,7 +173,7 @@ page_scan:  // So we can break out of the outer loop from inside the inner one
      * indexes.
      *
      * @throws InvalidFilePointerException if the specified file-pointer
-     *         doesn't actually point to a real tuple.
+     *                                     doesn't actually point to a real tuple.
      */
     @Override
     public Tuple getTuple(FilePointer fptr) throws InvalidFilePointerException {
@@ -182,8 +191,7 @@ page_scan:  // So we can break out of the outer loop from inside the inner one
         int slot;
         try {
             slot = DataPage.getSlotIndexFromOffset(dbPage, fptr.getOffset());
-        }
-        catch (IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             throw new InvalidFilePointerException(iae);
         }
 
@@ -206,7 +214,7 @@ page_scan:  // So we can break out of the outer loop from inside the inner one
      * correctly regardless of whether the input tuple is pinned or unpinned.
      *
      * @param tup the "previous tuple" that specifies where to start looking
-     *        for the next tuple
+     *            for the next tuple
      */
     @Override
     public Tuple getNextTuple(Tuple tup) {
@@ -248,7 +256,8 @@ page_scan:  // So we can break out of the outer loop from inside the inner one
         // tuple's slot.
         int nextSlot = prevSlot + 1;
 
-page_scan:  // So we can break out of the outer loop from inside the inner loop.
+        page_scan:
+        // So we can break out of the outer loop from inside the inner loop.
         while (true) {
             int numSlots = DataPage.getNumSlots(dbPage);
 
@@ -258,7 +267,7 @@ page_scan:  // So we can break out of the outer loop from inside the inner loop.
                     // Creating this tuple will pin the page a second time.
                     // Thus, we unpin the page after creating this tuple.
                     nextTup = new HeapFilePageTuple(schema, dbPage, nextSlot,
-                                                    nextOffset);
+                        nextOffset);
                     break page_scan;
                 }
 
@@ -285,12 +294,12 @@ page_scan:  // So we can break out of the outer loop from inside the inner loop.
      * <tt>HeapFilePageTuple</tt> object corresponding to the tuple is returned.
      *
      * @review (donnie) This could be made a little more space-efficient.
-     *         Right now when computing the required space, we assume that we
-     *         will <em>always</em> need a new slot entry, whereas the page may
-     *         contain empty slots.  (Note that we don't always create a new
-     *         slot when adding a tuple; we will reuse an empty slot.  This
-     *         inefficiency is simply in estimating the size required for the
-     *         new tuple.)
+     * Right now when computing the required space, we assume that we
+     * will <em>always</em> need a new slot entry, whereas the page may
+     * contain empty slots.  (Note that we don't always create a new
+     * slot when adding a tuple; we will reuse an empty slot.  This
+     * inefficiency is simply in estimating the size required for the
+     * new tuple.)
      */
     @Override
     public Tuple addTuple(Tuple tup) {
@@ -326,13 +335,13 @@ page_scan:  // So we can break out of the outer loop from inside the inner loop.
                 // Couldn't load the current page, because it doesn't exist.
                 // Break out of the loop.
                 logger.debug("Reached end of data file without finding " +
-                             "space for new tuple.");
+                    "space for new tuple.");
                 break;
             }
 
             int freeSpace = DataPage.getFreeSpaceInPage(dbPage);
             logger.trace(String.format("Page %d has %d bytes of free space.",
-                         pageNo, freeSpace));
+                pageNo, freeSpace));
 
             // If this page has enough free space to add a new tuple, break
             // out of the loop.  (The "+ 2" is for the new slot entry we will
@@ -373,12 +382,13 @@ page_scan:  // So we can break out of the outer loop from inside the inner loop.
 
 
     // Inherit interface-method documentation.
+
     /**
      * @review (donnie) This method will fail if a tuple is modified in a way
-     *         that requires more space than is currently available in the data
-     *         page.  One solution would be to move the tuple to a different
-     *         page and then perform the update, but that would cause all kinds
-     *         of additional issues.  So, if the page runs out of data, oh well.
+     * that requires more space than is currently available in the data
+     * page.  One solution would be to move the tuple to a different
+     * page and then perform the update, but that would cause all kinds
+     * of additional issues.  So, if the page runs out of data, oh well.
      */
     @Override
     public void updateTuple(Tuple tup, Map<String, Object> newValues) {

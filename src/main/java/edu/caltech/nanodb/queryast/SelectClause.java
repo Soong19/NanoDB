@@ -29,7 +29,9 @@ import edu.caltech.nanodb.storage.TableManager;
  */
 public class SelectClause {
 
-    /** A logging object for reporting anything interesting that happens. **/
+    /**
+     * A logging object for reporting anything interesting that happens.
+     **/
     private static Logger logger = LogManager.getLogger(SelectClause.class);
 
 
@@ -130,8 +132,8 @@ public class SelectClause {
      * enclosing queries.
      *
      * @design (Donnie) We need to know both the column names and the
-     *         corresponding parent-queries that will generate those values,
-     *         so that we can set up the execution plan properly.
+     * corresponding parent-queries that will generate those values,
+     * so that we can set up the execution plan properly.
      */
     private HashMap<ColumnName, SelectClause> correlatedWith = new HashMap<>();
 
@@ -142,8 +144,8 @@ public class SelectClause {
      * "<tt>SELECT [ALL] ...</tt>" or "<tt>SELECT DISTINCT ...</tt>".
      *
      * @param distinct If true, specifies that the results of this select
-     *        clause are distinct.  If false, the results of the clause are
-     *        not distinct.
+     *                 clause are distinct.  If false, the results of the clause are
+     *                 not distinct.
      */
     public void setDistinct(boolean distinct) {
         this.distinct = distinct;
@@ -197,7 +199,7 @@ public class SelectClause {
      * otherwise.
      *
      * @return the parent of this query if it is a subquery; {@code null}
-     *         otherwise.
+     * otherwise.
      */
     public SelectClause getParentSelect() {
         return parentSelect;
@@ -229,7 +231,7 @@ public class SelectClause {
      * query.  If the query has no FROM clause, this will be an empty schema.
      *
      * @return the schema produced by the FROM clause of this query, or an
-     *         empty schema if the query has no FROM clause.
+     * empty schema if the query has no FROM clause.
      */
     public Schema getFromSchema() {
         return fromSchema;
@@ -303,7 +305,7 @@ public class SelectClause {
      * will cause an exception to be thrown.
      *
      * @param limit a positive number specifying the maximum number of tuples
-     *        to produce, or 0 to specify "unlimited."
+     *              to produce, or 0 to specify "unlimited."
      */
     public void setLimit(int limit) {
         if (limit < 0) {
@@ -333,8 +335,8 @@ public class SelectClause {
      * exception to be thrown.
      *
      * @param offset a positive number specifying the number of tuples to skip
-     *        during query evaluation, or 0 to specify "start at the
-     *        beginning."
+     *               during query evaluation, or 0 to specify "start at the
+     *               beginning."
      */
     public void setOffset(int offset) {
         if (offset < 0) {
@@ -351,7 +353,7 @@ public class SelectClause {
      * query, or false otherwise.
      *
      * @return true if the select clause is correlated with some enclosing
-     *         query, or false otherwise.
+     * query, or false otherwise.
      */
     public boolean isCorrelated() {
         return !correlatedWith.isEmpty();
@@ -368,17 +370,14 @@ public class SelectClause {
      * process it performs various semantic checks as well.
      *
      * @param tableManager the table manager to use for retrieving schema info
-     *
      * @param parentSelect the enclosing SELECT query if this is a nested
-     *        subquery, or {@code null} if this is a top-level query
-     *
+     *                     subquery, or {@code null} if this is a top-level query
      * @return the schema of this select clause's result
-     *
      * @throws SchemaNameException if the select clause contains some kind of
-     *         semantic error involving schemas that are referenced
+     *                             semantic error involving schemas that are referenced
      */
     public Schema computeSchema(TableManager tableManager,
-        SelectClause parentSelect) throws SchemaNameException {
+                                SelectClause parentSelect) throws SchemaNameException {
 
         this.parentSelect = parentSelect;
 
@@ -387,8 +386,7 @@ public class SelectClause {
         // queries.
         if (fromClause != null) {
             fromSchema = fromClause.computeSchema(tableManager);
-        }
-        else {
+        } else {
             // No FROM clause - no FROM schema...
             fromSchema = new Schema();
         }
@@ -415,11 +413,10 @@ public class SelectClause {
                     if (!fromTables.contains(colName.getTableName())) {
                         throw new SchemaNameException(String.format(
                             "SELECT-value %s specifies an unrecognized " +
-                            "table name.", colName));
+                                "table name.", colName));
                     }
                 }
-            }
-            else {
+            } else {
                 // An expression that is not a wildcard.  It could contain
                 // column references that need to be resolved.  Also, it could
                 // contain a scalar subquery, particularly one that requires
@@ -517,26 +514,22 @@ public class SelectClause {
      * In these cases, the unresolvable attributes are collected so they can
      * be resolved at the end of the process.
      *
-     * @param desc A short string describing the context of the expression,
-     *        since expressions can appear in the <tt>SELECT</tt> clause, the
-     *        <tt>WHERE</tt> clause, the <tt>GROUP BY</tt> clause, etc.
-     *
-     * @param expr The expression that will be evaluated.
-     *
-     * @param s The schema against which the expression will be evaluated.
-     *
+     * @param desc               A short string describing the context of the expression,
+     *                           since expressions can appear in the <tt>SELECT</tt> clause, the
+     *                           <tt>WHERE</tt> clause, the <tt>GROUP BY</tt> clause, etc.
+     * @param expr               The expression that will be evaluated.
+     * @param s                  The schema against which the expression will be evaluated.
      * @param checkParentQueries if this is true and the column-name can't be
-     *        resolved against the current query, any parent queries will also
-     *        be checked for the column-name.  This allows correlated queries
-     *        to be resolved properly.
-     *
+     *                           resolved against the current query, any parent queries will also
+     *                           be checked for the column-name.  This allows correlated queries
+     *                           to be resolved properly.
      * @throws SchemaNameException if an expression-reference cannot be resolved
-     *         against the specified schema, either because the named column
-     *         or table doesn't appear in the schema, or if a column name is
-     *         ambiguous.
+     *                             against the specified schema, either because the named column
+     *                             or table doesn't appear in the schema, or if a column name is
+     *                             ambiguous.
      */
     private void resolveExpressionRefs(String desc, Expression expr, Schema s,
-        boolean checkParentQueries) throws SchemaNameException {
+                                       boolean checkParentQueries) throws SchemaNameException {
 
         // Get the list of column-values in the expression, and resolve each one.
         // (This won't include subquery expressions, since they will reference
@@ -554,29 +547,24 @@ public class SelectClause {
     /**
      * This helper function attempts to resolve a specific column-name against
      * a query's schema.
-
-     * @param desc A short string describing the context of the expression,
-     *        since expressions can appear in the <tt>SELECT</tt> clause, the
-     *        <tt>WHERE</tt> clause, the <tt>GROUP BY</tt> clause, etc.
      *
-     * @param expr The expression that will be evaluated.
-     *
-     * @param colName The column-name to resolve.
-     *
-     * @param s The schema against which the expression will be evaluated.
-     *
+     * @param desc               A short string describing the context of the expression,
+     *                           since expressions can appear in the <tt>SELECT</tt> clause, the
+     *                           <tt>WHERE</tt> clause, the <tt>GROUP BY</tt> clause, etc.
+     * @param expr               The expression that will be evaluated.
+     * @param colName            The column-name to resolve.
+     * @param s                  The schema against which the expression will be evaluated.
      * @param checkParentQueries if this is true and the column-name can't be
-     *        resolved against the current query, any parent queries will also
-     *        be checked for the column-name.  This allows correlated queries
-     *        to be resolved properly.
-     *
+     *                           resolved against the current query, any parent queries will also
+     *                           be checked for the column-name.  This allows correlated queries
+     *                           to be resolved properly.
      * @throws SchemaNameException if an expression-reference cannot be resolved
-     *         against the specified schema, either because the named column
-     *         or table doesn't appear in the schema, or if a column name is
-     *         ambiguous.
+     *                             against the specified schema, either because the named column
+     *                             or table doesn't appear in the schema, or if a column name is
+     *                             ambiguous.
      */
     private void resolveColumnRef(String desc, Expression expr,
-        ColumnName colName, Schema s, boolean checkParentQueries)
+                                  ColumnName colName, Schema s, boolean checkParentQueries)
         throws SchemaNameException {
 
         // This flag indicates whether we are referencing a column in a parent
@@ -609,7 +597,7 @@ public class SelectClause {
                         correlatedWith.get(colName) != clause) {
                         throw new IllegalStateException(String.format(
                             "Column name %s is associated with two " +
-                            "different queries", colName));
+                                "different queries", colName));
                     }
                     correlatedWith.put(colName, clause);
                 }
@@ -634,8 +622,7 @@ public class SelectClause {
                 clause = clause.parentSelect;
                 s = clause.getFromSchema();
                 parentRef = true;
-            }
-            else {
+            } else {
                 throw new SchemaNameException(String.format(
                     "%s %s references an unknown column %s.",
                     desc, expr, colName));
@@ -672,7 +659,7 @@ public class SelectClause {
             buf.append("\tcorrelatedWith=[");
 
             boolean first = true;
-            for (Map.Entry e: correlatedWith.entrySet()) {
+            for (Map.Entry e : correlatedWith.entrySet()) {
                 if (first)
                     first = false;
                 else

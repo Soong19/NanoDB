@@ -25,7 +25,9 @@ import edu.caltech.nanodb.storage.StorageManager;
  */
 public class IndexUpdater implements RowEventListener {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(IndexUpdater.class);
 
 
@@ -111,8 +113,7 @@ public class IndexUpdater implements RowEventListener {
      * on the table are updated to include the new row.
      *
      * @param tblFileInfo details of the table being updated
-     *
-     * @param ptup the new tuple that was inserted into the table
+     * @param ptup        the new tuple that was inserted into the table
      */
     private void addRowToIndexes(TableInfo tblFileInfo, PageTuple ptup) {
         logger.debug("Adding tuple " + ptup + " to indexes for table " +
@@ -136,8 +137,7 @@ public class IndexUpdater implements RowEventListener {
      * All indexes on the table are updated to remove the row.
      *
      * @param tableInfo details of the table being updated
-     *
-     * @param ptup the tuple about to be removed from the table
+     * @param ptup      the tuple about to be removed from the table
      */
     private void removeRowFromIndexes(TableInfo tableInfo, PageTuple ptup) {
 

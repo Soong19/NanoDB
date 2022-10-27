@@ -12,7 +12,9 @@ import edu.caltech.nanodb.storage.StorageManager;
  */
 public class ExitCommand extends Command {
 
-    /** Construct an exit command. */
+    /**
+     * Construct an exit command.
+     */
     public ExitCommand() {
         super(Command.Type.UTILITY);
     }
@@ -23,7 +25,7 @@ public class ExitCommand extends Command {
      * executed, and handles it separately.
      *
      * @review (Donnie) We could actually have this command operate on the
-     *         server now that we pass it in...  Need to think about this.
+     * server now that we pass it in...  Need to think about this.
      */
     @Override
     public void execute(NanoDBServer server) throws ExecutionException {

@@ -16,6 +16,7 @@ public interface TableManager {
 
     /**
      * Returns a set of the names of the tables available.
+     *
      * @return a list of table names
      */
     Set<String> getTables();
@@ -25,9 +26,8 @@ public interface TableManager {
      * Returns true if the specified table exists, or false otherwise.
      *
      * @param tableName the name of the table to check for existence
-     *
      * @return {@code true} if the specified table exists, or {@code false}
-     *         if it doesn't exist
+     * if it doesn't exist
      */
     boolean tableExists(String tableName);
 
@@ -39,7 +39,7 @@ public interface TableManager {
      * {@code TableInfo} object upon successful creation of the new table.
      */
     TableInfo createTable(String tableName, Schema schema,
-        CommandProperties properties);
+                          CommandProperties properties);
 
 
     /**
@@ -49,11 +49,10 @@ public interface TableManager {
      * {@code null} is returned.
      *
      * @param tableName the name of the table to open.  This is generally
-     *        whatever was specified in a SQL statement that references the
-     *        table.
-     *
+     *                  whatever was specified in a SQL statement that references the
+     *                  table.
      * @return an object that holds the details of the open table, or
-     *         {@code null} if the table does not exist.
+     * {@code null} if the table does not exist.
      */
     TableInfo openTable(String tableName);
 
@@ -65,10 +64,10 @@ public interface TableManager {
      * new tables, and also to update tables when their schema changes.
      *
      * @param tableInfo This object is an in/out parameter.  It is used to
-     *        specify the name and schema of the new table being created.
-     *        When the table is successfully created, the object is updated
-     *        with the actual file that the table's schema and data are
-     *        stored in.
+     *                  specify the name and schema of the new table being created.
+     *                  When the table is successfully created, the object is updated
+     *                  with the actual file that the table's schema and data are
+     *                  stored in.
      */
     void saveTableInfo(TableInfo tableInfo);
 

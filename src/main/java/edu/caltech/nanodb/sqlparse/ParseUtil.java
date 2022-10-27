@@ -22,7 +22,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * parser.
  */
 public class ParseUtil {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(ParseUtil.class);
 
 
@@ -46,12 +48,10 @@ public class ParseUtil {
     /**
      * Parse an input string into some kind of {@link Command}.
      *
-     * @param command the string representation of the command
+     * @param command           the string representation of the command
      * @param functionDirectory a directory of functions to resolve
-     *        function-calls against
-     *
+     *                          function-calls against
      * @return a {@code Command} object representing the command
-     *
      * @throws RecognitionException if the string could not be parsed
      */
     public static Command parseCommand(String command,
@@ -78,9 +78,7 @@ public class ParseUtil {
      * Parse an input string into some kind of {@link Command}.
      *
      * @param command the string representation of the command
-     *
      * @return a {@code Command} object representing the command
-     *
      * @throws RecognitionException if the string could not be parsed
      */
     public static Command parseCommand(String command)
@@ -91,7 +89,7 @@ public class ParseUtil {
 
     @SuppressWarnings("unchecked")
     public static List<Command> parseCommands(String commands,
-        FunctionDirectory functionDirectory) throws RecognitionException {
+                                              FunctionDirectory functionDirectory) throws RecognitionException {
 
         appendSemicolon(commands);
 
@@ -109,7 +107,7 @@ public class ParseUtil {
 
 
     public static Expression parseExpression(String expression,
-        FunctionDirectory functionDirectory) {
+                                             FunctionDirectory functionDirectory) {
 
         CharStream input = CharStreams.fromString(expression);
         NanoSQLLexer lexer = new NanoSQLLexer(input);

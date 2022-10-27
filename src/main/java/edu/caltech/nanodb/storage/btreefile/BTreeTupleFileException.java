@@ -9,7 +9,9 @@ import edu.caltech.nanodb.storage.TupleFileException;
  */
 public class BTreeTupleFileException extends TupleFileException {
 
-    /** Construct a tuple-file exception with no message. */
+    /**
+     * Construct a tuple-file exception with no message.
+     */
     public BTreeTupleFileException() {
         super();
     }

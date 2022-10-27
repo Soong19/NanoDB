@@ -45,23 +45,33 @@ import edu.caltech.nanodb.storage.StorageManager;
  * </p>
  */
 public class NanoDBServer implements ServerProperties {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(NanoDBServer.class);
 
 
-    /** The property registry for this database server. */
+    /**
+     * The property registry for this database server.
+     */
     private PropertyRegistry propertyRegistry;
 
 
-    /** The function directory for this database server. */
+    /**
+     * The function directory for this database server.
+     */
     private FunctionDirectory functionDirectory;
 
 
-    /** The event dispatcher for this database server. */
+    /**
+     * The event dispatcher for this database server.
+     */
     private EventDispatcher eventDispatcher;
 
 
-    /** The storage manager for this database server. */
+    /**
+     * The storage manager for this database server.
+     */
     private StorageManager storageManager;
 
 
@@ -90,9 +100,9 @@ public class NanoDBServer implements ServerProperties {
      * specified as an argument.
      *
      * @param initialProperties an optional set of database configuration
-     *        properties which will override system properties and default
-     *        values, or {@code null} if no initial properties should be
-     *        provided.
+     *                          properties which will override system properties and default
+     *                          values, or {@code null} if no initial properties should be
+     *                          provided.
      */
     public void startup(Properties initialProperties) {
         // Start up the database by doing the appropriate startup processing.
@@ -175,10 +185,9 @@ public class NanoDBServer implements ServerProperties {
      * reason, a {@code RuntimeException} will be thrown.
      *
      * @return a query-planner object of the type specified in the current
-     *         server properties.
-     *
+     * server properties.
      * @throws RuntimeException if the specified planner class cannot be
-     *         instantiated for some reason.
+     *                          instantiated for some reason.
      */
     public Planner getQueryPlanner() {
         String className =
@@ -190,8 +199,7 @@ public class NanoDBServer implements ServerProperties {
             Planner p = (Planner) c.getDeclaredConstructor().newInstance();
             p.setStorageManager(storageManager);
             return p;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(
                 "Couldn't instantiate Planner class " + className, e);
         }
@@ -203,10 +211,9 @@ public class NanoDBServer implements ServerProperties {
      * object describing the results.  The tuples produced by the command may
      * optionally be included in the results as well.
      *
-     * @param command the SQL operation to perform
+     * @param command       the SQL operation to perform
      * @param includeTuples if {@code true}, the results will include all
-     *        tuples produced by the command
-     *
+     *                      tuples produced by the command
      * @return an object describing the outcome of the command execution
      */
     public CommandResult doCommand(String command, boolean includeTuples) {
@@ -214,8 +221,7 @@ public class NanoDBServer implements ServerProperties {
         try {
             Command commandObject = parseCommand(command);
             return doCommand(commandObject, includeTuples);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // If a parsing error or some other exception occurs, we won't
             // have a CommandResult to return.  So, make sure to return one
             // here.
@@ -232,15 +238,14 @@ public class NanoDBServer implements ServerProperties {
      * produced by the commands may optionally be included in the results as
      * well.
      *
-     * @param commands one or more SQL operations to perform
+     * @param commands      one or more SQL operations to perform
      * @param includeTuples if {@code true}, the results will include all
-     *        tuples produced by the commands
-     *
+     *                      tuples produced by the commands
      * @return a list of objects describing the outcome of the command
-     *         execution
+     * execution
      */
     public List<CommandResult> doCommands(String commands,
-        boolean includeTuples) {
+                                          boolean includeTuples) {
 
         ArrayList<CommandResult> results = new ArrayList<>();
 
@@ -268,11 +273,10 @@ public class NanoDBServer implements ServerProperties {
      * command-related details, such as firing "before-command" and
      * "after-command" events, and acquiring and releasing appropriate locks.
      *
-     * @param command the command to execute
+     * @param command       the command to execute
      * @param includeTuples a value of {@code true} causes the command's
-     *        tuples to be stored into the command-result; {@code false}
-     *        causes any tuples to be discarded.
-     *
+     *                      tuples to be stored into the command-result; {@code false}
+     *                      causes any tuples to be discarded.
      * @return a command-result describing the results of the operation
      */
     public CommandResult doCommand(Command command, boolean includeTuples) {
@@ -298,16 +302,14 @@ public class NanoDBServer implements ServerProperties {
             try {
                 if (command instanceof ExitCommand) {
                     result.setExit();
-                }
-                else {
+                } else {
                     // Execute the command, but fire before- and after-command
                     // handlers when we execute it.
                     eventDispatcher.fireBeforeCommandExecuted(command);
                     command.execute(this);
                     eventDispatcher.fireAfterCommandExecuted(command);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("Command threw an exception!", e);
                 result.recordFailure(e);
 
@@ -324,8 +326,7 @@ public class NanoDBServer implements ServerProperties {
             if (propertyRegistry.getBooleanProperty(PROP_FLUSH_AFTER_CMD)) {
                 try {
                     storageManager.flushAllData();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error(
                         "Post-command flush of all data threw an exception!",
                         e);
@@ -333,8 +334,7 @@ public class NanoDBServer implements ServerProperties {
             }
 
             return result;
-        }
-        finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -345,15 +345,14 @@ public class NanoDBServer implements ServerProperties {
      * shutting down the NanoDB server.
      *
      * @return {@code true} if the database server was shutdown cleanly, or
-     *         {@code false} if an error occurred during shutdown.
+     * {@code false} if an error occurred during shutdown.
      */
     public boolean shutdown() {
         boolean success = true;
 
         try {
             storageManager.shutdown();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Couldn't cleanly shut down the Storage Manager!", e);
             success = false;
         }

@@ -27,16 +27,15 @@ public class SimpleFilterNode extends SelectNode {
      * the same predicate and child sub-expression.
      *
      * @param obj the object to check for equality
-     *
      * @return true if the passed-in object is equal to this object; false
-     *         otherwise
+     * otherwise
      */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SimpleFilterNode) {
             SimpleFilterNode other = (SimpleFilterNode) obj;
             return leftChild.equals(other.leftChild) &&
-                   predicate.equals(other.predicate);
+                predicate.equals(other.predicate);
         }
         return false;
     }
@@ -84,19 +83,25 @@ public class SimpleFilterNode extends SelectNode {
     }
 
 
-    /** This node supports marking if its subplan supports marking. */
+    /**
+     * This node supports marking if its subplan supports marking.
+     */
     public boolean supportsMarking() {
         return leftChild.supportsMarking();
     }
 
 
-    /** The simple filter node doesn't require any marking from either child. */
+    /**
+     * The simple filter node doesn't require any marking from either child.
+     */
     public boolean requiresLeftMarking() {
         return false;
     }
 
 
-    /** The simple filter node doesn't require any marking from either child. */
+    /**
+     * The simple filter node doesn't require any marking from either child.
+     */
     public boolean requiresRightMarking() {
         return false;
     }

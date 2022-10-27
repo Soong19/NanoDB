@@ -36,7 +36,7 @@ public class AnalyzeCommand extends Command {
      * method.
      *
      * @param verbose a flag indicating whether this command should produce
-     *        verbose output
+     *                verbose output
      */
     public AnalyzeCommand(boolean verbose) {
         super(Command.Type.UTILITY);
@@ -69,8 +69,8 @@ public class AnalyzeCommand extends Command {
      * Construct a new <tt>ANALYZE</tt> command to analyze the specified table.
      *
      * @param tableName the name of the table to analyze.
-     * @param verbose a flag indicating whether this command should produce
-     *        verbose output
+     * @param verbose   a flag indicating whether this command should produce
+     *                  verbose output
      */
     public AnalyzeCommand(String tableName, boolean verbose) {
         this(verbose);

@@ -10,14 +10,11 @@ public class ArrayUtil {
      * starting at the specified index.  The arrays are expected to be the same
      * length.
      *
-     * @param a the first array to examine
-     *
-     * @param b the second array to examine
-     *
+     * @param a     the first array to examine
+     * @param b     the second array to examine
      * @param index the index to start the comparison at
-     *
      * @return the number of bytes that are the same, starting from the
-     *         specified index
+     * specified index
      */
     public static int sizeOfIdenticalRange(byte[] a, byte[] b, int index) {
         if (a == null)
@@ -35,7 +32,7 @@ public class ArrayUtil {
         }
 
         int size = 0;
-        for (int i = index; i < a.length && a[i] == b[i]; i++, size++);
+        for (int i = index; i < a.length && a[i] == b[i]; i++, size++) ;
 
         return size;
     }
@@ -46,14 +43,11 @@ public class ArrayUtil {
      * starting at the specified index.  The arrays are expected to be the same
      * length.
      *
-     * @param a the first array to examine
-     *
-     * @param b the second array to examine
-     *
+     * @param a     the first array to examine
+     * @param b     the second array to examine
      * @param index the index to start the comparison at
-     *
      * @return the number of bytes that are different, starting from the
-     *         specified index
+     * specified index
      */
     public static int sizeOfDifferentRange(byte[] a, byte[] b, int index) {
         if (a == null)
@@ -71,7 +65,7 @@ public class ArrayUtil {
         }
 
         int size = 0;
-        for (int i = index; i < a.length && a[i] != b[i]; i++, size++);
+        for (int i = index; i < a.length && a[i] != b[i]; i++, size++) ;
 
         return size;
     }

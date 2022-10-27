@@ -28,7 +28,9 @@ import edu.caltech.nanodb.storage.TupleFile;
  * it is very useful for verifying student implementations of file structures.
  */
 public class VerifyCommand extends Command {
-    /** A logging object for reporting anything interesting that happens. **/
+    /**
+     * A logging object for reporting anything interesting that happens.
+     **/
     private static Logger logger = LogManager.getLogger(VerifyCommand.class);
 
 

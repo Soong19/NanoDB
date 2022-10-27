@@ -16,7 +16,7 @@ import edu.caltech.nanodb.expressions.LiteralValue;
  * This test class exercises the functionality of the {@link ArithmeticOperator}
  * class.
  */
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestArithmeticOperator {
 
     /**
@@ -33,7 +33,7 @@ public class TestArithmeticOperator {
         Object result;
 
         TestOperation(ArithmeticOperator.Type op,
-                             Object arg1, Object arg2, Object result) {
+                      Object arg1, Object arg2, Object result) {
             this.op = op;
             this.arg1 = arg1;
             this.arg2 = arg2;

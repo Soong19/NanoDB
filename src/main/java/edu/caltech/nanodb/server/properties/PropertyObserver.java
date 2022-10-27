@@ -11,8 +11,7 @@ public interface PropertyObserver {
      * is changed to a new value.
      *
      * @param propertyName the name of the property that was changed
-     *
-     * @param newValue the new value of the property
+     * @param newValue     the new value of the property
      */
     void propertyChanged(String propertyName, Object newValue);
 }

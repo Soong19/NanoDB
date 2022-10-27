@@ -23,17 +23,25 @@ public abstract class InteractiveClient {
     private static Logger logger = LogManager.getLogger(InteractiveClient.class);
 
 
-    /** A string constant specifying the "first-line" command-prompt. */
+    /**
+     * A string constant specifying the "first-line" command-prompt.
+     */
     private static final String CMDPROMPT_FIRST = "CMD> ";
 
 
-    /** A string constant specifying the "subsequent-lines" command-prompt. */
+    /**
+     * A string constant specifying the "subsequent-lines" command-prompt.
+     */
     private static final String CMDPROMPT_NEXT = "   > ";
 
-    /** The buffer that accumulates each command's text. */
+    /**
+     * The buffer that accumulates each command's text.
+     */
     private StringBuilder enteredText;
 
-    /** A flag that records if we are exiting the interactive client. */
+    /**
+     * A flag that records if we are exiting the interactive client.
+     */
     private boolean exiting;
 
 
@@ -75,8 +83,7 @@ public abstract class InteractiveClient {
                             System.out.print(CMDPROMPT_FIRST);
                             System.out.flush();
                             firstLine = false;
-                        }
-                        else {
+                        } else {
                             System.out.print(CMDPROMPT_NEXT);
                             System.out.flush();
                         }
@@ -97,8 +104,7 @@ public abstract class InteractiveClient {
 
                     if (enteredText.length() == 0)
                         firstLine = true;
-                }
-                catch (Throwable e) {
+                } catch (Throwable e) {
                     System.out.println("Unexpected error:  " + e.getClass() +
                         ":  " + e.getMessage());
                     logger.error("Unexpected error", e);
@@ -134,7 +140,7 @@ public abstract class InteractiveClient {
 
                     // Look for the end of the line.
                     while (endIdx < enteredText.length() &&
-                           enteredText.charAt(endIdx) != '\n') {
+                        enteredText.charAt(endIdx) != '\n') {
                         endIdx++;
                     }
 
@@ -149,15 +155,14 @@ public abstract class InteractiveClient {
 
                     // Go back and try to find more commands.
                     continue;
-                }
-                else if ("/*".equals(enteredText.substring(0, 2))) {
+                } else if ("/*".equals(enteredText.substring(0, 2))) {
                     // Consume block comment
 
                     int endIdx = 2;
 
                     // Look for the end of the block comment.
                     while (endIdx + 1 < enteredText.length() &&
-                           (enteredText.charAt(endIdx) != '*' ||
+                        (enteredText.charAt(endIdx) != '*' ||
                             enteredText.charAt(endIdx + 1) != '/')) {
                         endIdx++;
                     }
@@ -205,8 +210,7 @@ public abstract class InteractiveClient {
             if (result.isExit()) {
                 exiting = true;
                 break;
-            }
-            else {
+            } else {
                 outputCommandResult(result);
             }
         }
@@ -222,8 +226,8 @@ public abstract class InteractiveClient {
      * returned.
      *
      * @return the first semicolon-terminated command in the internal data
-     *         buffer, or {@code null} if the buffer contains no complete
-     *         commands.
+     * buffer, or {@code null} if the buffer contains no complete
+     * commands.
      */
     private String getCommandString() {
         int i = 0;
@@ -240,18 +244,17 @@ public abstract class InteractiveClient {
                 // Consume any leading whitespace at the start of the entered
                 // text.
                 while (enteredText.length() > 0 &&
-                       Character.isWhitespace(enteredText.charAt(0))) {
+                    Character.isWhitespace(enteredText.charAt(0))) {
                     enteredText.deleteCharAt(0);
                 }
 
                 break;
-            }
-            else if (ch == '\'' || ch == '"') {
+            } else if (ch == '\'' || ch == '"') {
                 // Need to ignore all subsequent characters until we find
                 // the end of this quoted string.
                 i++;
                 while (i < enteredText.length() &&
-                       enteredText.charAt(i) != ch) {
+                    enteredText.charAt(i) != ch) {
                     i++;
                 }
             }
@@ -270,7 +273,6 @@ public abstract class InteractiveClient {
      * to the console.
      *
      * @param command the command to handle.
-     *
      * @return the command-result from executing the command
      */
     public abstract CommandResult handleCommand(String command);
@@ -314,19 +316,16 @@ public abstract class InteractiveClient {
                     // will all be processed.
                     processEnteredText();
                 }
-            }
-            catch (FileNotFoundException e) {
+            } catch (FileNotFoundException e) {
                 System.out.println("ERROR:  Could not open file \"" +
                     filename + "\"");
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.out.println("ERROR:  Could not read file \"" +
                     filename + "\":  " + e.getMessage());
             }
 
             enteredText = oldText;
-        }
-        else if ("\\help".equals(parts[0])) {
+        } else if ("\\help".equals(parts[0])) {
             // Show help information.
             System.out.println("You can enter any NanoDB SQL command, or " +
                 "the following built-in commands.");
@@ -338,8 +337,7 @@ public abstract class InteractiveClient {
             System.out.println("\\source filename.sql");
             System.out.println("\tLoads and executes the contents of \"filename.sql\".");
             System.out.println();
-        }
-        else {
+        } else {
             System.out.println("ERROR:  Unrecognized shell command \"" +
                 parts[0] + "\"");
         }
@@ -361,8 +359,7 @@ public abstract class InteractiveClient {
             Exception e = result.getFailure();
             if (e instanceof ParseCancellationException) {
                 System.out.println("ERROR:  Could not parse command");
-            }
-            else {
+            } else {
                 System.out.println("ERROR:  " + e.getMessage());
             }
         }

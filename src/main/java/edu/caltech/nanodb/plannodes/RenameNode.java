@@ -23,10 +23,14 @@ import edu.caltech.nanodb.relations.Tuple;
  */
 public class RenameNode extends PlanNode {
 
-    /** A logging object for reporting anything interesting that happens. **/
+    /**
+     * A logging object for reporting anything interesting that happens.
+     **/
     private static Logger logger = LogManager.getLogger(RenameNode.class);
 
-    /** The result table-name to use in the output schema of this plan-node. */
+    /**
+     * The result table-name to use in the output schema of this plan-node.
+     */
     private String resultTableName;
 
     public RenameNode(PlanNode subplan, String resultTableName) {
@@ -48,8 +52,8 @@ public class RenameNode extends PlanNode {
             Expression expr = orderByExpr.getExpression().duplicate();
 
             ((ColumnValue) expr).setColumnName(new ColumnName(
-                    resultTableName,
-                    expr.getColumnInfo(leftChild.getSchema()).getName()));
+                resultTableName,
+                expr.getColumnInfo(leftChild.getSchema()).getName()));
 
             resultsOrderedBy.add(new OrderByExpression(expr));
         }
@@ -122,7 +126,7 @@ public class RenameNode extends PlanNode {
         if (obj instanceof RenameNode) {
             RenameNode other = (RenameNode) obj;
             return resultTableName.equals(other.resultTableName) &&
-                   leftChild.equals(other.leftChild);
+                leftChild.equals(other.leftChild);
         }
 
         return false;

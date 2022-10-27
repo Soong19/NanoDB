@@ -15,7 +15,7 @@ import edu.caltech.test.nanodb.storage.TableFormatTestCase;
  * performing various SQL operations against it.  It doesn't test the
  * implementation class directly.
  */
-@Test(groups={"hw1"})
+@Test(groups = {"hw1"})
 public class TestHeapTableFormat extends TableFormatTestCase {
 
     /**
@@ -29,7 +29,7 @@ public class TestHeapTableFormat extends TableFormatTestCase {
             "PROPERTIES (storage = 'heap', pagesize = 4096);", false);
 
         insertRows("heap_1p_ins", 150, 200, 3, 20, /* ordered */ false,
-                   /* delete */ false);
+            /* delete */ false);
     }
 
 
@@ -44,7 +44,7 @@ public class TestHeapTableFormat extends TableFormatTestCase {
             "PROPERTIES (storage = 'heap', pagesize = 4096);", false);
 
         insertRows("heap_1p_insdel", 150, 200, 3, 20, /* ordered */ false,
-                   /* delete */ true);
+            /* delete */ true);
     }
 
 
@@ -60,7 +60,7 @@ public class TestHeapTableFormat extends TableFormatTestCase {
 
         // This should require around 10 pages.
         insertRows("heap_mp_ins", 1000, 200, 20, 50, /* ordered */ false,
-                   /* delete */ false);
+            /* delete */ false);
     }
 
 
@@ -77,7 +77,7 @@ public class TestHeapTableFormat extends TableFormatTestCase {
         // Not sure how many pages this will require, since tuples will be
         // deleted along the way.
         insertRows("heap_mp_insdel", 3000, 200, 20, 50, /* ordered */ false,
-                   /* delete */ true);
+            /* delete */ true);
     }
 
 

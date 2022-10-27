@@ -8,7 +8,7 @@ package edu.caltech.nanodb.queryeval;
  * is very approximate.  For more involved plans, the best we can really hope
  * for is that better, faster plans will be assigned lower costs than worse,
  * slower plans.
- *
+ * <p>
  * Some of these values are floating-point values since they are affected by
  * selectivity estimates, which are always between 0 and 1.  Other values are
  * cumulative (e.g. the number of block reads and large seeks), so they are
@@ -25,7 +25,9 @@ public class PlanCost {
     public float numTuples;
 
 
-    /** The average tuple size of tuples produced by the node. */
+    /**
+     * The average tuple size of tuples produced by the node.
+     */
     public float tupleSize;
 
 
@@ -55,18 +57,14 @@ public class PlanCost {
     /**
      * Constructs a PlanCost object from its component fields.
      *
-     * @param numTuples the estimated number of tuples that will be produced
-     *
-     * @param tupleSize the estimated size of the produced tuples in bytes
-     *
-     * @param cpuCost an estimate of the overall computational cost of the plan
-     *        node, in some imaginary unit
-     *
-     * @param numBlockIOs the estimated number of block reads and writes that
-     *        will be performed in evaluating the query
-     *
+     * @param numTuples     the estimated number of tuples that will be produced
+     * @param tupleSize     the estimated size of the produced tuples in bytes
+     * @param cpuCost       an estimate of the overall computational cost of the plan
+     *                      node, in some imaginary unit
+     * @param numBlockIOs   the estimated number of block reads and writes that
+     *                      will be performed in evaluating the query
      * @param numLargeSeeks the estimated number of large disk-seeks that will
-     *        be performed in evaluating the query
+     *                      be performed in evaluating the query
      */
     public PlanCost(float numTuples, float tupleSize, float cpuCost,
                     long numBlockIOs, long numLargeSeeks) {
@@ -86,14 +84,14 @@ public class PlanCost {
      */
     public PlanCost(PlanCost c) {
         this(c.numTuples, c.tupleSize, c.cpuCost,
-             c.numBlockIOs, c.numLargeSeeks);
+            c.numBlockIOs, c.numLargeSeeks);
     }
 
 
     @Override
     public String toString() {
         return String.format("[tuples=%.1f, tupSize=%.1f, cpuCost=%.1f, " +
-            "blockIOs=%d, largeSeeks=%d]", numTuples, tupleSize, cpuCost,
+                "blockIOs=%d, largeSeeks=%d]", numTuples, tupleSize, cpuCost,
             numBlockIOs, numLargeSeeks);
     }
 }

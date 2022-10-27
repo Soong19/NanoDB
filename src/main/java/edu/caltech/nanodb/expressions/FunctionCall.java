@@ -25,7 +25,9 @@ import edu.caltech.nanodb.relations.SchemaNameException;
  * {@link FunctionDirectory}.
  */
 public class FunctionCall extends Expression {
-    /** The string name of the function as specified in the original SQL. */
+    /**
+     * The string name of the function as specified in the original SQL.
+     */
     private String funcName;
 
     /**
@@ -36,7 +38,9 @@ public class FunctionCall extends Expression {
      */
     private boolean distinct;
 
-    /** The list of one or more arguments for the function call. */
+    /**
+     * The list of one or more arguments for the function call.
+     */
     private ArrayList<Expression> args;
 
 
@@ -72,10 +76,9 @@ public class FunctionCall extends Expression {
      * implementation of the function is available at evaluation time.
      *
      * @param directory the function directory to resolve the function against
-     *
      * @throws IllegalArgumentException if the {@link #distinct} flag is
-     *         {@code true} but the function implementation is not an
-     *         {@link AggregateFunction}.
+     *                                  {@code true} but the function implementation is not an
+     *                                  {@link AggregateFunction}.
      */
     public void resolve(FunctionDirectory directory) {
         function = directory.getFunction(funcName);
@@ -93,7 +96,7 @@ public class FunctionCall extends Expression {
      * method.
      *
      * @return the implementation of the function, or {@code null} if the
-     *         implementation has not yet been resolved.
+     * implementation has not yet been resolved.
      */
     public Function getFunction() {
         return function;
@@ -138,8 +141,8 @@ public class FunctionCall extends Expression {
         // Check to see if we have invalid outputs. If so, return null instead
         // of a NaN. The Integer class is unable to detect NaN's and division
         // by 0 though...
-        if (result instanceof Double && Double.isNaN((Double)result) ||
-            result instanceof Float && Float.isNaN((Float)result))
+        if (result instanceof Double && Double.isNaN((Double) result) ||
+            result instanceof Float && Float.isNaN((Float) result))
             return null;
 
         return result;

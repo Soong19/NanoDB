@@ -47,8 +47,7 @@ public class CrashCommand extends Command {
         if (secondsToCrash <= 0) {
             // Crash immediately.
             doCrash();
-        }
-        else {
+        } else {
             // Wait for the specified amount of time in a thread, then crash.
             Thread t = new Thread(new Runnable() {
                 public void run() {

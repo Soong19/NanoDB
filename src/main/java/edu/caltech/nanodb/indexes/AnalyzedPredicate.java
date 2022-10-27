@@ -208,8 +208,7 @@ public class AnalyzedPredicate {
                 // If we are here then the index is a sequential index and we
                 // have some prefix of the index.
                 break;
-            }
-            else {
+            } else {
                 // We have range endpoints for this column.
 
                 // Hash indexes require an equality test on all columns.  Note

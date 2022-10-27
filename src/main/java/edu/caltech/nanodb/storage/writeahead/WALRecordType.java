@@ -56,7 +56,6 @@ public enum WALRecordType {
      * or <tt>null</tt> if no type corresponds to the ID.
      *
      * @param id the numeric ID of the type to retrieve
-     *
      * @return the type-value with that ID, or <tt>null</tt> if not found
      */
     public static WALRecordType valueOf(int id) {

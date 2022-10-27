@@ -14,7 +14,7 @@ import edu.caltech.nanodb.sqlparse.ParseUtil;
 /**
  * Verifies that parsing of the <tt>UPDATE</tt> command works as expected.
  */
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserUpdate {
     /**
      * Verifies that an <tt>UPDATE</tt> statement with no predicate is parsed

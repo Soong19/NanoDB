@@ -14,7 +14,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Returns the first non-<tt>NULL</tt> argument.  The function's return-type is
  * reported to be whatever the first argument's type is.
- * 
+ *
  * @author emil
  */
 public class Coalesce extends SimpleFunction {
@@ -35,14 +35,14 @@ public class Coalesce extends SimpleFunction {
             throw new ExpressionException("Cannot call COALESCE on " +
                 args.size() + " arguments");
         }
-        
+
         for (Expression arg : args) {
             Object val = arg.evaluate(env);
-            
+
             if (val != null)
                 return val;
         }
-        
+
         return null;
     }
 }

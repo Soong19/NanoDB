@@ -17,7 +17,9 @@ import edu.caltech.nanodb.relations.Tuple;
  */
 public class ColumnValue extends Expression {
 
-    /** The name of the column. */
+    /**
+     * The name of the column.
+     */
     private ColumnName columnName;
 
 
@@ -54,7 +56,7 @@ public class ColumnValue extends Expression {
 
     /**
      * Sets the column name object
-     * 
+     *
      * @param columnName the new column name object
      */
     public void setColumnName(ColumnName columnName) {
@@ -69,11 +71,9 @@ public class ColumnValue extends Expression {
 
         if (found.size() == 1) {
             colInfo = found.get(found.firstKey());
-        }
-        else if (found.size() == 0) {
+        } else if (found.size() == 0) {
             throw new SchemaNameException("Unknown column " + columnName + ".");
-        }
-        else {
+        } else {
             assert found.size() > 1;
             throw new SchemaNameException("Ambiguous column " + columnName +
                 "; found " + found.values() + ".");
@@ -119,8 +119,8 @@ public class ColumnValue extends Expression {
     public Expression simplify() {
         return this;
     }
-  
-  
+
+
     /**
      * Checks if the argument is an expression with the same structure, but not
      * necessarily the same references.
@@ -135,8 +135,8 @@ public class ColumnValue extends Expression {
         }
         return false;
     }
-  
-  
+
+
     /**
      * Computes the hashcode of an Expression.  This method is used to see if
      * two expressions might be equal.
@@ -149,7 +149,9 @@ public class ColumnValue extends Expression {
     }
 
 
-    /** Creates a copy of expression. */
+    /**
+     * Creates a copy of expression.
+     */
     @Override
     protected Object clone() throws CloneNotSupportedException {
         ColumnValue expr = (ColumnValue) super.clone();

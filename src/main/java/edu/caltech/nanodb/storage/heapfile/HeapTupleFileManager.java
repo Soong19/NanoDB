@@ -22,11 +22,15 @@ import edu.caltech.nanodb.storage.TupleFileManager;
  * This class provides high-level operations on heap tuple files.
  */
 public class HeapTupleFileManager implements TupleFileManager {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(HeapTupleFileManager.class);
 
 
-    /** A reference to the storage manager. */
+    /**
+     * A reference to the storage manager.
+     */
     private StorageManager storageManager;
 
 

@@ -6,7 +6,9 @@ package edu.caltech.nanodb.storage;
  */
 public class TableException extends StorageException {
 
-    /** Construct a table exception with no message. */
+    /**
+     * Construct a table exception with no message.
+     */
     public TableException() {
         super();
     }
@@ -34,4 +36,3 @@ public class TableException extends StorageException {
         super(msg, cause);
     }
 }
-

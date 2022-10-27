@@ -21,7 +21,7 @@ package edu.caltech.nanodb.functions;
  *   <li>{@link TableFunction} is the parent class for table-returning
  *       functions</li>
  * </ul>
- *
+ * <p>
  * Functions must support cloning because the implementation classes often
  * carry their own internal state values, and clearly the same function being
  * invoked in two different parts of the same query, or being invoked

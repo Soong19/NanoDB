@@ -17,7 +17,9 @@ public class UpdateValue {
     private String columnName;
 
 
-    /** The expression that will be computed and stored. */
+    /**
+     * The expression that will be computed and stored.
+     */
     private Expression expression;
 
 
@@ -25,10 +27,9 @@ public class UpdateValue {
      * Construct an update-value object from a column name and an expression.
      *
      * @param colName The column name that will receive the value.
-     * @param e The expression that generates the value to store.
-     *
+     * @param e       The expression that generates the value to store.
      * @throws java.lang.NullPointerException if <code>colName</code> or
-     * <code>e</code> is <code>null</code>
+     *                                        <code>e</code> is <code>null</code>
      */
     public UpdateValue(String colName, Expression e) {
         if (colName == null || e == null)
@@ -49,9 +50,10 @@ public class UpdateValue {
     }
 
 
-    /** Returns the expression for generating the update-value. */
+    /**
+     * Returns the expression for generating the update-value.
+     */
     public Expression getExpression() {
         return expression;
     }
 }
-

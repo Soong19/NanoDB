@@ -113,8 +113,7 @@ public class TransactionState {
 
         if (transactionID == NO_TRANSACTION) {
             buf.append("no transaction");
-        }
-        else {
+        } else {
             buf.append(String.format(
                 "txnID=%d, userStarted=%s, loggedStart=%s, lastLSN=%s",
                 transactionID, userStartedTxn, loggedTxnStart, lastLSN));

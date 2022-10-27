@@ -13,17 +13,21 @@ import edu.caltech.nanodb.expressions.TypeConverter;
  * format-specifier to include the value passed to the validator.
  */
 public class IntegerValueValidator implements PropertyValidator {
-    /** A predicate for validating an integer value. */
+    /**
+     * A predicate for validating an integer value.
+     */
     private Predicate<Integer> predicate;
 
-    /** An error message for when an integer value is invalid. */
+    /**
+     * An error message for when an integer value is invalid.
+     */
     private String errorMessage;
 
 
     public IntegerValueValidator(int minValue, int maxValue) {
-        this( (Integer i) -> i >= minValue && i <= maxValue,
+        this((Integer i) -> i >= minValue && i <= maxValue,
             "Value must be between " + minValue + " and " + maxValue +
-            " (got %d)");
+                " (got %d)");
     }
 
 

@@ -12,7 +12,7 @@ import edu.caltech.nanodb.server.CommandResult;
  * statements against a single table, to see if simple selects and
  * predicates work properly.
  */
-@Test(groups={"sql", "hw2"})
+@Test(groups = {"sql", "hw2"})
 public class TestStringMatch extends SqlTestCase {
 
     public TestStringMatch() {

@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the absolute value of a single argument. Returns NULL if argument
  * is NULL.
- * 
+ *
  * @author emil
  */
 public class Abs extends SimpleFunction {
@@ -45,7 +45,7 @@ public class Abs extends SimpleFunction {
             throw new ExpressionException("Cannot call ABS on " + args.size() +
                 " arguments");
         }
-        
+
         Object argVal = args.get(0).evaluate(env);
 
         // A NULL input results in a NULL output.
@@ -54,17 +54,13 @@ public class Abs extends SimpleFunction {
 
         if (argVal instanceof Byte) {
             return (byte) Math.abs((Byte) argVal);
-        }
-        else if (argVal instanceof Short) {
+        } else if (argVal instanceof Short) {
             return (short) Math.abs((Short) argVal);
-        }
-        else if (argVal instanceof Integer) {
+        } else if (argVal instanceof Integer) {
             return Math.abs((Integer) argVal);
-        }
-        else if (argVal instanceof Long) {
+        } else if (argVal instanceof Long) {
             return Math.abs((Long) argVal);
-        }
-        else if (argVal instanceof Float) {
+        } else if (argVal instanceof Float) {
             return Math.abs((Float) argVal);
         }
 

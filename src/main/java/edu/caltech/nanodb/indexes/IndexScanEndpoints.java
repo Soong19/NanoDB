@@ -66,7 +66,7 @@ public class IndexScanEndpoints {
      * satisfy a specific predicate.
      *
      * @param ranges a list of {@code RangeEndpoints} objects describing
-     *        specific columns that are referenced by a predicate
+     *               specific columns that are referenced by a predicate
      */
     public IndexScanEndpoints(List<AnalyzedPredicate.RangeEndpoints> ranges) {
         if (ranges == null)

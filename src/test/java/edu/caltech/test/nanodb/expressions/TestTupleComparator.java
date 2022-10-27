@@ -15,7 +15,7 @@ import edu.caltech.nanodb.relations.ColumnType;
 import edu.caltech.nanodb.relations.Schema;
 
 
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestTupleComparator {
     public void testAreTuplesEqual() {
         // Simple scenarios without type coercion.
@@ -229,8 +229,7 @@ public class TestTupleComparator {
         try {
             TupleComparator.compareTuples(null, t1);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Pass!
         }
 
@@ -238,8 +237,7 @@ public class TestTupleComparator {
             // Different arity tuples should cause an exception.
             TupleComparator.compareTuples(t1, t2);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Pass!
         }
     }
@@ -390,8 +388,7 @@ public class TestTupleComparator {
         try {
             TupleComparator.comparePartialTuples(null, t);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Pass!
         }
     }

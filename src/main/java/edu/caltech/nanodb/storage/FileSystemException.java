@@ -6,7 +6,9 @@ package edu.caltech.nanodb.storage;
  * manipulating files.
  */
 public class FileSystemException extends StorageException {
-    /** Construct a storage exception with no message. */
+    /**
+     * Construct a storage exception with no message.
+     */
     public FileSystemException() {
         super();
     }

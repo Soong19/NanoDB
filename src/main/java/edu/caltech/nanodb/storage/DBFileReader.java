@@ -26,15 +26,17 @@ import java.io.UnsupportedEncodingException;
  * </p>
  *
  * @design This class always has the current {@code DBPage} pinned, and it
- *         will unpin the current page when it moves into the next page.  This
- *         means that when the reader is closed, it may still have a page that
- *         is pinned.  Therefore, the class implements {@code AutoCloseable}
- *         so that users can call {@link #close} on a reader to unpin the last
- *         page, or they can use this type with the "try-with-resources" Java
- *         syntax.
+ * will unpin the current page when it moves into the next page.  This
+ * means that when the reader is closed, it may still have a page that
+ * is pinned.  Therefore, the class implements {@code AutoCloseable}
+ * so that users can call {@link #close} on a reader to unpin the last
+ * page, or they can use this type with the "try-with-resources" Java
+ * syntax.
  */
 public class DBFileReader implements AutoCloseable {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(DBFileReader.class);
 
 
@@ -45,7 +47,9 @@ public class DBFileReader implements AutoCloseable {
     protected StorageManager storageManager;
 
 
-    /** The database file being read by this reader. */
+    /**
+     * The database file being read by this reader.
+     */
     protected DBFile dbFile;
 
 
@@ -57,15 +61,21 @@ public class DBFileReader implements AutoCloseable {
     protected boolean extendFile = false;
 
 
-    /** The page-size of the database file being read from. */
+    /**
+     * The page-size of the database file being read from.
+     */
     protected int pageSize;
 
 
-    /** The last page used for reading the database file. */
+    /**
+     * The last page used for reading the database file.
+     */
     protected DBPage dbPage;
 
 
-    /** The current position in the file where reads will occur from. */
+    /**
+     * The current position in the file where reads will occur from.
+     */
     protected int position;
 
 
@@ -157,7 +167,7 @@ public class DBFileReader implements AutoCloseable {
      * {@code position} value currently falls within.
      *
      * @return the page-number of the page that the {@code position} value
-     *         currently falls within
+     * currently falls within
      */
     protected int getPositionPageNo() {
         return position / pageSize;
@@ -169,7 +179,7 @@ public class DBFileReader implements AutoCloseable {
      * {@code position} value currently falls at.
      *
      * @return the offset within the current page that the {@code position}
-     *         value currently falls at
+     * value currently falls at
      */
     protected int getPositionPageOffset() {
         return position % pageSize;
@@ -190,8 +200,7 @@ public class DBFileReader implements AutoCloseable {
             if (dbPage.getPageNo() == pageNo) {
                 // The current DBPage is the one we need; use it!
                 return;
-            }
-            else {
+            } else {
                 // The current DBPage is not the one we need, so unpin it
                 // in preparation for loading the next page.
                 dbPage.unpin();
@@ -211,10 +220,8 @@ public class DBFileReader implements AutoCloseable {
      * Read a sequence of bytes into the provided byte-array, starting with the
      * specified offset, and reading the specified number of bytes.
      *
-     * @param b the byte-array to read bytes into
-     *
+     * @param b   the byte-array to read bytes into
      * @param off the offset to read the bytes into the array
-     *
      * @param len the number of bytes to read into the array
      */
     public void read(byte[] b, int off, int len) {
@@ -225,8 +232,7 @@ public class DBFileReader implements AutoCloseable {
         if (pagePosition + len <= pageSize) {
             dbPage.read(pagePosition, b, off, len);
             position += len;
-        }
-        else {
+        } else {
             // Read part of the data from this page, then load the next page and
             // read the remainder of the data.
             int page1Len = pageSize - pagePosition;
@@ -269,7 +275,9 @@ public class DBFileReader implements AutoCloseable {
     }
 
 
-    /** Reads and returns a signed byte from the current position. */
+    /**
+     * Reads and returns a signed byte from the current position.
+     */
     public byte readByte() {
         checkDBPage();
         byte b = dbPage.readByte(getPositionPageOffset());
@@ -303,8 +311,7 @@ public class DBFileReader implements AutoCloseable {
             checkDBPage();
             value = dbPage.readUnsignedShort(pagePosition);
             position += 2;
-        }
-        else {
+        } else {
             // Need to read the bytes spanning this page and the next.
             // Note that read() moves the file position forward.
             read(tmpBuf, 0, 2);
@@ -315,7 +322,9 @@ public class DBFileReader implements AutoCloseable {
     }
 
 
-    /** Reads and returns a signed short from the current position. */
+    /**
+     * Reads and returns a signed short from the current position.
+     */
     public short readShort() {
         int pagePosition = getPositionPageOffset();
 
@@ -324,8 +333,7 @@ public class DBFileReader implements AutoCloseable {
             checkDBPage();
             value = dbPage.readShort(pagePosition);
             position += 2;
-        }
-        else {
+        } else {
             // Need to read the bytes spanning this page and the next.
             // Note that read() moves the file position forward.
             read(tmpBuf, 0, 2);
@@ -333,14 +341,16 @@ public class DBFileReader implements AutoCloseable {
             // Don't chop off high-order bits.  When byte is cast to int,
             // the sign will be extended, so if original byte is negative,
             // the resulting int will be too.
-            value = (short) ((tmpBuf[0] <<  8) | (tmpBuf[1] & 0xFF));
+            value = (short) ((tmpBuf[0] << 8) | (tmpBuf[1] & 0xFF));
         }
 
         return value;
     }
 
 
-    /** Reads and returns a two-byte char value from the current position. */
+    /**
+     * Reads and returns a two-byte char value from the current position.
+     */
     public char readChar() {
         int pagePosition = getPositionPageOffset();
 
@@ -349,8 +359,7 @@ public class DBFileReader implements AutoCloseable {
             checkDBPage();
             value = dbPage.readChar(pagePosition);
             position += 2;
-        }
-        else {
+        } else {
             // Need to read the bytes spanning this page and the next.
             // Note that read() moves the file position forward.
             read(tmpBuf, 0, 2);
@@ -358,7 +367,7 @@ public class DBFileReader implements AutoCloseable {
             // Don't chop off high-order bits.  When byte is cast to int,
             // the sign will be extended, so if original byte is negative,
             // the resulting int will be too.
-            value = (char) ((tmpBuf[0] <<  8) | (tmpBuf[1] & 0xFF));
+            value = (char) ((tmpBuf[0] << 8) | (tmpBuf[1] & 0xFF));
         }
 
         return value;
@@ -377,20 +386,21 @@ public class DBFileReader implements AutoCloseable {
             checkDBPage();
             value = dbPage.readUnsignedInt(pagePosition);
             position += 4;
-        }
-        else {
+        } else {
             // Need to read the bytes spanning this page and the next.
             // Note that read() moves the file position forward.
             read(tmpBuf, 0, 4);
             value = ((tmpBuf[0] & 0xFF) << 24) | ((tmpBuf[1] & 0xFF) << 16) |
-                    ((tmpBuf[2] & 0xFF) <<  8) | ((tmpBuf[3] & 0xFF)      );
+                ((tmpBuf[2] & 0xFF) << 8) | ((tmpBuf[3] & 0xFF));
         }
 
         return value;
     }
 
 
-    /** Reads and returns a four-byte integer value from the current position. */
+    /**
+     * Reads and returns a four-byte integer value from the current position.
+     */
     public int readInt() {
         int pagePosition = getPositionPageOffset();
 
@@ -399,13 +409,12 @@ public class DBFileReader implements AutoCloseable {
             checkDBPage();
             value = dbPage.readInt(pagePosition);
             position += 4;
-        }
-        else {
+        } else {
             // Need to read the bytes spanning this page and the next.
             // Note that read() moves the file position forward.
             read(tmpBuf, 0, 4);
             value = ((tmpBuf[0] & 0xFF) << 24) | ((tmpBuf[1] & 0xFF) << 16) |
-                    ((tmpBuf[2] & 0xFF) <<  8) | ((tmpBuf[3] & 0xFF)      );
+                ((tmpBuf[2] & 0xFF) << 8) | ((tmpBuf[3] & 0xFF));
         }
 
         return value;
@@ -423,19 +432,18 @@ public class DBFileReader implements AutoCloseable {
             checkDBPage();
             value = dbPage.readLong(pagePosition);
             position += 8;
-        }
-        else {
+        } else {
             // Need to read the bytes spanning this page and the next.
             // Note that read() moves the file position forward.
             read(tmpBuf, 0, 8);
             value = ((long) (tmpBuf[0] & 0xFF) << 56) |
-                    ((long) (tmpBuf[1] & 0xFF) << 48) |
-                    ((long) (tmpBuf[2] & 0xFF) << 40) |
-                    ((long) (tmpBuf[3] & 0xFF) << 32) |
-                    ((long) (tmpBuf[4] & 0xFF) << 24) |
-                    ((long) (tmpBuf[5] & 0xFF) << 16) |
-                    ((long) (tmpBuf[6] & 0xFF) <<  8) |
-                    ((long) (tmpBuf[7] & 0xFF)      );
+                ((long) (tmpBuf[1] & 0xFF) << 48) |
+                ((long) (tmpBuf[2] & 0xFF) << 40) |
+                ((long) (tmpBuf[3] & 0xFF) << 32) |
+                ((long) (tmpBuf[4] & 0xFF) << 24) |
+                ((long) (tmpBuf[5] & 0xFF) << 16) |
+                ((long) (tmpBuf[6] & 0xFF) << 8) |
+                ((long) (tmpBuf[7] & 0xFF));
         }
 
         return value;
@@ -467,8 +475,7 @@ public class DBFileReader implements AutoCloseable {
         String str = null;
         try {
             str = new String(strBytes, 0, len, "US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.
@@ -496,8 +503,7 @@ public class DBFileReader implements AutoCloseable {
         String str = null;
         try {
             str = new String(strBytes, 0, len, "US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.

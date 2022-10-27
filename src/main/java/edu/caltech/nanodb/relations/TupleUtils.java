@@ -11,7 +11,7 @@ public class TupleUtils {
 
         for (int i = 0; i < input.getColumnCount(); i++) {
             Object value = input.getColumnValue(i);
-            ColumnType colType =  schema.getColumnInfo(i).getType();
+            ColumnType colType = schema.getColumnInfo(i).getType();
             Object coerced = TypeConverter.coerceTo(value, colType);
             result.addValue(coerced);
         }

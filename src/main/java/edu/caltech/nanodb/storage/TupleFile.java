@@ -28,12 +28,11 @@ public interface TupleFile {
     /**
      * Returns the {@code DBFile} object that this tuple file is stored in.
      *
-     * @design (donnie) For tuple files that are comprised of multiple
-     *         physical files, this file will be the top-level file that
-     *         records details such as all the other files necessary for
-     *         that storage format.
-     *
      * @return the {@code DBFile} object that this tuple file is stored in.
+     * @design (donnie) For tuple files that are comprised of multiple
+     * physical files, this file will be the top-level file that
+     * records details such as all the other files necessary for
+     * that storage format.
      */
     DBFile getDBFile();
 
@@ -79,10 +78,9 @@ public interface TupleFile {
      * correctly regardless of whether the input tuple is pinned or unpinned.
      *
      * @param tuple the "previous" tuple in the table.  This tuple may be
-     *        pinned or unpinned.
-     *
+     *              pinned or unpinned.
      * @return the tuple following the previous tuple, or {@code null} if the
-     *         previous tuple is the last one in the table
+     * previous tuple is the last one in the table
      */
     Tuple getNextTuple(Tuple tuple);
 
@@ -92,11 +90,9 @@ public interface TupleFile {
      * method is used by other features in the database, such as indexes.
      *
      * @param fptr a file-pointer specifying the tuple to retrieve
-     *
      * @return the tuple referenced by <tt>fptr</tt>
-     *
      * @throws InvalidFilePointerException if the specified file-pointer
-     *         doesn't actually point to a real tuple.
+     *                                     doesn't actually point to a real tuple.
      */
     Tuple getTuple(FilePointer fptr) throws InvalidFilePointerException;
 
@@ -106,7 +102,6 @@ public interface TupleFile {
      * corresponding to the actual tuple added to the table.
      *
      * @param tuple a tuple object containing the values to add to the table
-     *
      * @return a tuple object actually backed by this table
      */
     Tuple addTuple(Tuple tuple);
@@ -115,12 +110,11 @@ public interface TupleFile {
     /**
      * Modifies the values in the specified tuple.
      *
-     * @param tuple the tuple to modify in the table
-     *
+     * @param tuple     the tuple to modify in the table
      * @param newValues a map containing the name/value pairs to use to update
-     *        the tuple.  Values in this map will be coerced to the
-     *        column-type of the specified columns.  Only the columns being
-     *        modified need to be specified in this collection.
+     *                  the tuple.  Values in this map will be coerced to the
+     *                  column-type of the specified columns.  Only the columns being
+     *                  modified need to be specified in this collection.
      */
     void updateTuple(Tuple tuple, Map<String, Object> newValues);
 
@@ -145,8 +139,8 @@ public interface TupleFile {
      * of error-message strings, each one reporting some error that was found.
      *
      * @return a list of error-message strings describing issues identified
-     *         during verification.  The list will be empty if the file has no
-     *         identifiable errors.
+     * during verification.  The list will be empty if the file has no
+     * identifiable errors.
      */
     List<String> verify();
 

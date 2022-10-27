@@ -72,7 +72,9 @@ public class ColumnType implements Serializable {
     }
 
 
-    /** The base SQL data-type for the attribute. */
+    /**
+     * The base SQL data-type for the attribute.
+     */
     private SQLDataType baseType;
 
 
@@ -137,16 +139,16 @@ public class ColumnType implements Serializable {
                 // additional fields.
                 switch (baseType) {
 
-                case NUMERIC:
-                    return (scale == c.scale && precision == c.precision);
+                    case NUMERIC:
+                        return (scale == c.scale && precision == c.precision);
 
-                case CHAR:
-                case VARCHAR:
-                    return (length == c.length);
+                    case CHAR:
+                    case VARCHAR:
+                        return (length == c.length);
 
-                default:
-                    // No other types have additional values to check.
-                    return true;
+                    default:
+                        // No other types have additional values to check.
+                        return true;
                 }
             }
         }
@@ -161,18 +163,18 @@ public class ColumnType implements Serializable {
 
         switch (baseType) {
 
-        case NUMERIC:
-            hash = 37 * hash + scale;
-            hash = 37 * hash + precision;
-            break;
+            case NUMERIC:
+                hash = 37 * hash + scale;
+                hash = 37 * hash + precision;
+                break;
 
-        case CHAR:
-        case VARCHAR:
-            hash = 37 * hash + length;
-            break;
+            case CHAR:
+            case VARCHAR:
+                hash = 37 * hash + length;
+                break;
 
-        default:
-            // No other types have additional values to check.
+            default:
+                // No other types have additional values to check.
         }
 
         return hash;
@@ -194,7 +196,7 @@ public class ColumnType implements Serializable {
      * or <tt>false</tt> if the type does not.
      *
      * @return <tt>true</tt> if this column type supports/requires a length, or
-     *         <tt>false</tt> if the type does not
+     * <tt>false</tt> if the type does not
      */
     public boolean hasLength() {
         return baseType == SQLDataType.CHAR || baseType == SQLDataType.VARCHAR;
@@ -206,12 +208,10 @@ public class ColumnType implements Serializable {
      * attributes.
      *
      * @param val the length of the data-type
-     *
-     * @throws IllegalStateException if the attribute's base-type is not
-     *         <tt>CHAR</tt> or <tt>VARCHAR</tt>.
-     *
+     * @throws IllegalStateException    if the attribute's base-type is not
+     *                                  <tt>CHAR</tt> or <tt>VARCHAR</tt>.
      * @throws IllegalArgumentException if the specified length is zero or
-     *         negative.
+     *                                  negative.
      */
     public void setLength(int val) {
         if (!hasLength()) {
@@ -233,9 +233,8 @@ public class ColumnType implements Serializable {
      * attributes.
      *
      * @return the length of the data-type
-     *
      * @throws IllegalStateException if the attribute's base-type is not
-     *         <tt>CHAR</tt> or <tt>VARCHAR</tt>.
+     *                               <tt>CHAR</tt> or <tt>VARCHAR</tt>.
      */
     public int getLength() {
         if (!hasLength()) {
@@ -251,12 +250,10 @@ public class ColumnType implements Serializable {
      * Specify the precision of the data for <tt>NUMERIC</tt> attributes.
      *
      * @param val the precision of the data-type
-     *
-     * @throws IllegalStateException if the attribute's base-type is not
-     *         <tt>NUMERIC</tt>.
-     *
+     * @throws IllegalStateException    if the attribute's base-type is not
+     *                                  <tt>NUMERIC</tt>.
      * @throws IllegalArgumentException if the specified precision is zero or
-     *         negative, or if the specified precision is less than the scale.
+     *                                  negative, or if the specified precision is less than the scale.
      */
     public void setPrecision(int val) {
 
@@ -281,9 +278,8 @@ public class ColumnType implements Serializable {
      * Returns the precision of the data for NUMERIC attributes.
      *
      * @return the precision of the data-type
-     *
      * @throws IllegalStateException if the attribute's base-type is not
-     *         <tt>NUMERIC</tt>.
+     *                               <tt>NUMERIC</tt>.
      */
     public int getPrecision() {
         if (baseType != SQLDataType.NUMERIC) {
@@ -299,12 +295,10 @@ public class ColumnType implements Serializable {
      * Specify the scale of the data for <tt>NUMERIC</tt> attributes.
      *
      * @param val the scale of the data-type
-     *
-     * @throws IllegalStateException if the attribute's base-type is not
-     *         <tt>NUMERIC</tt>.
-     *
+     * @throws IllegalStateException    if the attribute's base-type is not
+     *                                  <tt>NUMERIC</tt>.
      * @throws IllegalArgumentException if the specified scale is negative, or
-     *         if the specified scale is greater than the precision.
+     *                                  if the specified scale is greater than the precision.
      */
     public void setScale(int val) {
         if (baseType != SQLDataType.NUMERIC)
@@ -326,9 +320,8 @@ public class ColumnType implements Serializable {
      * Returns the scale of the data for <tt>NUMERIC</tt> attributes.
      *
      * @return the scale of the data-type
-     *
      * @throws IllegalStateException if the attribute's base-type is not
-     *         <tt>NUMERIC</tt>.
+     *                               <tt>NUMERIC</tt>.
      */
     public int getScale() {
         if (baseType != SQLDataType.NUMERIC)

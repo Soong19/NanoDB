@@ -10,7 +10,7 @@ import edu.caltech.test.nanodb.sql.SqlTestCase;
 /**
  * This class tests various functions to ensure that they work correctly.
  */
-@Test(groups={"sql", "hw2"})
+@Test(groups = {"sql", "hw2"})
 public class TestSimpleFunctions extends SqlTestCase {
 
     public void testAbs() throws Exception {
@@ -28,7 +28,7 @@ public class TestSimpleFunctions extends SqlTestCase {
     public void testCoalesce() throws Exception {
         CommandResult result = server.doCommand(
             "SELECT COALESCE(1), COALESCE(NULL, 2), COALESCE(NULL, 3, NULL), " +
-            "COALESCE(NULL, NULL, NULL, 4), COALESCE(NULL)", true);
+                "COALESCE(NULL, NULL, NULL, 4), COALESCE(NULL)", true);
 
         TupleLiteral[] expected = {
             new TupleLiteral(1, 2, 3, 4, null)
@@ -41,7 +41,7 @@ public class TestSimpleFunctions extends SqlTestCase {
     public void testConcat() throws Exception {
         CommandResult result = server.doCommand(
             "SELECT CONCAT('a', 'b'), CONCAT('a', 'b', 'c'), CONCAT('a', 'b', 'c', 'd'), " +
-            "CONCAT(NULL, 'a'), CONCAT('a', NULL), CONCAT(NULL, NULL)", true);
+                "CONCAT(NULL, 'a'), CONCAT('a', NULL), CONCAT(NULL, NULL)", true);
 
         TupleLiteral[] expected = {
             new TupleLiteral("ab", "abc", "abcd", null, null, null)

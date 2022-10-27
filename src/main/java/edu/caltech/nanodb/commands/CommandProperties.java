@@ -14,7 +14,9 @@ import edu.caltech.nanodb.expressions.TypeConverter;
  * use for the table file, and so forth.
  */
 public class CommandProperties {
-    /** A map of name-value pairs that represent the actual properties. */
+    /**
+     * A map of name-value pairs that represent the actual properties.
+     */
     private HashMap<String, Object> values = new HashMap<>();
 
 

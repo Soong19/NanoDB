@@ -73,9 +73,9 @@ public class InValuesOperator extends Expression {
      * expression's result is always <code>FALSE</code>.
      *
      * @design (Donnie) We have to suppress "unchecked operation" warnings on
-     *         this code, since {@link Comparable} is a generic (and thus allows
-     *         us to specify the type of object being compared), but we want to
-     *         use it without specifying any types.
+     * this code, since {@link Comparable} is a generic (and thus allows
+     * us to specify the type of object being compared), but we want to
+     * use it without specifying any types.
      */
     @SuppressWarnings("unchecked")
     public Object evaluate(Environment env) throws ExpressionException {
@@ -164,7 +164,7 @@ public class InValuesOperator extends Expression {
      * this will be the list of values.  Otherwise, this will be <tt>null</tt>.
      *
      * @return the list of values on the righthand side of the <tt>IN</tt>
-     *         operation, or <tt>null</tt>.
+     * operation, or <tt>null</tt>.
      */
     public ArrayList<Expression> getValues() {
         return values;

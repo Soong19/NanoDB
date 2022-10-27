@@ -12,18 +12,18 @@ public class WALFileException extends IOException {
     public WALFileException() {
         super();
     }
-    
-    
+
+
     public WALFileException(String msg) {
         super(msg);
     }
-    
-    
+
+
     public WALFileException(Throwable cause) {
         super(cause);
     }
-    
-    
+
+
     public WALFileException(String msg, Throwable cause) {
         super(msg, cause);
     }

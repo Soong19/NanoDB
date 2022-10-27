@@ -73,7 +73,9 @@ public class FromClause {
      * enumeration.
      */
     public enum ClauseType {
-        /** This clause is a simple table (a "base relation"). */
+        /**
+         * This clause is a simple table (a "base relation").
+         */
         BASE_TABLE,
 
         /**
@@ -88,7 +90,9 @@ public class FromClause {
          */
         JOIN_EXPR,
 
-        /** This clause is a table-returning function. */
+        /**
+         * This clause is a table-returning function.
+         */
         TABLE_FUNCTION
     }
 
@@ -118,7 +122,9 @@ public class FromClause {
     }
 
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(FromClause.class);
 
 
@@ -201,7 +207,9 @@ public class FromClause {
     private List<String> joinUsingNames = new ArrayList<>();
 
 
-    /** The expression used for joining tables in this <tt>FROM</tt> clause. */
+    /**
+     * The expression used for joining tables in this <tt>FROM</tt> clause.
+     */
     private Expression joinOnExpr = null;
 
 
@@ -245,7 +253,7 @@ public class FromClause {
      *
      * @param tableName the name of the table being selected from
      * @param aliasName an optional alias used to refer to the table in the rest
-     *        of the query
+     *                  of the query
      */
     public FromClause(String tableName, String aliasName) {
         if (tableName == null)
@@ -280,10 +288,9 @@ public class FromClause {
      * specified for derived tables.
      *
      * @param derivedTable the subquery that is referenced by this from-clause
-     * @param aliasName the relation-name given for this subquery
-     *
+     * @param aliasName    the relation-name given for this subquery
      * @throws NullPointerException if either <tt>derivedTable</tt> or
-     *         <tt>aliasName</tt> is <tt>null</tt>
+     *                              <tt>aliasName</tt> is <tt>null</tt>
      */
     public FromClause(SelectClause derivedTable, String aliasName) {
         if (derivedTable == null)
@@ -306,12 +313,11 @@ public class FromClause {
      * {@link FromClause.ClauseType#JOIN_EXPR}.  The two sub-relations being
      * joined are specified as <tt>FromClause</tt> instances.
      *
-     * @param left the left relation being joined
+     * @param left  the left relation being joined
      * @param right the right relation being joined
-     * @param type the kind of join being performed
-     *
+     * @param type  the kind of join being performed
      * @throws NullPointerException if either sub-relation is <tt>null</tt>, or
-     *         if the join-type is <tt>null</tt>.
+     *                              if the join-type is <tt>null</tt>.
      */
     public FromClause(FromClause left, FromClause right, JoinType type) {
         if (left == null)
@@ -329,7 +335,6 @@ public class FromClause {
         rightChild = right;
         joinType = type;
     }
-
 
 
     /**
@@ -358,7 +363,7 @@ public class FromClause {
      * opposed to a base table or a join expression.
      *
      * @return {@code true} if this clause is a derived table specified as a
-     *         <tt>SELECT</tt> statement.
+     * <tt>SELECT</tt> statement.
      */
     public boolean isDerivedTable() {
         return (clauseType == ClauseType.SELECT_SUBQUERY);
@@ -381,9 +386,8 @@ public class FromClause {
      * or a join expression.
      *
      * @return the name of the table.
-     *
      * @throws IllegalStateException if the from-clause's type is not a
-     *         {@link ClauseType#BASE_TABLE}.
+     *                               {@link ClauseType#BASE_TABLE}.
      */
     public String getTableName() {
         if (clauseType != ClauseType.BASE_TABLE) {
@@ -400,9 +404,8 @@ public class FromClause {
      * null if this is not derived.
      *
      * @return the derived select clause
-     *
      * @throws IllegalStateException if the from-clause's type is not a
-     *         {@link ClauseType#SELECT_SUBQUERY}.
+     *                               {@link ClauseType#SELECT_SUBQUERY}.
      */
     public SelectClause getSelectClause() {
         if (clauseType != ClauseType.SELECT_SUBQUERY) {
@@ -419,9 +422,8 @@ public class FromClause {
      * child-clause.
      *
      * @return the left child-clause of this join clause
-     *
      * @throws IllegalStateException if this from-clause is not a join
-     *         expression.
+     *                               expression.
      */
     public FromClause getLeftChild() {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -438,9 +440,8 @@ public class FromClause {
      * child-clause.
      *
      * @return the right child-clause of this join clause
-     *
      * @throws IllegalStateException if this from-clause is not a join
-     *         expression.
+     *                               expression.
      */
     public FromClause getRightChild() {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -458,9 +459,8 @@ public class FromClause {
      * exist, this must return the table name for the base table.
      *
      * @return the result relation name
-     *
      * @throws IllegalStateException if the clause-type is a join expression,
-     *         since that kind of from-clause doesn't have a result name.
+     *                               since that kind of from-clause doesn't have a result name.
      */
     public String getResultName() {
         // Join expressions aren't renamed; only tables and SELECT subqueries
@@ -491,9 +491,8 @@ public class FromClause {
      * Returns the join type of a join clause.
      *
      * @return the join type
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join type.
+     *                               Only join clauses have a join type.
      */
     public JoinType getJoinType() {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -509,9 +508,8 @@ public class FromClause {
      * Returns true if this join clause is an outer join, false otherwise.
      *
      * @return true if this join clause is an outer join, false otherwise.
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join type.
+     *                               Only join clauses have a join type.
      */
     public boolean isOuterJoin() {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -520,8 +518,8 @@ public class FromClause {
         }
 
         return (joinType == JoinType.LEFT_OUTER ||
-                joinType == JoinType.RIGHT_OUTER ||
-                joinType == JoinType.FULL_OUTER);
+            joinType == JoinType.RIGHT_OUTER ||
+            joinType == JoinType.FULL_OUTER);
     }
 
 
@@ -532,7 +530,7 @@ public class FromClause {
         }
 
         return joinType == JoinType.LEFT_OUTER ||
-               joinType == JoinType.FULL_OUTER;
+            joinType == JoinType.FULL_OUTER;
     }
 
 
@@ -543,9 +541,8 @@ public class FromClause {
         }
 
         return joinType == JoinType.RIGHT_OUTER ||
-               joinType == JoinType.FULL_OUTER;
+            joinType == JoinType.FULL_OUTER;
     }
-
 
 
     /**
@@ -553,9 +550,8 @@ public class FromClause {
      * only 1 table in the outer array of from clauses.
      *
      * @return the join condition type
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join-condition type.
+     *                               Only join clauses have a join-condition type.
      */
     public JoinConditionType getConditionType() {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -571,9 +567,8 @@ public class FromClause {
      * Sets the join condition type.
      *
      * @param type the join condition type
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join-condition type.
+     *                               Only join clauses have a join-condition type.
      */
     public void setConditionType(JoinConditionType type) {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -592,9 +587,8 @@ public class FromClause {
      * returns <tt>null</tt>.
      *
      * @return the list of column names specified in the <tt>USING</tt> clause
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join condition.
+     *                               Only join clauses have a join condition.
      */
     public List<String> getUsingNames() {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -613,9 +607,8 @@ public class FromClause {
      * parsed.
      *
      * @param name the name of the column to use in the join operation
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join condition.
+     *                               Only join clauses have a join condition.
      */
     public void addUsingName(String name) {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -635,9 +628,8 @@ public class FromClause {
      * clause.  Returns <tt>null</tt> if there is no <tt>ON</tt> clause.
      *
      * @return the expression specified in the <tt>ON</tt> clause
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join condition.
+     *                               Only join clauses have a join condition.
      */
     public Expression getOnExpression() {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -654,9 +646,8 @@ public class FromClause {
      * clause.  Returns <tt>null</tt> if there is no <tt>ON</tt> clause.
      *
      * @param expr the expression specified in the <tt>ON</tt> clause
-     *
      * @throws IllegalStateException if the clause-type is not a join clause.
-     *         Only join clauses have a join condition.
+     *                               Only join clauses have a join condition.
      */
     public void setOnExpression(Expression expr) {
         if (clauseType != ClauseType.JOIN_EXPR) {
@@ -698,97 +689,95 @@ public class FromClause {
 
         switch (clauseType) {
 
-        case BASE_TABLE:
-            logger.debug("Preparing BASE_TABLE from-clause.");
+            case BASE_TABLE:
+                logger.debug("Preparing BASE_TABLE from-clause.");
 
-            TableInfo tableInfo = tableManager.openTable(tableName);
-            if (tableInfo == null) {
-                throw new SchemaNameException(String.format(
-                    "Table \"%s\" doesn't exist.", tableName));
-            }
+                TableInfo tableInfo = tableManager.openTable(tableName);
+                if (tableInfo == null) {
+                    throw new SchemaNameException(String.format(
+                        "Table \"%s\" doesn't exist.", tableName));
+                }
 
-            result = tableInfo.getSchema();
+                result = tableInfo.getSchema();
 
-            if (aliasName != null) {
+                if (aliasName != null) {
+                    // Make a copy of the result schema and change the table names.
+                    result = new Schema(result);
+                    result.setTableName(aliasName);
+                }
+
+                break;
+
+            case SELECT_SUBQUERY:
+                logger.debug("Preparing SELECT_SUBQUERY from-clause.");
+
+                // Don't pass in a parent SELECT, since we won't allow correlated
+                // subqueries in the FROM clause.  (Donnie's still not entirely
+                // sure this is possible in standard SQL.)
+                result = derivedTable.computeSchema(tableManager, null);
+
+                assert aliasName != null;
+
                 // Make a copy of the result schema and change the table names.
                 result = new Schema(result);
                 result.setTableName(aliasName);
-            }
 
-            break;
+                break;
 
-        case SELECT_SUBQUERY:
-            logger.debug("Preparing SELECT_SUBQUERY from-clause.");
+            case JOIN_EXPR:
+                logger.debug("Preparing JOIN_EXPR from-clause.  Condition type = " +
+                    condType);
 
-            // Don't pass in a parent SELECT, since we won't allow correlated
-            // subqueries in the FROM clause.  (Donnie's still not entirely
-            // sure this is possible in standard SQL.)
-            result = derivedTable.computeSchema(tableManager, null);
+                result = null;
 
-            assert aliasName != null;
+                Schema leftSchema = leftChild.computeSchema(tableManager);
+                Schema rightSchema = rightChild.computeSchema(tableManager);
 
-            // Make a copy of the result schema and change the table names.
-            result = new Schema(result);
-            result.setTableName(aliasName);
-
-            break;
-
-        case JOIN_EXPR:
-            logger.debug("Preparing JOIN_EXPR from-clause.  Condition type = " +
-                condType);
-
-            result = null;
-
-            Schema leftSchema = leftChild.computeSchema(tableManager);
-            Schema rightSchema = rightChild.computeSchema(tableManager);
-
-            // Depending on the join type, we might eliminate duplicate column
-            // names.
-            if (condType == JoinConditionType.NATURAL_JOIN) {
-                // Make sure that each side of the join doesn't have any
-                // duplicate column names.  (A schema can have columns with the
-                // same name, but from different table names.  This is not
-                // allowed for natural joins.)
-                if (leftSchema.hasMultipleColumnsWithSameName()) {
-                    throw new SchemaNameException("Natural join error:  " +
-                        "left child table has multiple columns with same " +
-                        "column name");
-                }
-                if (rightSchema.hasMultipleColumnsWithSameName()) {
-                    throw new SchemaNameException("Natural join error:  " +
-                        "right child table has multiple columns with same " +
-                        "column name");
-                }
-
-                Set<String> commonCols = leftSchema.getCommonColumnNames(rightSchema);
-                if (commonCols.isEmpty()) {
-                    // TODO:  According to the SQL99 standard, this shouldn't
-                    //        generate an error.
-                    throw new SchemaNameException("Natural join error:  " +
-                        "child tables share no common column names!");
-                }
-
-                result = buildJoinSchema("Natural join",
-                    leftSchema, rightSchema, commonCols);
-            }
-            else if (condType == JoinConditionType.JOIN_USING) {
-                LinkedHashSet<String> commonCols = new LinkedHashSet<>();
-                for (String name : joinUsingNames) {
-                    if (!commonCols.add(name)) {
-                        throw new SchemaNameException("Column name " + name +
-                            " was specified multiple times in USING clause");
+                // Depending on the join type, we might eliminate duplicate column
+                // names.
+                if (condType == JoinConditionType.NATURAL_JOIN) {
+                    // Make sure that each side of the join doesn't have any
+                    // duplicate column names.  (A schema can have columns with the
+                    // same name, but from different table names.  This is not
+                    // allowed for natural joins.)
+                    if (leftSchema.hasMultipleColumnsWithSameName()) {
+                        throw new SchemaNameException("Natural join error:  " +
+                            "left child table has multiple columns with same " +
+                            "column name");
                     }
-                }
+                    if (rightSchema.hasMultipleColumnsWithSameName()) {
+                        throw new SchemaNameException("Natural join error:  " +
+                            "right child table has multiple columns with same " +
+                            "column name");
+                    }
 
-                result = buildJoinSchema("Join USING",
-                    leftSchema, rightSchema, commonCols);
-            }
-            else {
-                // This join condition-type doesn't alter the result schema.
-                // Just lump together the result schemas.
-                result = new Schema(leftSchema, rightSchema);
-                computedJoinExpr = joinOnExpr;
-            }
+                    Set<String> commonCols = leftSchema.getCommonColumnNames(rightSchema);
+                    if (commonCols.isEmpty()) {
+                        // TODO:  According to the SQL99 standard, this shouldn't
+                        //        generate an error.
+                        throw new SchemaNameException("Natural join error:  " +
+                            "child tables share no common column names!");
+                    }
+
+                    result = buildJoinSchema("Natural join",
+                        leftSchema, rightSchema, commonCols);
+                } else if (condType == JoinConditionType.JOIN_USING) {
+                    LinkedHashSet<String> commonCols = new LinkedHashSet<>();
+                    for (String name : joinUsingNames) {
+                        if (!commonCols.add(name)) {
+                            throw new SchemaNameException("Column name " + name +
+                                " was specified multiple times in USING clause");
+                        }
+                    }
+
+                    result = buildJoinSchema("Join USING",
+                        leftSchema, rightSchema, commonCols);
+                } else {
+                    // This join condition-type doesn't alter the result schema.
+                    // Just lump together the result schemas.
+                    result = new Schema(leftSchema, rightSchema);
+                    computedJoinExpr = joinOnExpr;
+                }
         }
 
         // Don't need to do any schema validation in this function, since all the
@@ -818,19 +807,15 @@ public class FromClause {
      * Of course, any of these sets of columns could be empty.
      * </p>
      *
-     * @param context a string used in logging messages and exceptions to
-     *        indicate the context in which this method was called.
-     *
-     * @param leftSchema the schema of the table on the left side of the join
-     *
+     * @param context     a string used in logging messages and exceptions to
+     *                    indicate the context in which this method was called.
+     * @param leftSchema  the schema of the table on the left side of the join
      * @param rightSchema the schema of the table on the right side of the join
-     *
-     * @param commonCols the set of common columns to use
-     *
+     * @param commonCols  the set of common columns to use
      * @return the schema of the result, as produced by the join operation.
      */
     private Schema buildJoinSchema(String context, Schema leftSchema,
-        Schema rightSchema, Set<String> commonCols) {
+                                   Schema rightSchema, Set<String> commonCols) {
 
         computedJoinExpr = null;
         computedSelectValues = null;
@@ -847,7 +832,7 @@ public class FromClause {
 
             // Handle the shared columns.  We need to check that the
             // names aren't ambiguous on one or the other side.
-            for (String name: commonCols) {
+            for (String name : commonCols) {
                 checkJoinColumn(context, "left", leftSchema, name);
                 checkJoinColumn(context, "right", leftSchema, name);
 
@@ -856,7 +841,7 @@ public class FromClause {
                 ColumnInfo rhsColInfo = rightSchema.getColumnInfo(name);
 
                 resultCols.add(new ColumnInfo(lhsColInfo.getName(),
-                                              lhsColInfo.getType()));
+                    lhsColInfo.getType()));
 
                 // Add an equality test between the common columns to the join
                 // condition.
@@ -870,33 +855,33 @@ public class FromClause {
                 // column down to the common column.
                 SelectValue selVal;
                 switch (joinType) {
-                case INNER:
-                case LEFT_OUTER:
-                    // We can use the left column in the result, as it will
-                    // always be non-NULL.
-                    selVal = new SelectValue(
-                        new ColumnValue(lhsColInfo.getColumnName()), name);
-                    computedSelectValues.add(selVal);
-                    break;
+                    case INNER:
+                    case LEFT_OUTER:
+                        // We can use the left column in the result, as it will
+                        // always be non-NULL.
+                        selVal = new SelectValue(
+                            new ColumnValue(lhsColInfo.getColumnName()), name);
+                        computedSelectValues.add(selVal);
+                        break;
 
-                case RIGHT_OUTER:
-                    // We can use the right column in the result, as it will
-                    // always be non-NULL.
-                    selVal = new SelectValue(
-                        new ColumnValue(rhsColInfo.getColumnName()), name);
-                    computedSelectValues.add(selVal);
-                    break;
+                    case RIGHT_OUTER:
+                        // We can use the right column in the result, as it will
+                        // always be non-NULL.
+                        selVal = new SelectValue(
+                            new ColumnValue(rhsColInfo.getColumnName()), name);
+                        computedSelectValues.add(selVal);
+                        break;
 
-                case FULL_OUTER:
-                    // In this case, the LHS column-value could be null, or the
-                    // RHS column-value could be null.  Thus, we need to produce
-                    // a result of COALESCE(lhs.col, rhs.col) AS col.
-                    Expression coalesce = new FunctionCall("COALESCE",
-                        /* distinct */ false,
-                        new ColumnValue(lhsColInfo.getColumnName()),
-                        new ColumnValue(rhsColInfo.getColumnName()));
-                    selVal = new SelectValue(coalesce, name);
-                    computedSelectValues.add(selVal);
+                    case FULL_OUTER:
+                        // In this case, the LHS column-value could be null, or the
+                        // RHS column-value could be null.  Thus, we need to produce
+                        // a result of COALESCE(lhs.col, rhs.col) AS col.
+                        Expression coalesce = new FunctionCall("COALESCE",
+                            /* distinct */ false,
+                            new ColumnValue(lhsColInfo.getColumnName()),
+                            new ColumnValue(rhsColInfo.getColumnName()));
+                        selVal = new SelectValue(coalesce, name);
+                        computedSelectValues.add(selVal);
                 }
             }
 
@@ -933,8 +918,7 @@ public class FromClause {
         if (count == 0) {
             throw new SchemaNameException(context + " error:  column name \"" +
                 colName + "\" doesn't appear on " + side);
-        }
-        else if (count > 1) {
+        } else if (count > 1) {
             throw new SchemaNameException(context + " error:  column name \"" +
                 colName + "\" is ambiguous on " + side);
         }
@@ -962,37 +946,37 @@ public class FromClause {
 
         buf.append("JoinClause[type=").append(clauseType);
         switch (clauseType) {
-        case BASE_TABLE:
-            buf.append(", table=").append(tableName);
-            break;
+            case BASE_TABLE:
+                buf.append(", table=").append(tableName);
+                break;
 
-        case JOIN_EXPR:
-            buf.append(", joinType=").append(joinType);
-            buf.append(", condType=").append(condType);
+            case JOIN_EXPR:
+                buf.append(", joinType=").append(joinType);
+                buf.append(", condType=").append(condType);
 
-            if (condType != null) {
-                switch (condType) {
-                case JOIN_ON_EXPR:
-                    buf.append(", onExpr=").append(joinOnExpr);
-                    break;
+                if (condType != null) {
+                    switch (condType) {
+                        case JOIN_ON_EXPR:
+                            buf.append(", onExpr=").append(joinOnExpr);
+                            break;
 
-                case JOIN_USING:
-                    buf.append(", usingNames=").append(joinUsingNames);
-                    buf.append(", computedJoinExpr=").append(computedJoinExpr);
-                    break;
+                        case JOIN_USING:
+                            buf.append(", usingNames=").append(joinUsingNames);
+                            buf.append(", computedJoinExpr=").append(computedJoinExpr);
+                            break;
 
-                case NATURAL_JOIN:
-                    buf.append(", computedJoinExpr=").append(computedJoinExpr);
+                        case NATURAL_JOIN:
+                            buf.append(", computedJoinExpr=").append(computedJoinExpr);
+                    }
                 }
-            }
 
-            buf.append(", leftChild=").append(leftChild);
-            buf.append(", rightChild=").append(rightChild);
+                buf.append(", leftChild=").append(leftChild);
+                buf.append(", rightChild=").append(rightChild);
 
-            break;
+                break;
 
-        case SELECT_SUBQUERY:
-            buf.append(", select=").append(derivedTable);
+            case SELECT_SUBQUERY:
+                buf.append(", select=").append(derivedTable);
         }
 
         if (isRenamed())

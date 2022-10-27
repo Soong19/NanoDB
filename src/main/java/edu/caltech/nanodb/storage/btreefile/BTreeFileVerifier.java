@@ -23,12 +23,17 @@ import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.*;
  * tree tuple files.
  */
 public class BTreeFileVerifier {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(BTreeFileVerifier.class);
 
 
-    /** This runtime exception class is used to abort the verification scan. */
-    private static class ScanAbortedException extends RuntimeException { }
+    /**
+     * This runtime exception class is used to abort the verification scan.
+     */
+    private static class ScanAbortedException extends RuntimeException {
+    }
 
 
     /**
@@ -36,15 +41,21 @@ public class BTreeFileVerifier {
      * B<sup>+</sup> tree file.
      */
     private static class PageInfo {
-        /** The page's number. */
+        /**
+         * The page's number.
+         */
         public int pageNo;
 
 
-        /** The type of the tuple-file page. */
+        /**
+         * The type of the tuple-file page.
+         */
         int pageType;
 
 
-        /** A flag indicating whether the page is accessible from the root. */
+        /**
+         * A flag indicating whether the page is accessible from the root.
+         */
         boolean accessibleFromRoot;
 
 
@@ -81,11 +92,15 @@ public class BTreeFileVerifier {
     }
 
 
-    /** A reference to the storage manager since we use it so much. */
+    /**
+     * A reference to the storage manager since we use it so much.
+     */
     private StorageManager storageManager;
 
 
-    /** The B<sup>+</sup> tree tuple file to verify. */
+    /**
+     * The B<sup>+</sup> tree tuple file to verify.
+     */
     private BTreeTupleFile tupleFile;
 
 
@@ -103,7 +118,9 @@ public class BTreeFileVerifier {
     private HashMap<Integer, PageInfo> pages;
 
 
-    /** The collection of errors found during the verification process. */
+    /**
+     * The collection of errors found during the verification process.
+     */
     private ArrayList<String> errors;
 
 
@@ -126,8 +143,8 @@ public class BTreeFileVerifier {
      * of error messages.
      *
      * @return a list of error messages describing issues found with the
-     *         tuple file's structure.  If no errors are detected, this will
-     *         be an empty list, not {@code null}.
+     * tuple file's structure.  If no errors are detected, this will
+     * be an empty list, not {@code null}.
      */
     public List<String> verify() {
         errors = new ArrayList<>();
@@ -146,8 +163,7 @@ public class BTreeFileVerifier {
             pass6VerifyTableTuplesInIndex();
             pass7VerifyIndexTuplesInTable();
              */
-        }
-        catch (ScanAbortedException e) {
+        } catch (ScanAbortedException e) {
             // Do nothing.
             logger.warn("Tuple-file verification scan aborted.");
         }
@@ -212,169 +228,165 @@ public class BTreeFileVerifier {
         DBPage dbPage = storageManager.loadDBPage(dbFile, pageNo);
 
         switch (info.pageType) {
-        case BTREE_INNER_PAGE:
-        {
-            logger.trace("It's an inner page.");
-            InnerPage inner = new InnerPage(dbPage, tupleFile.getSchema());
+            case BTREE_INNER_PAGE: {
+                logger.trace("It's an inner page.");
+                InnerPage inner = new InnerPage(dbPage, tupleFile.getSchema());
 
-            ArrayList<Integer> refPages = new ArrayList<>();
-            int refInner = 0;
-            int refLeaf = 0;
-            int refOther = 0;
+                ArrayList<Integer> refPages = new ArrayList<>();
+                int refInner = 0;
+                int refLeaf = 0;
+                int refOther = 0;
 
-            // Check the pages referenced from this page using the basic info
-            // collected in Pass 1.
+                // Check the pages referenced from this page using the basic info
+                // collected in Pass 1.
 
-            for (int p = 0; p < inner.getNumPointers(); p++) {
-                int refPageNo = inner.getPointer(p);
-                refPages.add(refPageNo);
-                PageInfo refPageInfo = pages.get(refPageNo);
+                for (int p = 0; p < inner.getNumPointers(); p++) {
+                    int refPageNo = inner.getPointer(p);
+                    refPages.add(refPageNo);
+                    PageInfo refPageInfo = pages.get(refPageNo);
 
-                switch (refPageInfo.pageType) {
-                case BTREE_INNER_PAGE:
-                    refInner++;
-                    break;
+                    switch (refPageInfo.pageType) {
+                        case BTREE_INNER_PAGE:
+                            refInner++;
+                            break;
 
-                case BTREE_LEAF_PAGE:
-                    refLeaf++;
-                    break;
+                        case BTREE_LEAF_PAGE:
+                            refLeaf++;
+                            break;
 
-                default:
-                    refOther++;
+                        default:
+                            refOther++;
+                    }
+
+                    if (refInner != 0 && refLeaf != 0) {
+                        errors.add(String.format("Pass 2:  Inner page %d " +
+                            "references both inner and leaf pages.", pageNo));
+                    }
+
+                    if (refOther != 0) {
+                        errors.add(String.format("Pass 2:  Inner page %d references " +
+                            "pages that are neither inner pages nor leaf pages.", pageNo));
+                    }
                 }
 
-                if (refInner != 0 && refLeaf != 0) {
-                    errors.add(String.format("Pass 2:  Inner page %d " +
-                        "references both inner and leaf pages.", pageNo));
+                // Make sure the keys are in the proper order in the page.
+
+                int numKeys = inner.getNumKeys();
+                ArrayList<TupleLiteral> keys = new ArrayList<>(numKeys);
+                if (numKeys > 1) {
+                    Tuple prevKey = inner.getKey(0);
+                    keys.add(TupleLiteral.fromTuple(prevKey));
+
+                    if (parentLeftKey != null) {
+                        int cmp = TupleComparator.compareTuples(parentLeftKey, prevKey);
+                        // It is possible that the parent's left-key would be the
+                        // same as the first key in this page.
+                        if (cmp > 0) {
+                            errors.add(String.format("Pass 2:  Parent page %d's " +
+                                    "left key is greater than inner page %d's first key",
+                                parentPageNo, pageNo));
+                        }
+                    }
+
+                    for (int k = 1; k < numKeys; k++) {
+                        Tuple key = inner.getKey(k);
+                        keys.add(TupleLiteral.fromTuple(key));
+
+                        int cmp = TupleComparator.compareTuples(prevKey, key);
+                        if (cmp == 0) {
+                            errors.add(String.format("Pass 2:  Inner page %d keys " +
+                                "%d and %d are duplicates!", pageNo, k - 1, k));
+                        } else if (cmp > 0) {
+                            errors.add(String.format("Pass 2:  Inner page %d keys " +
+                                "%d and %d are out of order!", pageNo, k - 1, k));
+                        }
+                        prevKey = key;
+                    }
+
+                    if (parentRightKey != null) {
+                        int cmp = TupleComparator.compareTuples(prevKey, parentRightKey);
+                        // The parent's right-key should be greater than the last
+                        // key in this page.
+                        if (cmp >= 0) {
+                            errors.add(String.format("Pass 2:  Parent page %d's " +
+                                "right key is less than or equal to inner page " +
+                                "%d's last key", parentPageNo, pageNo));
+                        }
+                    }
                 }
 
-                if (refOther != 0) {
-                    errors.add(String.format("Pass 2:  Inner page %d references " +
-                        "pages that are neither inner pages nor leaf pages.", pageNo));
+                // Now that we are done with this page, check each child-page.
+
+                int p = 0;
+                Tuple prevKey = parentLeftKey;
+                for (int refPageNo : refPages) {
+                    Tuple nextKey;
+                    if (p < keys.size())
+                        nextKey = keys.get(p);
+                    else
+                        nextKey = parentRightKey;
+
+                    scanTree(refPageNo, pageNo, prevKey, nextKey);
+                    prevKey = nextKey;
+                    p++;
                 }
+
+                break;
             }
 
-            // Make sure the keys are in the proper order in the page.
+            case BTREE_LEAF_PAGE: {
+                logger.trace("It's a leaf page.");
+                LeafPage leaf = new LeafPage(dbPage, tupleFile.getSchema());
 
-            int numKeys = inner.getNumKeys();
-            ArrayList<TupleLiteral> keys = new ArrayList<>(numKeys);
-            if (numKeys > 1) {
-                Tuple prevKey = inner.getKey(0);
-                keys.add(TupleLiteral.fromTuple(prevKey));
+                // Make sure the keys are in the proper order in the page.
 
-                if (parentLeftKey != null) {
-                    int cmp = TupleComparator.compareTuples(parentLeftKey, prevKey);
-                    // It is possible that the parent's left-key would be the
-                    // same as the first key in this page.
-                    if (cmp > 0) {
-                        errors.add(String.format("Pass 2:  Parent page %d's " +
-                            "left key is greater than inner page %d's first key",
-                            parentPageNo, pageNo));
+                int numKeys = leaf.getNumTuples();
+                if (numKeys >= 1) {
+                    Tuple prevKey = leaf.getTuple(0);
+
+                    if (parentLeftKey != null) {
+                        int cmp = TupleComparator.compareTuples(parentLeftKey, prevKey);
+                        // It is possible that the parent's left-key would be the
+                        // same as the first key in this page.
+                        if (cmp > 0) {
+                            errors.add(String.format("Pass 2:  Parent page %d's " +
+                                    "left key is greater than inner page %d's first key",
+                                parentPageNo, pageNo));
+                        }
+                    }
+
+                    for (int k = 1; k < numKeys; k++) {
+                        Tuple key = leaf.getTuple(k);
+                        int cmp = TupleComparator.compareTuples(prevKey, key);
+                        if (cmp == 0) {
+                            errors.add(String.format("Pass 2:  Leaf page %d keys " +
+                                "%d and %d are duplicates!", pageNo, k - 1, k));
+                        } else if (cmp > 0) {
+                            errors.add(String.format("Pass 2:  Leaf page %d keys " +
+                                "%d and %d are out of order!", pageNo, k - 1, k));
+                        }
+                        prevKey = key;
+                    }
+
+                    if (parentRightKey != null) {
+                        int cmp = TupleComparator.compareTuples(prevKey, parentRightKey);
+                        // The parent's right-key should be greater than the last
+                        // key in this page.
+                        if (cmp >= 0) {
+                            errors.add(String.format("Pass 2:  Parent page %d's " +
+                                "right key is less than or equal to inner page " +
+                                "%d's last key", parentPageNo, pageNo));
+                        }
                     }
                 }
 
-                for (int k = 1; k < numKeys; k++) {
-                    Tuple key = inner.getKey(k);
-                    keys.add(TupleLiteral.fromTuple(key));
-
-                    int cmp = TupleComparator.compareTuples(prevKey, key);
-                    if (cmp == 0) {
-                        errors.add(String.format("Pass 2:  Inner page %d keys " +
-                            "%d and %d are duplicates!", pageNo, k - 1, k));
-                    }
-                    else if (cmp > 0) {
-                        errors.add(String.format("Pass 2:  Inner page %d keys " +
-                            "%d and %d are out of order!", pageNo, k - 1, k));
-                    }
-                    prevKey = key;
-                }
-
-                if (parentRightKey != null) {
-                    int cmp = TupleComparator.compareTuples(prevKey, parentRightKey);
-                    // The parent's right-key should be greater than the last
-                    // key in this page.
-                    if (cmp >= 0) {
-                        errors.add(String.format("Pass 2:  Parent page %d's " +
-                            "right key is less than or equal to inner page " +
-                            "%d's last key", parentPageNo, pageNo));
-                    }
-                }
+                break;
             }
 
-            // Now that we are done with this page, check each child-page.
-
-            int p = 0;
-            Tuple prevKey = parentLeftKey;
-            for (int refPageNo : refPages) {
-                Tuple nextKey;
-                if (p < keys.size())
-                    nextKey = keys.get(p);
-                else
-                    nextKey = parentRightKey;
-
-                scanTree(refPageNo, pageNo, prevKey, nextKey);
-                prevKey = nextKey;
-                p++;
-            }
-
-            break;
-        }
-
-        case BTREE_LEAF_PAGE:
-        {
-            logger.trace("It's a leaf page.");
-            LeafPage leaf = new LeafPage(dbPage, tupleFile.getSchema());
-
-            // Make sure the keys are in the proper order in the page.
-
-            int numKeys = leaf.getNumTuples();
-            if (numKeys >= 1) {
-                Tuple prevKey = leaf.getTuple(0);
-
-                if (parentLeftKey != null) {
-                    int cmp = TupleComparator.compareTuples(parentLeftKey, prevKey);
-                    // It is possible that the parent's left-key would be the
-                    // same as the first key in this page.
-                    if (cmp > 0) {
-                        errors.add(String.format("Pass 2:  Parent page %d's " +
-                            "left key is greater than inner page %d's first key",
-                            parentPageNo, pageNo));
-                    }
-                }
-
-                for (int k = 1; k < numKeys; k++) {
-                    Tuple key = leaf.getTuple(k);
-                    int cmp = TupleComparator.compareTuples(prevKey, key);
-                    if (cmp == 0) {
-                        errors.add(String.format("Pass 2:  Leaf page %d keys " +
-                            "%d and %d are duplicates!", pageNo, k - 1, k));
-                    }
-                    else if (cmp > 0) {
-                        errors.add(String.format("Pass 2:  Leaf page %d keys " +
-                            "%d and %d are out of order!", pageNo, k - 1, k));
-                    }
-                    prevKey = key;
-                }
-
-                if (parentRightKey != null) {
-                    int cmp = TupleComparator.compareTuples(prevKey, parentRightKey);
-                    // The parent's right-key should be greater than the last
-                    // key in this page.
-                    if (cmp >= 0) {
-                        errors.add(String.format("Pass 2:  Parent page %d's " +
-                            "right key is less than or equal to inner page " +
-                            "%d's last key", parentPageNo, pageNo));
-                    }
-                }
-            }
-
-            break;
-        }
-
-        default:
-            errors.add(String.format("Pass 2:  Can reach page %d from root, " +
-                "but it's  not a leaf or an inner page!  Type = %d", pageNo,
-                info.pageType));
+            default:
+                errors.add(String.format("Pass 2:  Can reach page %d from root, " +
+                        "but it's  not a leaf or an inner page!  Type = %d", pageNo,
+                    info.pageType));
         }
     }
 
@@ -411,7 +423,7 @@ public class BTreeFileVerifier {
 
             if (info.numLeafListReferences > 10) {
                 errors.add(String.format("Pass 3:  Stopping scan!  I've visited " +
-                    "leaf page %d %d times; there may be a cycle in your leaf list.",
+                        "leaf page %d %d times; there may be a cycle in your leaf list.",
                     pageNo, info.numLeafListReferences));
                 throw new ScanAbortedException();
             }
@@ -426,22 +438,19 @@ public class BTreeFileVerifier {
                     if (cmp == 0) {
                         if (prevKeyPageNo == pageNo) {
                             errors.add(String.format("Pass 3:  Leaf page %d " +
-                                "keys %d and %d are duplicates!", pageNo,
+                                    "keys %d and %d are duplicates!", pageNo,
                                 k - 1, k));
-                        }
-                        else {
+                        } else {
                             errors.add(String.format("Pass 3:  Leaf page %d " +
                                 "key 0 is a duplicate to previous leaf %d's " +
                                 "last key!", pageNo, prevKeyPageNo));
                         }
-                    }
-                    else if (cmp > 0) {
+                    } else if (cmp > 0) {
                         if (prevKeyPageNo == pageNo) {
                             errors.add(String.format("Pass 3:  Leaf page %d " +
-                                "keys %d and %d are out of order!", pageNo,
+                                    "keys %d and %d are out of order!", pageNo,
                                 k - 1, k));
-                        }
-                        else {
+                        } else {
                             errors.add(String.format("Pass 3:  Leaf page %d " +
                                 "key 0 is out of order with previous leaf %d's " +
                                 "last key!", pageNo, prevKeyPageNo));
@@ -482,14 +491,14 @@ public class BTreeFileVerifier {
 
             if (info.numEmptyListReferences > 10) {
                 errors.add(String.format("Pass 4:  Stopping scan!  I've visited " +
-                    "empty page %d %d times; there may be a cycle in your empty list.",
+                        "empty page %d %d times; there may be a cycle in your empty list.",
                     emptyPageNo, info.numEmptyListReferences));
                 throw new ScanAbortedException();
             }
 
             if (info.pageType != BTREE_EMPTY_PAGE) {
                 errors.add(String.format("Page %d is in the empty-page list, " +
-                    "but it isn't an empty page!  Type = %d", emptyPageNo,
+                        "but it isn't an empty page!  Type = %d", emptyPageNo,
                     info.pageType));
             }
 
@@ -509,21 +518,20 @@ public class BTreeFileVerifier {
                 info.pageType == BTREE_LEAF_PAGE) {
                 if (info.numTreeReferences != 1) {
                     errors.add(String.format("B+ tree page %d should have " +
-                        "exactly one tree-reference, but has %d instead",
+                            "exactly one tree-reference, but has %d instead",
                         info.pageNo, info.numTreeReferences));
                 }
 
                 if (info.pageType == BTREE_LEAF_PAGE &&
                     info.numLeafListReferences != 1) {
                     errors.add(String.format("Leaf page %d should have " +
-                        "exactly one leaf-list reference, but has %d instead",
+                            "exactly one leaf-list reference, but has %d instead",
                         info.pageNo, info.numLeafListReferences));
                 }
-            }
-            else if (info.pageType == BTREE_EMPTY_PAGE) {
+            } else if (info.pageType == BTREE_EMPTY_PAGE) {
                 if (info.numEmptyListReferences != 1) {
                     errors.add(String.format("Empty page %d should have " +
-                        "exactly one empty-list reference, but has %d instead",
+                            "exactly one empty-list reference, but has %d instead",
                         info.pageNo, info.numEmptyListReferences));
                 }
             }

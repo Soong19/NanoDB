@@ -14,7 +14,9 @@ import edu.caltech.nanodb.relations.Schema;
 import edu.caltech.nanodb.server.performance.PerformanceCounters;
 
 
-/** Resets the specified performance counter, and returns the old value. */
+/**
+ * Resets the specified performance counter, and returns the old value.
+ */
 public class ResetPerfCounter extends SimpleFunction {
     @Override
     public ColumnType getReturnType(List<Expression> args, Schema schema) {

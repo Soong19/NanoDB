@@ -30,7 +30,7 @@ public interface Planner {
      * on tables that are referenced by the query.
      *
      * @param storageManager the storage manager instance for the planner
-     *        implementation to use
+     *                       implementation to use
      */
     void setStorageManager(StorageManager storageManager);
 
@@ -39,17 +39,15 @@ public interface Planner {
      * query.  There is no requirement that tuples produced by the returned plan
      * should support updating or deletion.
      *
-     * @param selClause an object describing the query to be performed
-     *
+     * @param selClause        an object describing the query to be performed
      * @param enclosingSelects a list of enclosing queries, if {@code selClause}
-     *        is a nested subquery.  This is allowed to be an empty list, or
-     *        {@code null}, if the query is a top-level query.  If
-     *        {@code selClause} is a nested subquery, {@code enclosingSelects[0]}
-     *        is the outermost enclosing query, then {@code enclosingSelects[1]}
-     *        is enclosed by {@code enclosingSelects[0]}, and so forth.  The
-     *        most tightly enclosing query is the last one in
-     *        {@code enclosingSelects}.
-     *
+     *                         is a nested subquery.  This is allowed to be an empty list, or
+     *                         {@code null}, if the query is a top-level query.  If
+     *                         {@code selClause} is a nested subquery, {@code enclosingSelects[0]}
+     *                         is the outermost enclosing query, then {@code enclosingSelects[1]}
+     *                         is enclosed by {@code enclosingSelects[0]}, and so forth.  The
+     *                         most tightly enclosing query is the last one in
+     *                         {@code enclosingSelects}.
      * @return a plan tree for executing the specified query
      */
     PlanNode makePlan(SelectClause selClause, List<SelectClause> enclosingSelects);
@@ -63,20 +61,17 @@ public interface Planner {
      * {@link edu.caltech.nanodb.commands.DeleteCommand} classes to create the
      * plans suitable for performing tuple modification or deletion.
      *
-     * @param tableName the table that the select will operate against
-     *
-     * @param predicate the selection predicate to apply, or {@code null} if
-     *        all tuples in the table should be returned
-     *
+     * @param tableName        the table that the select will operate against
+     * @param predicate        the selection predicate to apply, or {@code null} if
+     *                         all tuples in the table should be returned
      * @param enclosingSelects a list of enclosing queries, if {@code selClause}
-     *        is a nested subquery.  This is allowed to be an empty list, or
-     *        {@code null}, if the query is a top-level query.  If
-     *        {@code selClause} is a nested subquery, {@code enclosingSelects[0]}
-     *        is the outermost enclosing query, then {@code enclosingSelects[1]}
-     *        is enclosed by {@code enclosingSelects[0]}, and so forth.  The
-     *        most tightly enclosing query is the last one in
-     *        {@code enclosingSelects}.
-     *
+     *                         is a nested subquery.  This is allowed to be an empty list, or
+     *                         {@code null}, if the query is a top-level query.  If
+     *                         {@code selClause} is a nested subquery, {@code enclosingSelects[0]}
+     *                         is the outermost enclosing query, then {@code enclosingSelects[1]}
+     *                         is enclosed by {@code enclosingSelects[0]}, and so forth.  The
+     *                         most tightly enclosing query is the last one in
+     *                         {@code enclosingSelects}.
      * @return a plan tree for executing the select operation
      */
     SelectNode makeSimpleSelect(String tableName, Expression predicate,

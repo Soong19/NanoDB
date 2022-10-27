@@ -42,9 +42,10 @@ public class MaterializeNode extends PlanNode {
     private int currentTupleIndex;
 
 
-    /** This field stores the index of the tuple when a position is marked. */
+    /**
+     * This field stores the index of the tuple when a position is marked.
+     */
     private int markedTupleIndex;
-
 
 
     /**
@@ -52,7 +53,6 @@ public class MaterializeNode extends PlanNode {
      * all of its results.
      */
     private boolean childNodeFinished;
-
 
 
     public MaterializeNode(PlanNode leftChild) {
@@ -99,8 +99,7 @@ public class MaterializeNode extends PlanNode {
             // tuples we have so far.
             currentTupleIndex++;
             tup = tuples.get(currentTupleIndex);
-        }
-        else {
+        } else {
             // Moving forward the "current tuple" index will move beyond the
             // tuples we have so far.  Need to see if we have consumed all
             // child tuples yet.
@@ -119,8 +118,7 @@ public class MaterializeNode extends PlanNode {
 
                     tuples.add(tup);
                     currentTupleIndex++;
-                }
-                else {
+                } else {
                     // The child has no more tuples.
                     childNodeFinished = true;
                 }

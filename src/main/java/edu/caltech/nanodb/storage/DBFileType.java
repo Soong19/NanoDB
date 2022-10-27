@@ -37,21 +37,29 @@ public enum DBFileType {
     WRITE_AHEAD_LOG_FILE(51),
 
 
-    /** Represents a file used during testing. */
+    /**
+     * Represents a file used during testing.
+     */
     TEST_FILE(100);
 
 
-    /** A numeric ID that uniquely identifies this database file type. */
+    /**
+     * A numeric ID that uniquely identifies this database file type.
+     */
     private int id;
 
 
-    /** Initialize a {@code DBFileType} enum with the specified ID value. */
+    /**
+     * Initialize a {@code DBFileType} enum with the specified ID value.
+     */
     DBFileType(int id) {
         this.id = id;
     }
 
 
-    /** Returns the numeric ID of this {@code DBFileType} enum. */
+    /**
+     * Returns the numeric ID of this {@code DBFileType} enum.
+     */
     public int getID() {
         return id;
     }
@@ -62,7 +70,6 @@ public enum DBFileType {
      * or <tt>null</tt> if no type corresponds to the ID.
      *
      * @param id the numeric ID of the type to retrieve
-     *
      * @return the type-value with that ID, or <tt>null</tt> if not found
      */
     public static DBFileType valueOf(int id) {
@@ -73,4 +80,3 @@ public enum DBFileType {
         return null;
     }
 }
-

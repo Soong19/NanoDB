@@ -14,10 +14,14 @@ import java.util.HashSet;
  */
 public class ColumnRefs {
 
-    /** This array holds the indexes of the columns in the set. */
+    /**
+     * This array holds the indexes of the columns in the set.
+     */
     private int[] colIndexes;
 
-    /** This is the optional name of the constraint specified in the DDL. */
+    /**
+     * This is the optional name of the constraint specified in the DDL.
+     */
     private String constraintName;
 
     /**
@@ -45,13 +49,13 @@ public class ColumnRefs {
             if (tmp[i] < 0) {
                 throw new IllegalArgumentException(
                     "colIndexes cannot contain negative values; got " +
-                    Arrays.toString(colIndexes));
+                        Arrays.toString(colIndexes));
             }
 
             if (i > 0 && tmp[i] == tmp[i - 1]) {
                 throw new IllegalArgumentException(
                     "colIndexes cannot contain duplicate values; got " +
-                    Arrays.toString(colIndexes));
+                        Arrays.toString(colIndexes));
             }
         }
 
@@ -85,9 +89,8 @@ public class ColumnRefs {
      * same columns as this object, in the exact same order.
      *
      * @param ci the <tt>ColumnIndexes</tt> object to compare to this object
-     *
      * @return true if the two objects have the same column indexes, in the
-     *         exact same order
+     * exact same order
      */
     public boolean equalsColumns(ColumnRefs ci) {
         return equalsColumns(ci.colIndexes);
@@ -99,9 +102,8 @@ public class ColumnRefs {
      * same columns as this object, in the exact same order.
      *
      * @param indexes the array of indexes to compare to this object
-     *
      * @return true if the two objects have the same column indexes, in the
-     *         exact same order
+     * exact same order
      */
     public boolean equalsColumns(int[] indexes) {
         return Arrays.equals(colIndexes, indexes);
@@ -113,9 +115,8 @@ public class ColumnRefs {
      * columns as this object, independent of order.
      *
      * @param ci the <tt>ColumnIndexes</tt> object to compare to this object
-     *
      * @return true if the two objects have the same column indexes,
-     *         independent of order
+     * independent of order
      */
     public boolean hasSameColumns(ColumnRefs ci) {
         return hasSameColumns(ci.colIndexes);
@@ -127,9 +128,8 @@ public class ColumnRefs {
      * columns as this object, independent of order.
      *
      * @param indexes the array of indexes to compare to this object
-     *
      * @return true if the two objects have the same column indexes,
-     *         independent of order
+     * independent of order
      */
     public boolean hasSameColumns(int[] indexes) {
         HashSet<Integer> tmp = new HashSet<>();

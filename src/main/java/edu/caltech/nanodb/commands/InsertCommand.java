@@ -45,7 +45,9 @@ public class InsertCommand extends QueryCommand {
      * of the form <tt>INSERT</tt> ... <tt>SELECT</tt>.
      */
     private static class TupleInserter implements TupleProcessor {
-        /** The table into which the new tuples will be inserted. */
+        /**
+         * The table into which the new tuples will be inserted.
+         */
         private TableInfo tableInfo;
 
         private TupleFile tupleFile;
@@ -77,7 +79,9 @@ public class InsertCommand extends QueryCommand {
             // Ignore.
         }
 
-        /** This implementation simply inserts each tuple it is handed. */
+        /**
+         * This implementation simply inserts each tuple it is handed.
+         */
         public void process(Tuple tuple) {
             Tuple coerced =
                 TupleUtils.coerceToSchema(tuple, tableInfo.getSchema());
@@ -94,7 +98,9 @@ public class InsertCommand extends QueryCommand {
     }
 
 
-    /** The name of the table that the data will be inserted into. */
+    /**
+     * The name of the table that the data will be inserted into.
+     */
     private String tableName;
 
 
@@ -133,7 +139,7 @@ public class InsertCommand extends QueryCommand {
      * statements.
      */
     public InsertCommand(String tableName, List<String> colNames,
-        List<Expression> values) {
+                         List<Expression> values) {
 
         super(QueryCommand.Type.INSERT);
 
@@ -154,7 +160,7 @@ public class InsertCommand extends QueryCommand {
      * statements.
      */
     public InsertCommand(String tableName, List<String> colNames,
-        SelectClause selClause) {
+                         SelectClause selClause) {
 
         super(QueryCommand.Type.INSERT);
 
@@ -204,15 +210,16 @@ public class InsertCommand extends QueryCommand {
                 insertSingleRow(server);
             else
                 out.println("Nothing to explain about INSERT ... VALUES");
-        }
-        else {
+        } else {
             // Inserting the results of a SELECT query.
             super.execute(server);
         }
     }
 
 
-    /** This method is used when inserting only a single row of data. */
+    /**
+     * This method is used when inserting only a single row of data.
+     */
     private void insertSingleRow(NanoDBServer server)
         throws ExecutionException {
 
@@ -233,8 +240,7 @@ public class InsertCommand extends QueryCommand {
 
             try {
                 tuple.addValue(expr.evaluate());
-            }
-            catch (ExpressionException e) {
+            } catch (ExpressionException e) {
                 // This should be rare, but is still possible -- users
                 // can type anything...
                 throw new ExecutionException("Couldn't evaluate an INSERT value.", e);
@@ -308,8 +314,7 @@ public class InsertCommand extends QueryCommand {
                 sb.append(e);
             }
             sb.append(')');
-        }
-        else {
+        } else {
             sb.append("select=");
             sb.append(selClause);
         }
@@ -319,4 +324,3 @@ public class InsertCommand extends QueryCommand {
         return sb.toString();
     }
 }
-

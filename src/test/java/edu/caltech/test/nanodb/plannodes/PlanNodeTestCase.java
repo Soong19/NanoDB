@@ -9,9 +9,8 @@ import edu.caltech.nanodb.expressions.TupleLiteral;
 import edu.caltech.nanodb.plannodes.PlanNode;
 
 
-@Test(enabled=false)
+@Test(enabled = false)
 public class PlanNodeTestCase {
-
 
 
     public void checkOrderedResults(TupleLiteral[] expected, PlanNode plan) {
@@ -36,8 +35,7 @@ public class PlanNodeTestCase {
                         "Tuple %d:  Expected tuple %s, got %s instead",
                         count, expected[count], t);
                 }
-            }
-            else {
+            } else {
                 // Plan node produced an unexpected tuple.
                 success = false;
                 System.out.printf(

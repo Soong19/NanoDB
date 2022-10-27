@@ -6,13 +6,12 @@ package edu.caltech.nanodb.storage.btreefile;
  * B<sup>+</sup> Tree implementation.
  *
  * @design (donnie) We use this instead of an {@code enum} since the values
- *         are actually read and written against pages in the B<sup>+</sup>
- *         Tree file.  Note that there is no page-type value for the root
- *         page; that page is considered separately.
- *
+ * are actually read and written against pages in the B<sup>+</sup>
+ * Tree file.  Note that there is no page-type value for the root
+ * page; that page is considered separately.
  * @design (donnie) This class is package-private since it is an internal
- *         implementation detail and we want to keep it local to the
- *         {@code btreefile} package.
+ * implementation detail and we want to keep it local to the
+ * {@code btreefile} package.
  */
 final class BTreePageTypes {
     /**

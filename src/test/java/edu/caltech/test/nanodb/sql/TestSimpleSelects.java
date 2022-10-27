@@ -13,7 +13,7 @@ import edu.caltech.nanodb.server.NanoDBServer;
  * statements against a single table, to see if simple selects and
  * predicates work properly.
  */
-@Test(groups={"sql", "hw2"})
+@Test(groups = {"sql", "hw2"})
 public class TestSimpleSelects extends SqlTestCase {
 
     public TestSimpleSelects() {

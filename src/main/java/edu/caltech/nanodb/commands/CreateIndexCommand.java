@@ -21,13 +21,19 @@ import edu.caltech.nanodb.storage.TableManager;
 import edu.caltech.nanodb.storage.StorageManager;
 
 
-/** This command-class represents the <tt>CREATE INDEX</tt> DDL command. */
+/**
+ * This command-class represents the <tt>CREATE INDEX</tt> DDL command.
+ */
 public class CreateIndexCommand extends Command {
-    /** A logging object for reporting anything interesting that happens. **/
+    /**
+     * A logging object for reporting anything interesting that happens.
+     **/
     private static Logger logger = LogManager.getLogger(CreateIndexCommand.class);
 
 
-    /** The name of the index being created. */
+    /**
+     * The name of the index being created.
+     */
     private String indexName;
 
 
@@ -46,7 +52,9 @@ public class CreateIndexCommand extends Command {
     private boolean ifNotExists;
 
 
-    /** The name of the table that the index is built against. */
+    /**
+     * The name of the table that the index is built against.
+     */
     private String tableName;
 
 
@@ -58,7 +66,9 @@ public class CreateIndexCommand extends Command {
     private ArrayList<String> columnNames = new ArrayList<>();
 
 
-    /** Any additional properties specified in the command. */
+    /**
+     * Any additional properties specified in the command.
+     */
     private CommandProperties properties;
 
 
@@ -81,8 +91,8 @@ public class CreateIndexCommand extends Command {
      * be attempted.
      *
      * @return {@code true} if index creation should only be attempted if it
-     *         doesn't already exist, {@code false} if index creation should
-     *         always be attempted.
+     * doesn't already exist, {@code false} if index creation should
+     * always be attempted.
      */
     public boolean getIfNotExists() {
         return ifNotExists;
@@ -94,7 +104,7 @@ public class CreateIndexCommand extends Command {
      * attempted if it doesn't already exist.
      *
      * @param b the flag indicating whether index creation should only be
-     *        attempted if it doesn't already exist.
+     *          attempted if it doesn't already exist.
      */
     public void setIfNotExists(boolean b) {
         ifNotExists = b;
@@ -126,7 +136,7 @@ public class CreateIndexCommand extends Command {
      * unmodifiable list.
      *
      * @return the list of column names specified for the index as an
-     *         unmodifiable list.
+     * unmodifiable list.
      */
     public List<String> getColumnNames() {
         return Collections.unmodifiableList(columnNames);
@@ -148,7 +158,7 @@ public class CreateIndexCommand extends Command {
      * value may be {@code null} to indicate no properties.
      *
      * @param properties any additional properties to associate with the
-     *        command.
+     *                   command.
      */
     public void setProperties(CommandProperties properties) {
         this.properties = properties;
@@ -160,7 +170,7 @@ public class CreateIndexCommand extends Command {
      * {@code null} if no additional properties were specified.
      *
      * @return any additional properties specified for the command, or
-     *         {@code null} if no additional properties were specified.
+     * {@code null} if no additional properties were specified.
      */
     public CommandProperties getProperties() {
         return properties;
@@ -171,7 +181,7 @@ public class CreateIndexCommand extends Command {
      * Adds a column to the list of columns to be included in the index.
      *
      * @param columnName the name of the column to add to the columns to be
-     *        included in the index.
+     *                   included in the index.
      */
     public void addColumn(String columnName) {
         if (columnName == null)

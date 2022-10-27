@@ -15,7 +15,7 @@ import edu.caltech.nanodb.sqlparse.ParseUtil;
 /**
  * Verifies that parsing of the <tt>SELECT</tt> command works as expected.
  */
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserSelect {
 
     public void testParseSimpleSelect() {
@@ -47,7 +47,7 @@ public class TestParserSelect {
             "SELECT DISTINCT 3, a, b < 5;");
         selClause = cmd.getSelectClause();
 
-        assert  selClause.isDistinct();
+        assert selClause.isDistinct();
         assert !selClause.isTrivialProject();
         assert selClause.getFromClause() == null;
         assert selClause.getWhereExpr() == null;
@@ -70,7 +70,7 @@ public class TestParserSelect {
         selClause = cmd.getSelectClause();
 
         assert !selClause.isDistinct();
-        assert  selClause.isTrivialProject();
+        assert selClause.isTrivialProject();
         assert selClause.getWhereExpr() == null;
         assert selClause.getGroupByExprs().isEmpty();
         assert selClause.getHavingExpr() == null;
@@ -84,7 +84,7 @@ public class TestParserSelect {
         assert fromClause.isBaseTable();
         assert fromClause.getTableName().equals("foo") :
             "Expected table-name \"foo\", got \"" + fromClause.getTableName() +
-            "\" instead";
+                "\" instead";
 
         // TODO:  More checking...
     }
@@ -122,8 +122,8 @@ public class TestParserSelect {
             "SELECT DISTINCT * FROM bar;");
         selClause = cmd.getSelectClause();
 
-        assert  selClause.isDistinct();
-        assert  selClause.isTrivialProject();
+        assert selClause.isDistinct();
+        assert selClause.isTrivialProject();
         assert selClause.getWhereExpr() == null;
         assert selClause.getGroupByExprs().isEmpty();
         assert selClause.getHavingExpr() == null;

@@ -37,15 +37,17 @@ import edu.caltech.nanodb.storage.DBPage;
  * </p>
  *
  * @design (Donnie) Why is this class a static class, instead of a wrapper class
- *         around the {@link DBPage}?  No particular reason, really.  The class
- *         is used relatively briefly when a table is being accessed, and there
- *         is no real need for it to manage its own object-state, so it was just
- *         as convenient to provide all functionality as static methods.  This
- *         avoids the (small) overhead of instantiating an object as well.  But
- *         really, these are not particularly strong reasons.
+ * around the {@link DBPage}?  No particular reason, really.  The class
+ * is used relatively briefly when a table is being accessed, and there
+ * is no real need for it to manage its own object-state, so it was just
+ * as convenient to provide all functionality as static methods.  This
+ * avoids the (small) overhead of instantiating an object as well.  But
+ * really, these are not particularly strong reasons.
  */
 public class HeaderPage {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(HeaderPage.class);
 
 
@@ -76,9 +78,8 @@ public class HeaderPage {
      * data file).
      *
      * @param dbPage the page to check
-     *
      * @throws IllegalArgumentException if <tt>dbPage</tt> is <tt>null</tt>, or
-     *         if it's not actually page 0 in the table file
+     *                                  if it's not actually page 0 in the table file
      */
     private static void verifyIsHeaderPage(DBPage dbPage) {
         if (dbPage == null)
@@ -87,7 +88,7 @@ public class HeaderPage {
         if (dbPage.getPageNo() != 0) {
             throw new IllegalArgumentException(
                 "Page 0 is the header page in this storage format; was given page " +
-                dbPage.getPageNo());
+                    dbPage.getPageNo());
         }
     }
 
@@ -109,7 +110,7 @@ public class HeaderPage {
      * Sets the number of bytes that the table's schema occupies for storage
      * in the header page.
      *
-     * @param dbPage the header page of the heap table file
+     * @param dbPage   the header page of the heap table file
      * @param numBytes the number of bytes that the table's schema occupies
      */
     public static void setSchemaSize(DBPage dbPage, int numBytes) {
@@ -141,7 +142,7 @@ public class HeaderPage {
      * Sets the number of bytes that the table's statistics occupy for storage
      * in the header page.
      *
-     * @param dbPage the header page of the heap table file
+     * @param dbPage   the header page of the heap table file
      * @param numBytes the number of bytes that the table's statistics occupy
      */
     public static void setStatsSize(DBPage dbPage, int numBytes) {
@@ -163,7 +164,7 @@ public class HeaderPage {
      *
      * @param dbPage the header page of the heap table file
      * @return the offset within the header page that the table statistics
-     *         reside at
+     * reside at
      */
     public static int getStatsOffset(DBPage dbPage) {
         verifyIsHeaderPage(dbPage);

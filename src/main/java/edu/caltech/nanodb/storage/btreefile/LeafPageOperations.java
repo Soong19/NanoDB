@@ -21,7 +21,9 @@ import edu.caltech.nanodb.storage.StorageManager;
  * leaf nodes, updating parent nodes, and so forth.
  */
 public class LeafPageOperations {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(LeafPageOperations.class);
 
     private StorageManager storageManager;
@@ -52,10 +54,8 @@ public class LeafPageOperations {
      * returned.
      *
      * @param pageNo the page-number to load as a leaf-page.
-     *
      * @return a newly initialized {@link LeafPage} instance if {@code pageNo}
-     *         is positive, or {@code null} if {@code pageNo} is 0.
-     *
+     * is positive, or {@code null} if {@code pageNo} is 0.
      * @throws IllegalArgumentException if the specified page isn't a leaf-page
      */
     private LeafPage loadLeafPage(int pageNo) {
@@ -72,12 +72,10 @@ public class LeafPageOperations {
     /**
      * This helper function will handle deleting a tuple in the index.
      *
-     * @param leaf the leaf page to delete the tuple from
-     *
-     * @param tuple the tuple to delete from the leaf page
-     *
+     * @param leaf     the leaf page to delete the tuple from
+     * @param tuple    the tuple to delete from the leaf page
      * @param pagePath the path of pages taken from the root page to the leaf
-     *        page, represented as a list of page numbers
+     *                 page, represented as a list of page numbers
      */
     public void deleteTuple(LeafPage leaf, Tuple tuple,
                             List<Integer> pagePath) {
@@ -91,8 +89,7 @@ public class LeafPageOperations {
             // The page is at least half-full.  Don't need to redistribute or
             // coalesce.
             return;
-        }
-        else if (pagePath.size() == 1) {
+        } else if (pagePath.size() == 1) {
             // The page is the root.  Don't need to redistribute or coalesce,
             // but if the root is now empty, need to shorten the tree depth.
             // (Since this is a leaf page, the depth will go down to 0.)
@@ -136,7 +133,7 @@ public class LeafPageOperations {
         int rightPageNo = leaf.getRightSibling(pagePath);
 
         logger.debug(String.format("Leaf page %d is too empty.  Left " +
-            "sibling is %d, right sibling is %d.", leafPageNo, leftPageNo,
+                "sibling is %d, right sibling is %d.", leafPageNo, leftPageNo,
             rightPageNo));
 
         if (leftPageNo == -1 && rightPageNo == -1) {
@@ -170,14 +167,14 @@ public class LeafPageOperations {
         // TODO:  SEE IF WE CAN SIMPLIFY THIS AT ALL...
         if (leftSibling != null &&
             leftSibling.getUsedSpace() + leaf.getSpaceUsedByTuples() <
-            leftSibling.getTotalSpace()) {
+                leftSibling.getTotalSpace()) {
 
             // Coalesce the current node into the left sibling.
             logger.debug("Delete from leaf " + leaf.getPageNo() +
                 ":  coalescing with left sibling leaf.");
 
             logger.debug(String.format("Before coalesce-left, page has %d " +
-                "tuples and left sibling has %d tuples.",
+                    "tuples and left sibling has %d tuples.",
                 leaf.getNumTuples(), leftSibling.getNumTuples()));
 
             if (tuple instanceof BTreeFilePageTuple) {
@@ -193,7 +190,7 @@ public class LeafPageOperations {
             leftSibling.setNextPageNo(leaf.getNextPageNo());
 
             logger.debug(String.format("After coalesce-left, page has %d " +
-                "tuples and left sibling has %d tuples.",
+                    "tuples and left sibling has %d tuples.",
                 leaf.getNumTuples(), leftSibling.getNumTuples()));
 
             // Free up the leaf page since it's empty now
@@ -210,17 +207,16 @@ public class LeafPageOperations {
             List<Integer> parentPagePath = pagePath.subList(0, pagePath.size() - 1);
             innerPageOps.deletePointer(parent, parentPagePath, leafPageNo,
                 /* remove right tuple */ false);
-        }
-        else if (rightSibling != null &&
-                 rightSibling.getUsedSpace() + leaf.getSpaceUsedByTuples() <
-                 rightSibling.getTotalSpace()) {
+        } else if (rightSibling != null &&
+            rightSibling.getUsedSpace() + leaf.getSpaceUsedByTuples() <
+                rightSibling.getTotalSpace()) {
 
             // Coalesce the current node into the right sibling.
             logger.debug("Delete from leaf " + leaf.getPageNo() +
                 ":  coalescing with right sibling leaf.");
 
             logger.debug(String.format("Before coalesce-right, page has %d " +
-                "tuples and right sibling has %d tuples.",
+                    "tuples and right sibling has %d tuples.",
                 leaf.getNumTuples(), rightSibling.getNumTuples()));
 
             if (tuple instanceof BTreeFilePageTuple) {
@@ -241,7 +237,7 @@ public class LeafPageOperations {
                 leftSibling.setNextPageNo(rightPageNo);
 
             logger.debug(String.format("After coalesce-right, page has %d " +
-                "tuples and right sibling has %d tuples.",
+                    "tuples and right sibling has %d tuples.",
                 leaf.getNumTuples(), rightSibling.getNumTuples()));
 
             // Free up the leaf page since it's empty now
@@ -258,8 +254,7 @@ public class LeafPageOperations {
             List<Integer> parentPagePath = pagePath.subList(0, pagePath.size() - 1);
             innerPageOps.deletePointer(parent, parentPagePath, leafPageNo,
                 /* remove right tuple */ true);
-        }
-        else {
+        } else {
             // Can't coalesce the leaf node into either sibling.  Redistribute
             // tuples from left or right sibling into the leaf.  The strategy
             // is as follows:
@@ -276,12 +271,10 @@ public class LeafPageOperations {
                     adjPage = leftSibling;
                 else
                     adjPage = rightSibling;
-            }
-            else if (leftSibling != null) {
+            } else if (leftSibling != null) {
                 // There is no right sibling.  Use the left sibling.
                 adjPage = leftSibling;
-            }
-            else {
+            } else {
                 // There is no left sibling.  Use the right sibling.
                 adjPage = rightSibling;
             }
@@ -296,24 +289,22 @@ public class LeafPageOperations {
                 StringBuilder buf = new StringBuilder();
 
                 buf.append(String.format("Couldn't relocate tuples to satisfy" +
-                    " minimum space requirement in leaf-page %d with %d tuples!\n",
+                        " minimum space requirement in leaf-page %d with %d tuples!\n",
                     leaf.getPageNo(), leaf.getNumTuples()));
 
                 if (leftSibling != null) {
                     buf.append(
                         String.format("\t- Left sibling page %d has %d tuples\n",
-                        leftSibling.getPageNo(), leftSibling.getNumTuples()));
-                }
-                else {
+                            leftSibling.getPageNo(), leftSibling.getNumTuples()));
+                } else {
                     buf.append("\t- No left sibling\n");
                 }
 
                 if (rightSibling != null) {
                     buf.append(
                         String.format("\t- Right sibling page %d has %d tuples",
-                        rightSibling.getPageNo(), rightSibling.getNumTuples()));
-                }
-                else {
+                            rightSibling.getPageNo(), rightSibling.getNumTuples()));
+                } else {
                     buf.append("\t- No right sibling");
                 }
 
@@ -323,7 +314,7 @@ public class LeafPageOperations {
             }
 
             logger.debug(String.format("Relocating %d tuples into leaf page " +
-                "%d from %s sibling page %d", tuplesToMove, leaf.getPageNo(),
+                    "%d from %s sibling page %d", tuplesToMove, leaf.getPageNo(),
                 (adjPage == leftSibling ? "left" : "right"), adjPage.getPageNo()));
 
             if (tuple instanceof BTreeFilePageTuple) {
@@ -338,41 +329,38 @@ public class LeafPageOperations {
                 if (adjPage == leftSibling) {
                     if (nextPageNo == leafPageNo) {
                         logger.debug(String.format("Moving %d tuples from left " +
-                            "sibling %d to leaf %d.  Deleted tuple has next " +
-                            "tuple at [%d:%d]; updating to [%d:%d]", tuplesToMove,
+                                "sibling %d to leaf %d.  Deleted tuple has next " +
+                                "tuple at [%d:%d]; updating to [%d:%d]", tuplesToMove,
                             leftPageNo, leafPageNo, nextPageNo, nextIndex,
                             nextPageNo, nextIndex + tuplesToMove));
 
                         btpt.setNextTuplePosition(nextPageNo, nextIndex + tuplesToMove);
-                    }
-                    else {
-                        assert(nextIndex == 0);
+                    } else {
+                        assert (nextIndex == 0);
 
                         logger.debug(String.format("Moving %d tuples from " +
-                            "left sibling %d to leaf %d.  Deleted tuple " +
-                            "has next tuple at [%d:%d]; not updating",
+                                "left sibling %d to leaf %d.  Deleted tuple " +
+                                "has next tuple at [%d:%d]; not updating",
                             tuplesToMove, leftPageNo, leafPageNo,
                             nextPageNo, nextIndex));
                     }
-                }
-                else {
+                } else {
                     assert adjPage == rightSibling;
 
                     if (nextPageNo == rightPageNo) {
-                        assert(nextIndex == 0);
+                        assert (nextIndex == 0);
 
                         logger.debug(String.format("Moving %d tuples from " +
-                            "right sibling %d to leaf %d.  Deleted tuple " +
-                            "has next tuple at [%d:%d]; not updating",
+                                "right sibling %d to leaf %d.  Deleted tuple " +
+                                "has next tuple at [%d:%d]; not updating",
                             tuplesToMove, rightPageNo, leafPageNo,
                             nextPageNo, nextIndex));
 
                         btpt.setNextTuplePosition(leafPageNo, leaf.getNumTuples());
-                    }
-                    else {
+                    } else {
                         logger.debug(String.format("Moving %d tuples from " +
-                            "right sibling %d to leaf %d.  Deleted tuple " +
-                            "has next tuple at [%d:%d]; not updating",
+                                "right sibling %d to leaf %d.  Deleted tuple " +
+                                "has next tuple at [%d:%d]; not updating",
                             tuplesToMove, rightPageNo, leafPageNo,
                             nextPageNo, nextIndex));
                     }
@@ -387,8 +375,7 @@ public class LeafPageOperations {
                 adjPage.moveTuplesRight(leaf, tuplesToMove);
                 index = parent.getIndexOfPointer(adjPage.getPageNo());
                 parent.replaceTuple(index, leaf.getTuple(0));
-            }
-            else { // adjPage == right sibling
+            } else { // adjPage == right sibling
                 adjPage.moveTuplesLeft(leaf, tuplesToMove);
                 index = parent.getIndexOfPointer(leaf.getPageNo());
                 parent.replaceTuple(index, adjPage.getTuple(0));
@@ -403,15 +390,13 @@ public class LeafPageOperations {
      * {@link LeafPage} class, because adding the new tuple might require the
      * leaf page to be split into two pages.
      *
-     * @param leaf the leaf page to add the tuple to
-     *
+     * @param leaf     the leaf page to add the tuple to
      * @param newTuple the new tuple to add to the leaf page
-     *
      * @param pagePath the path of pages taken from the root page to this leaf
-     *        page, represented as a list of page numbers in the data file
+     *                 page, represented as a list of page numbers in the data file
      */
     public BTreeFilePageTuple addTuple(LeafPage leaf, TupleLiteral newTuple,
-        List<Integer> pagePath) {
+                                       List<Integer> pagePath) {
 
         BTreeFilePageTuple result;
 
@@ -424,8 +409,7 @@ public class LeafPageOperations {
             result = relocateTuplesAndAddTuple(leaf, pagePath, newTuple);
             if (result == null)
                 result = splitLeafAndAddTuple(leaf, pagePath, newTuple);
-        }
-        else {
+        } else {
             // There is room in the leaf for the new tuple.  Add it there.
             result = leaf.addTuple(newTuple);
         }
@@ -441,18 +425,15 @@ public class LeafPageOperations {
      * because there isn't space and/or because there is no sibling), the
      * method returns {@code null}.
      *
-     * @param page The leaf page to relocate tuples out of.
-     *
+     * @param page     The leaf page to relocate tuples out of.
      * @param pagePath The path from the index's root to the leaf page
-     *
-     * @param tuple The tuple to add to the index.
-     *
+     * @param tuple    The tuple to add to the index.
      * @return a {@code BTreeFilePageTuple} representing the actual tuple
-     *         added into the tree structure, or {@code null} if tuples
-     *         couldn't be relocated to make space for the new tuple.
+     * added into the tree structure, or {@code null} if tuples
+     * couldn't be relocated to make space for the new tuple.
      */
     private BTreeFilePageTuple relocateTuplesAndAddTuple(LeafPage page,
-        List<Integer> pagePath, TupleLiteral tuple) {
+                                                         List<Integer> pagePath, TupleLiteral tuple) {
 
         // See if we are able to relocate records either direction to free up
         // space for the new tuple.
@@ -495,7 +476,7 @@ public class LeafPageOperations {
                 if (count > 0) {
                     // Yes, we can do it!
                     logger.debug(String.format("Relocating %d tuples from " +
-                        "leaf-page %d to left-sibling leaf-page %d", count,
+                            "leaf-page %d to left-sibling leaf-page %d", count,
                         page.getPageNo(), prevPage.getPageNo()));
 
                     logger.debug("Space before relocation:  Leaf = " +
@@ -546,7 +527,7 @@ public class LeafPageOperations {
                     // Yes, we can do it!
 
                     logger.debug(String.format("Relocating %d tuples from " +
-                        "leaf-page %d to right-sibling leaf-page %d", count,
+                            "leaf-page %d to right-sibling leaf-page %d", count,
                         page.getPageNo(), nextPage.getPageNo()));
 
                     logger.debug("Space before relocation:  Leaf = " +
@@ -594,17 +575,14 @@ public class LeafPageOperations {
      * representing the actual tuple in the tree once it has been added.
      *
      * @param prevLeaf the first leaf in the pair, left sibling of
-     *        {@code nextLeaf}
-     *
+     *                 {@code nextLeaf}
      * @param nextLeaf the second leaf in the pair, right sibling of
-     *        {@code prevLeaf}
-     *
-     * @param tuple the tuple to insert into the pair of leaves
-     *
+     *                 {@code prevLeaf}
+     * @param tuple    the tuple to insert into the pair of leaves
      * @return the actual tuple in the page, after the insert is completed
      */
     private BTreeFilePageTuple addTupleToLeafPair(LeafPage prevLeaf,
-        LeafPage nextLeaf, TupleLiteral tuple) {
+                                                  LeafPage nextLeaf, TupleLiteral tuple) {
 
         BTreeFilePageTuple result = null;
         BTreeFilePageTuple firstRightTuple = nextLeaf.getTuple(0);
@@ -615,8 +593,7 @@ public class LeafPageOperations {
                 " in pair");
             if (prevLeaf.getFreeSpace() >= tuple.getStorageSize())
                 result = prevLeaf.addTuple(tuple);
-        }
-        else {
+        } else {
             // The new tuple goes in the right page.  Again, hopefully there
             // is room for it...
             logger.debug("Adding tuple to right leaf " + nextLeaf.getPageNo() +
@@ -635,24 +612,20 @@ public class LeafPageOperations {
      * bytes.  If it is possible, the number of tuples that must be relocated
      * is returned.  If it is not possible, the method returns 0.
      *
-     * @param leaf the leaf node to relocate tuples from
-     *
-     * @param adjLeaf the adjacent leaf (predecessor or successor) to relocate
-     *        tuples to
-     *
-     * @param movingRight pass {@code true} if the sibling is to the right of
-     *        {@code page} (and therefore we are moving tuples right), or
-     *        {@code false} if the sibling is to the left of {@code page} (and
-     *        therefore we are moving tuples left).
-     *
+     * @param leaf          the leaf node to relocate tuples from
+     * @param adjLeaf       the adjacent leaf (predecessor or successor) to relocate
+     *                      tuples to
+     * @param movingRight   pass {@code true} if the sibling is to the right of
+     *                      {@code page} (and therefore we are moving tuples right), or
+     *                      {@code false} if the sibling is to the left of {@code page} (and
+     *                      therefore we are moving tuples left).
      * @param bytesRequired the number of bytes that must be freed up in
-     *        {@code leaf} by the operation
-     *
+     *                      {@code leaf} by the operation
      * @return the number of tuples that must be relocated to free up the
-     *         required space, or 0 if it is not possible.
+     * required space, or 0 if it is not possible.
      */
     private int tryLeafRelocateForSpace(LeafPage leaf, LeafPage adjLeaf,
-        boolean movingRight, int bytesRequired) {
+                                        boolean movingRight, int bytesRequired) {
 
         int numTuples = leaf.getNumTuples();
         int leafBytesFree = leaf.getFreeSpace();
@@ -714,20 +687,18 @@ public class LeafPageOperations {
      * a tuple to a leaf that doesn't have enough space, when it isn't
      * possible to relocate values to the left or right sibling of the leaf.
      *
-     * @todo (donnie) When the leaf node is split, half of the tuples are
-     *       put into the new leaf, regardless of the size of individual
-     *       tuples.  In other words, this method doesn't try to keep the
-     *       leaves half-full based on bytes used.  It would almost
-     *       certainly be better if it did.
-     *
-     * @param leaf the leaf node to split and then add the tuple to
+     * @param leaf     the leaf node to split and then add the tuple to
      * @param pagePath the sequence of page-numbers traversed to reach this
-     *        leaf node.
-     *
-     * @param tuple the new tuple to insert into the leaf node
+     *                 leaf node.
+     * @param tuple    the new tuple to insert into the leaf node
+     * @todo (donnie) When the leaf node is split, half of the tuples are
+     * put into the new leaf, regardless of the size of individual
+     * tuples.  In other words, this method doesn't try to keep the
+     * leaves half-full based on bytes used.  It would almost
+     * certainly be better if it did.
      */
     private BTreeFilePageTuple splitLeafAndAddTuple(LeafPage leaf,
-        List<Integer> pagePath, TupleLiteral tuple) {
+                                                    List<Integer> pagePath, TupleLiteral tuple) {
 
         int pathSize = pagePath.size();
         if (pagePath.get(pathSize - 1) != leaf.getPageNo()) {
@@ -767,18 +738,15 @@ public class LeafPageOperations {
      * bytes.  If it is possible, the number of tuples that must be relocated
      * is returned.  If it is not possible, the method returns 0.
      *
-     * @param leaf the leaf node to relocate tuples from
-     *
-     * @param adjLeaf the adjacent leaf (predecessor or successor) to relocate
-     *        tuples to
-     *
+     * @param leaf        the leaf node to relocate tuples from
+     * @param adjLeaf     the adjacent leaf (predecessor or successor) to relocate
+     *                    tuples to
      * @param movingRight pass {@code true} if the sibling is to the left of
-     *        {@code page} (and therefore we are moving tuples right), or
-     *        {@code false} if the sibling is to the right of {@code page}
-     *        (and therefore we are moving tuples left).
-     *
+     *                    {@code page} (and therefore we are moving tuples right), or
+     *                    {@code false} if the sibling is to the right of {@code page}
+     *                    (and therefore we are moving tuples left).
      * @return the number of tuples that must be relocated to fill the node
-     *         to a minimal level, or 0 if not possible.
+     * to a minimal level, or 0 if not possible.
      */
     private int tryLeafRelocateToFill(LeafPage leaf, LeafPage adjLeaf,
                                       boolean movingRight) {

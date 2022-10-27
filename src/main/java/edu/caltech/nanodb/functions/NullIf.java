@@ -15,7 +15,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Implements {@code NULLIF(cond, expr)}. Returns {@code NULL} if the first
  * argument is {@code TRUE}, else returns the second argument.
- * 
+ *
  * @author emil
  */
 public class NullIf extends SimpleFunction {
@@ -34,8 +34,8 @@ public class NullIf extends SimpleFunction {
     @Override
     public Object evaluate(Environment env, List<Expression> args) {
         if (args.size() != 2) {
-            throw new ExpressionException("Cannot call NULLIF on " + args.size() 
-                    + " arguments");
+            throw new ExpressionException("Cannot call NULLIF on " + args.size()
+                + " arguments");
         }
 
         Object condVal = args.get(0).evaluate(env);

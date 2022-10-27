@@ -1,7 +1,6 @@
 package edu.caltech.nanodb.server;
 
 
-
 public class ServerConfig {
 
 
@@ -55,8 +54,6 @@ public class ServerConfig {
         }
     }
         */
-
-
 
 
 }

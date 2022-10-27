@@ -42,7 +42,9 @@ public abstract class Expression implements Cloneable {
      * </p>
      */
     private static class SymbolFinder implements ExpressionProcessor {
-        /** A flag indicating whether the expression has any symbols. */
+        /**
+         * A flag indicating whether the expression has any symbols.
+         */
         private boolean hasSymbols;
 
         /**
@@ -57,9 +59,9 @@ public abstract class Expression implements Cloneable {
          * themselves into the {@link #symbols} collection.
          *
          * @param symbols An optional collection to receive the symbols found
-         *        by this expression processor.  This may be {@code null} if
-         *        the {@code SymbolFinder} is only being used to identify
-         *        whether an expression includes symbols.
+         *                by this expression processor.  This may be {@code null} if
+         *                the {@code SymbolFinder} is only being used to identify
+         *                whether an expression includes symbols.
          */
         private SymbolFinder(Collection<ColumnName> symbols) {
             hasSymbols = false;
@@ -84,8 +86,7 @@ public abstract class Expression implements Cloneable {
                     if (!cn.isColumnWildcard())
                         symbols.add(cv.getColumnName());
                 }
-            }
-            else if (e instanceof SubqueryOperator) {
+            } else if (e instanceof SubqueryOperator) {
                 SubqueryOperator subOp = (SubqueryOperator) e;
                 SelectClause subquery = subOp.getSubquery();
                 if (subquery.isCorrelated()) {
@@ -109,14 +110,12 @@ public abstract class Expression implements Cloneable {
      * the name) of the expression's result.
      *
      * @param schema a schema object that can be used to look up name and type
-     *        details for symbols referenced by the expression.
-     *
+     *               details for symbols referenced by the expression.
      * @return a column-information object describing the type (and possibly the
-     *         name and table-name) of this expression's result
-     *
+     * name and table-name) of this expression's result
      * @throws SchemaNameException if a symbol cannot be resolved, either
-     *         because it doesn't appear in the schema, or because the name is
-     *         ambiguous.
+     *                             because it doesn't appear in the schema, or because the name is
+     *                             ambiguous.
      */
     public abstract ColumnInfo getColumnInfo(Schema schema)
         throws SchemaNameException;
@@ -129,12 +128,10 @@ public abstract class Expression implements Cloneable {
      * referenced within the expression.
      *
      * @param env the environment to look up symbol-values from, when evaluating
-     *        the expression
-     *
+     *            the expression
      * @return the result of the expression evaluation
-     *
      * @throws ExpressionException if the expression cannot be evaluated for
-     *         some reason.
+     *                             some reason.
      */
     public abstract Object evaluate(Environment env) throws ExpressionException;
 
@@ -146,9 +143,8 @@ public abstract class Expression implements Cloneable {
      * at evaluation time.
      *
      * @return the result of the expression evaluation
-     *
      * @throws ExpressionException if the expression cannot be evaluated for
-     *         some reason.
+     *                             some reason.
      */
     public Object evaluate() throws ExpressionException {
         return evaluate(null);
@@ -159,9 +155,7 @@ public abstract class Expression implements Cloneable {
      * Evaluates an expression as a Boolean predicate.
      *
      * @param env the environment that the predicate is evaluated within
-     *
      * @return the result of the evaluation, converted to a Boolean value
-     *
      * @throws ExpressionException if an error occurred during evaluation
      */
     public boolean evaluatePredicate(Environment env) throws ExpressionException {
@@ -180,7 +174,6 @@ public abstract class Expression implements Cloneable {
      * exception will be thrown at evaluation time.
      *
      * @return the result of the evaluation, converted to a Boolean value
-     *
      * @throws ExpressionException if an error occurred during evaluation
      */
     public boolean evaluatePredicate() throws ExpressionException {
@@ -206,10 +199,9 @@ public abstract class Expression implements Cloneable {
      * </p>
      *
      * @param p the object that performs analysis or transformation of the
-     *        expression tree
-     *
+     *          expression tree
      * @return an {@code Expression} node to replace this node, or
-     *         {@code null} if no changes are to be made.
+     * {@code null} if no changes are to be made.
      */
     public abstract Expression traverse(ExpressionProcessor p);
 
@@ -241,7 +233,7 @@ public abstract class Expression implements Cloneable {
      * a {@link java.util.Set} implementation as the argument.
      *
      * @param symbols A collection that will receive all of the symbols in the
-     *        expression.
+     *                expression.
      */
     public final void getAllSymbols(Collection<ColumnName> symbols) {
         traverse(new SymbolFinder(symbols));
@@ -255,7 +247,7 @@ public abstract class Expression implements Cloneable {
      * then the return-value will simply be this expression object, unsimplified.
      *
      * @return a reference to an expression, either a simplified version of this
-     *         expression, or the original unmodified expression
+     * expression, or the original unmodified expression
      */
     public Expression simplify() {
         return this;
@@ -298,8 +290,7 @@ public abstract class Expression implements Cloneable {
         Expression expr;
         try {
             expr = (Expression) clone();
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
 

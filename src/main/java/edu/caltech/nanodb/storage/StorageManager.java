@@ -30,7 +30,9 @@ import edu.caltech.nanodb.transactions.TransactionManager;
  */
 public class StorageManager {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(StorageManager.class);
 
 
@@ -47,7 +49,9 @@ public class StorageManager {
     private NanoDBServer server;
 
 
-    /** The base directory, in which all database files are stored. */
+    /**
+     * The base directory, in which all database files are stored.
+     */
     private File baseDir;
 
 
@@ -58,7 +62,9 @@ public class StorageManager {
     private boolean initialized = false;
 
 
-    /** The buffer manager stores data pages in memory, to avoid disk IOs. */
+    /**
+     * The buffer manager stores data pages in memory, to avoid disk IOs.
+     */
     private BufferManager bufferManager;
 
 
@@ -94,8 +100,7 @@ public class StorageManager {
      * This method initializes the storage manager.  It should only be called
      * once.
      *
-     * @throws StorageException if
-     *
+     * @throws StorageException      if
      * @throws IllegalStateException if <tt>init()</tt> has already been called
      */
     public void initialize(NanoDBServer server) {
@@ -151,8 +156,7 @@ public class StorageManager {
             // This method opens the transaction-state file, performs any
             // necessary recovery operations, and so forth.
             transactionManager.initialize();
-        }
-        else {
+        } else {
             logger.info("Transaction manager is disabled.");
         }
 
@@ -178,8 +182,8 @@ public class StorageManager {
      * once.
      *
      * @throws IllegalStateException if <tt>init()</tt> has not been called
-     * @throws StorageException if the storage manager cannot save all data
-     *         for some reason
+     * @throws StorageException      if the storage manager cannot save all data
+     *                               for some reason
      */
     public void shutdown() {
         // Detect if already shut down...
@@ -296,11 +300,9 @@ public class StorageManager {
      * Returns the tuple-file manager for the specified file type.
      *
      * @param type the database file type to get the tuple-file manager for.
-     *
      * @return the tuple-file manager instance for the specified file type
-     *
      * @throws IllegalArgumentException if the file-type is <tt>null</tt>, or
-     *         if the file-type is currently unsupported.
+     *                                  if the file-type is currently unsupported.
      */
     public TupleFileManager getTupleFileManager(DBFileType type) {
         if (type == null)
@@ -332,12 +334,10 @@ public class StorageManager {
      * @param dbFile the database file to load the page from
      * @param pageNo the number of the page to load
      * @param create a flag specifying whether the page should be created if it
-     *        doesn't already exist
-     *
+     *               doesn't already exist
      * @return the database page (either from cache or from the data file),
-     *         or {@code null} if the requested page is not in the data file
-     *         and {@code create} is {@code false}.
-     *
+     * or {@code null} if the requested page is not in the data file
+     * and {@code create} is {@code false}.
      * @throws IllegalArgumentException if the page number is negative
      */
     public DBPage loadDBPage(DBFile dbFile, int pageNo, boolean create) {
@@ -360,10 +360,8 @@ public class StorageManager {
      *
      * @param dbFile the database file to load the page from
      * @param pageNo the number of the page to load
-     *
      * @return the database page (either from cache or from the data file),
-     *         or {@code null} if the requested page is not in the data file
-     *
+     * or {@code null} if the requested page is not in the data file
      * @throws IllegalArgumentException if the page number is negative
      */
     public DBPage loadDBPage(DBFile dbFile, int pageNo) {

@@ -14,7 +14,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Implements {@code IFNULL(expr1, expr2)}. If the first argument is
  * {@code NULL}, returns the second argument, else returns the first argument.
- * 
+ *
  * @author emil
  */
 public class IfNull extends SimpleFunction {
@@ -36,10 +36,10 @@ public class IfNull extends SimpleFunction {
             throw new ExpressionException("Cannot call IFNULL on " +
                 args.size() + " arguments");
         }
-        
+
         Object argVal1 = args.get(0).evaluate(env);
         Object argVal2 = args.get(1).evaluate(env);
-        
+
         if (argVal1 == null)
             return argVal2;
         else

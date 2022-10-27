@@ -1,9 +1,9 @@
 <html>
 <body>
 <p>
-This package provides a naive implementation of the heap file organization
-for NanoDB.  All heap files in nanodb are accessed by pages, as is the case
-with virtually all NanoDB files.  This implementation is naive because:
+    This package provides a naive implementation of the heap file organization
+    for NanoDB. All heap files in nanodb are accessed by pages, as is the case
+    with virtually all NanoDB files. This implementation is naive because:
 </p>
 <ul>
     <li>
@@ -17,15 +17,15 @@ with virtually all NanoDB files.  This implementation is naive because:
 </ul>
 
 <p>
-Following is a description of the storage format for heap files:
+    Following is a description of the storage format for heap files:
 </p>
 
 <h2>Overview</h2>
 
 <p>
-Page 0 is the header page, containing the table's schema and statistics
-information.  All other pages are data pages, storing tuples using a
-slotted-page structure in each page.  Relevant classes are:
+    Page 0 is the header page, containing the table's schema and statistics
+    information. All other pages are data pages, storing tuples using a
+    slotted-page structure in each page. Relevant classes are:
 </p>
 
 <ul>
@@ -59,12 +59,17 @@ slotted-page structure in each page.  Relevant classes are:
 <p>The header page has the following structural layout:</p>
 
 <table>
-    <tr><th>Offset in Page</th><th>Type</th><th>Description</th></tr>
+    <tr>
+        <th>Offset in Page</th>
+        <th>Type</th>
+        <th>Description</th>
+    </tr>
     <tr>
         <td>0</td>
         <td>unsigned byte</td>
         <td>
-            <b>File type</b>, set to {@link edu.caltech.nanodb.storage.DBFileType#HEAP_DATA_FILE}.
+            <b>File type</b>, set to {@link
+            edu.caltech.nanodb.storage.DBFileType#HEAP_DATA_FILE}.
             (See the {@link edu.caltech.nanodb.storage.FileManagerImpl} for code
             that accesses and manipulates this value.)
         </td>
@@ -79,13 +84,14 @@ slotted-page structure in each page.  Relevant classes are:
         </td>
 
         <td>2 ({@link
-            edu.caltech.nanodb.storage.heapfile.HeaderPage#OFFSET_SCHEMA_SIZE})</td>
+            edu.caltech.nanodb.storage.heapfile.HeaderPage#OFFSET_SCHEMA_SIZE})
+        </td>
         <td>unsigned short</td>
         <td>
             <p>
-            The number of bytes in the header page occupied by the table
-            schema.  This value should not be 0, although the API allows it
-            to be.
+                The number of bytes in the header page occupied by the table
+                schema. This value should not be 0, although the API allows it
+                to be.
             </p>
             <p>
                 (See {@link
@@ -97,12 +103,14 @@ slotted-page structure in each page.  Relevant classes are:
         </td>
 
         <td>4 ({@link
-            edu.caltech.nanodb.storage.heapfile.HeaderPage#OFFSET_STATS_SIZE})</td>
+            edu.caltech.nanodb.storage.heapfile.HeaderPage#OFFSET_STATS_SIZE})
+        </td>
         <td>unsigned short</td>
         <td>
             <p>
-            The number of bytes in the header page occupied by table statistics.
-            This value may be 0 if the table currently has no statistics.
+                The number of bytes in the header page occupied by table
+                statistics.
+                This value may be 0 if the table currently has no statistics.
             </p>
             <p>
                 (See {@link
@@ -114,7 +122,8 @@ slotted-page structure in each page.  Relevant classes are:
         </td>
 
         <td>6 ({@link
-            edu.caltech.nanodb.storage.heapfile.HeaderPage#OFFSET_SCHEMA_START})</td>
+            edu.caltech.nanodb.storage.heapfile.HeaderPage#OFFSET_SCHEMA_START})
+        </td>
         <td><em>[table schema]</em></td>
         <td>
             The schema of the table, as written by the

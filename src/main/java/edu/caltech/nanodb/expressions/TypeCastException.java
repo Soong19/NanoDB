@@ -7,7 +7,9 @@ package edu.caltech.nanodb.expressions;
  */
 public class TypeCastException extends ExpressionException {
 
-    /** Create a new <code>TypeCastException</code> with no message or cause. */
+    /**
+     * Create a new <code>TypeCastException</code> with no message or cause.
+     */
     public TypeCastException() {
         super();
     }

@@ -9,7 +9,9 @@ import edu.caltech.nanodb.server.NanoDBServer;
  * A sync is not performed.
  */
 public class FlushCommand extends Command {
-    /** Construct a new <tt>FLUSH</tt> command. */
+    /**
+     * Construct a new <tt>FLUSH</tt> command.
+     */
     public FlushCommand() {
         super(Command.Type.UTILITY);
     }

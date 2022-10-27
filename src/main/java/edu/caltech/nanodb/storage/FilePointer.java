@@ -20,14 +20,20 @@ public class FilePointer implements Comparable<FilePointer>, Cloneable {
     public static final FilePointer ZERO_FILE_POINTER = new FilePointer(0, 0);
 
 
-    /** The page number in the table file.  This value is nonnegative. */
+    /**
+     * The page number in the table file.  This value is nonnegative.
+     */
     private int pageNo;
 
-    /** The offset of the data within the page.  This value is nonnegative. */
+    /**
+     * The offset of the data within the page.  This value is nonnegative.
+     */
     private int offset;
 
 
-    /** Construct a new file pointer. */
+    /**
+     * Construct a new file pointer.
+     */
     public FilePointer(int pageNo, int offset) {
         if (pageNo < 0) {
             throw new IllegalArgumentException("pageNo must be >= 0 (got " +
@@ -44,13 +50,17 @@ public class FilePointer implements Comparable<FilePointer>, Cloneable {
     }
 
 
-    /** Returns the page number that the data is in. */
+    /**
+     * Returns the page number that the data is in.
+     */
     public int getPageNo() {
         return pageNo;
     }
 
 
-    /** Returns the offset within the page where the data starts. */
+    /**
+     * Returns the offset within the page where the data starts.
+     */
     public int getOffset() {
         return offset;
     }
@@ -76,7 +86,9 @@ public class FilePointer implements Comparable<FilePointer>, Cloneable {
     }
 
 
-    /** Calculate a hash-code for the file pointer. */
+    /**
+     * Calculate a hash-code for the file pointer.
+     */
     @Override
     public int hashCode() {
         int hashCode;

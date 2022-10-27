@@ -16,14 +16,20 @@ import edu.caltech.nanodb.storage.FileManager;
 import edu.caltech.nanodb.storage.FileManagerImpl;
 
 
-/** Tests to exercise the file manager implementation. */
-@Test(groups={"storage", "framework"})
+/**
+ * Tests to exercise the file manager implementation.
+ */
+@Test(groups = {"storage", "framework"})
 public class TestFileManager extends StorageTestCase {
 
-    /** A reference to the File Manager implementation being exercised. */
+    /**
+     * A reference to the File Manager implementation being exercised.
+     */
     private FileManager fileMgr;
 
-    /** Creating DBPages requires a Buffer Manager, and this is it. */
+    /**
+     * Creating DBPages requires a Buffer Manager, and this is it.
+     */
     private BufferManager bufMgr;
 
 
@@ -83,8 +89,7 @@ public class TestFileManager extends StorageTestCase {
                 DBFileType.HEAP_TUPLE_FILE, DBFile.DEFAULT_PAGESIZE);
 
             assert false : "Shouldn't be able to create a DBFile twice.";
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Success.
         }
 

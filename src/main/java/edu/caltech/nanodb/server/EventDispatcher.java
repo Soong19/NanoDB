@@ -18,7 +18,9 @@ import java.util.ArrayList;
  */
 public class EventDispatcher {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(EventDispatcher.class);
 
 
@@ -62,7 +64,6 @@ public class EventDispatcher {
 
 
     /**
-     *
      * @param cmd the command that is about to be executed
      */
     public void fireBeforeCommandExecuted(Command cmd) {
@@ -72,7 +73,6 @@ public class EventDispatcher {
 
 
     /**
-     *
      * @param cmd the command that was just executed
      */
     public void fireAfterCommandExecuted(Command cmd) {

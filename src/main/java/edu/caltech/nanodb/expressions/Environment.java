@@ -22,35 +22,37 @@ import edu.caltech.nanodb.relations.Tuple;
  * result of a join operation between two tables.
  *
  * @design (donnie) This class could be applied in several different ways.
- *         Any SELECT clause really could (or should) have its own environment
- *         associated with it, because it will reference tables.  In addition,
- *         a derived table (a named subquery in the FROM clause) can also be
- *         referred to by name.  So, we will have to devise a strategy for
- *         managing environments properly.  Some plan-nodes will have to be
- *         responsible for updating environments, but definitely not all will do
- *         so.
- *         <p>
- *         It probably makes the most sense to give <em>every</em> plan-node its
- *         own environment-reference.  If the reference is null, the node could
- *         get its parent's environment.  Or, we could set all plan-nodes to
- *         have a specific environment, and just manage that assignment process
- *         carefully.
- *         <p>
- *         Environments can refer to a parent environment, for cases where a
- *         query contains subqueries.  The subqueries can refer to the same
- *         table(s) as the outer query, and thus they need their own environment
- *         to track that information.  This becomes especially useful with
- *         correlated subqueries, as the inner query needs to be completely
- *         reevaluated for each value of the outer query.
- *         <p>
- *         Matching a symbol name goes from child to parent.  If a child
- *         environment contains a value for a particular symbol, that value is
- *         returned.  It is only if the child environment <em>doesn't</em>
- *         contain a value that the parent environment is utilized.
+ * Any SELECT clause really could (or should) have its own environment
+ * associated with it, because it will reference tables.  In addition,
+ * a derived table (a named subquery in the FROM clause) can also be
+ * referred to by name.  So, we will have to devise a strategy for
+ * managing environments properly.  Some plan-nodes will have to be
+ * responsible for updating environments, but definitely not all will do
+ * so.
+ * <p>
+ * It probably makes the most sense to give <em>every</em> plan-node its
+ * own environment-reference.  If the reference is null, the node could
+ * get its parent's environment.  Or, we could set all plan-nodes to
+ * have a specific environment, and just manage that assignment process
+ * carefully.
+ * <p>
+ * Environments can refer to a parent environment, for cases where a
+ * query contains subqueries.  The subqueries can refer to the same
+ * table(s) as the outer query, and thus they need their own environment
+ * to track that information.  This becomes especially useful with
+ * correlated subqueries, as the inner query needs to be completely
+ * reevaluated for each value of the outer query.
+ * <p>
+ * Matching a symbol name goes from child to parent.  If a child
+ * environment contains a value for a particular symbol, that value is
+ * returned.  It is only if the child environment <em>doesn't</em>
+ * contain a value that the parent environment is utilized.
  */
 public class Environment {
 
-    /** A list of the schemas being considered by the environment. */
+    /**
+     * A list of the schemas being considered by the environment.
+     */
     private ArrayList<Schema> currentSchemas = new ArrayList<>();
 
 
@@ -69,7 +71,9 @@ public class Environment {
     private ArrayList<Environment> parents = new ArrayList<>();
 
 
-    /** Reset the environment. */
+    /**
+     * Reset the environment.
+     */
     public void clear() {
         currentSchemas.clear();
         currentTuples.clear();
@@ -85,7 +89,7 @@ public class Environment {
      * Adds a tuple to the environment with the given schema.
      *
      * @param schema the schema for the specified tuple
-     * @param tuple the tuple to be added
+     * @param tuple  the tuple to be added
      */
     public void addTuple(Schema schema, Tuple tuple) {
         if (schema == null)
@@ -112,13 +116,13 @@ public class Environment {
      *         environment.
      *
     public Tuple getCurrentTuple(String tableName) {
-        Tuple tup = currentTuples.get(tableName);
-        if (tup == null && parentEnv != null)
-            tup = parentEnv.getCurrentTuple(tableName);
+    Tuple tup = currentTuples.get(tableName);
+    if (tup == null && parentEnv != null)
+    tup = parentEnv.getCurrentTuple(tableName);
 
-        return tup;
+    return tup;
     }
-    */
+     */
 
 
     /**
@@ -163,8 +167,7 @@ public class Environment {
                     result = p.getColumnValue(colName);
                     found = true;
                     break;
-                }
-                catch (ExpressionException e) {
+                } catch (ExpressionException e) {
                     // The parent environment doesn't have the specified
                     // column name.  Just swallow the exception.
                 }

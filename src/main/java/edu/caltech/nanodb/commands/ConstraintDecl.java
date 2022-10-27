@@ -23,7 +23,9 @@ public class ConstraintDecl {
     private String name = null;
 
 
-    /** The type of the constraint. */
+    /**
+     * The type of the constraint.
+     */
     private TableConstraintType type;
 
 
@@ -90,13 +92,17 @@ public class ConstraintDecl {
     private ForeignKeyValueChangeOption onUpdateOption = null;
 
 
-    /** Create a new unnamed constraint for a table or a table-column. */
+    /**
+     * Create a new unnamed constraint for a table or a table-column.
+     */
     public ConstraintDecl(TableConstraintType type, boolean columnConstraint) {
         this(type, null, columnConstraint);
     }
 
 
-    /** Create a new named constraint for a table or a table-column. */
+    /**
+     * Create a new named constraint for a table or a table-column.
+     */
     public ConstraintDecl(TableConstraintType type, String name,
                           boolean columnConstraint) {
         this.type = type;
@@ -107,6 +113,7 @@ public class ConstraintDecl {
 
     /**
      * Returns the name of the constraint.
+     *
      * @return the name of the constraint.
      */
     public String getName() {
@@ -114,7 +121,9 @@ public class ConstraintDecl {
     }
 
 
-    /** Returns the type of this constraint. */
+    /**
+     * Returns the type of this constraint.
+     */
     public TableConstraintType getType() {
         return type;
     }
@@ -136,17 +145,15 @@ public class ConstraintDecl {
      * columns may be specified.
      *
      * @param columnName the column governed by the constraint
-     *
-     * @throws NullPointerException if columnName is <tt>null</tt>
+     * @throws NullPointerException  if columnName is <tt>null</tt>
      * @throws IllegalStateException if this is a column-constraint and
-     *         there is already one column specified
-     *
+     *                               there is already one column specified
      * @design (donnie) Column names are checked for existence and uniqueness
-     *         when initializing the corresponding objects for storage on the
-     *         table schema.  See
-     *         {@link edu.caltech.nanodb.relations.Schema#addCandidateKey} and
-     *         {@link edu.caltech.nanodb.relations.Schema#addForeignKey}
-     *         for details.
+     * when initializing the corresponding objects for storage on the
+     * table schema.  See
+     * {@link edu.caltech.nanodb.relations.Schema#addCandidateKey} and
+     * {@link edu.caltech.nanodb.relations.Schema#addForeignKey}
+     * for details.
      */
     public void addColumn(String columnName) {
         if (columnName == null)
@@ -172,13 +179,11 @@ public class ConstraintDecl {
      * the column.
      *
      * @param tableName the table referenced in the constraint
-     *
-     * @throws NullPointerException if tableName is <tt>null</tt>
+     * @throws NullPointerException  if tableName is <tt>null</tt>
      * @throws IllegalStateException if this constraint is not a foreign-key
-     *         constraint
-     *
+     *                               constraint
      * @design (donnie) Existence of the referenced table is checked in the
-     *         {@link CreateTableCommand#execute} method's operation.
+     * {@link CreateTableCommand#execute} method's operation.
      */
     public void setRefTable(String tableName) {
         if (type != TableConstraintType.FOREIGN_KEY) {
@@ -216,18 +221,16 @@ public class ConstraintDecl {
      * specified.
      *
      * @param columnName the column referenced in the constraint
-     *
-     * @throws NullPointerException if columnName is <tt>null</tt>
+     * @throws NullPointerException  if columnName is <tt>null</tt>
      * @throws IllegalStateException if this constraint is not a foreign-key
-     *         constraint, or if this is a column-constraint and there is
-     *         already one reference-column specified
-     *
+     *                               constraint, or if this is a column-constraint and there is
+     *                               already one reference-column specified
      * @design (donnie) Column names are checked for existence and uniqueness
-     *         when initializing the corresponding objects for storage on the
-     *         table schema.  See
-     *         {@link edu.caltech.nanodb.relations.Schema#addCandidateKey} and
-     *         {@link edu.caltech.nanodb.relations.Schema#addForeignKey}
-     *         for details.
+     * when initializing the corresponding objects for storage on the
+     * table schema.  See
+     * {@link edu.caltech.nanodb.relations.Schema#addCandidateKey} and
+     * {@link edu.caltech.nanodb.relations.Schema#addForeignKey}
+     * for details.
      */
     public void addRefColumn(String columnName) {
         if (type != TableConstraintType.FOREIGN_KEY) {
@@ -257,10 +260,9 @@ public class ConstraintDecl {
      * {@link TableConstraintType#FOREIGN_KEY} constraint.
      *
      * @param f the {@link ForeignKeyValueChangeOption} to set for
-     *        <tt>ON DELETE</tt> behavior
-     *
+     *          <tt>ON DELETE</tt> behavior
      * @throws IllegalStateException if this constraint is not a foreign-key
-     *         constraint
+     *                               constraint
      */
     public void setOnDeleteOption(ForeignKeyValueChangeOption f) {
         if (type != TableConstraintType.FOREIGN_KEY) {
@@ -292,10 +294,9 @@ public class ConstraintDecl {
      * {@link TableConstraintType#FOREIGN_KEY} constraint.
      *
      * @param f the {@link ForeignKeyValueChangeOption} to set for
-     *        <tt>ON UPDATE</tt> behavior
-     *
+     *          <tt>ON UPDATE</tt> behavior
      * @throws IllegalStateException if this constraint is not a foreign-key
-     *         constraint
+     *                               constraint
      */
     public void setOnUpdateOption(ForeignKeyValueChangeOption f) {
         if (type != TableConstraintType.FOREIGN_KEY) {

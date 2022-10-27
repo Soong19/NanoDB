@@ -36,8 +36,7 @@ public class TupleSender implements TupleProcessor {
 
         try {
             objectOutput.writeObject(schema);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Couldn't send schema", e);
         }
     }
@@ -53,8 +52,7 @@ public class TupleSender implements TupleProcessor {
 
         try {
             objectOutput.writeObject(tupLit);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Couldn't send tuple", e);
         }
     }

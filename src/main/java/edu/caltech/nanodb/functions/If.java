@@ -39,7 +39,7 @@ public class If extends SimpleFunction {
         }
 
         Object condVal = args.get(0).evaluate(env);
-        
+
         if (condVal != null && TypeConverter.getBooleanValue(condVal))
             return args.get(1).evaluate(env);
         else

@@ -10,13 +10,17 @@ import edu.caltech.nanodb.server.NanoDBException;
  */
 public class ExpressionException extends NanoDBException {
 
-    /** Construct an expression exception with no message. */
+    /**
+     * Construct an expression exception with no message.
+     */
     public ExpressionException() {
         super();
     }
 
 
-    /** Construct an expression exception with the specified message. */
+    /**
+     * Construct an expression exception with the specified message.
+     */
     public ExpressionException(String msg) {
         super(msg);
     }
