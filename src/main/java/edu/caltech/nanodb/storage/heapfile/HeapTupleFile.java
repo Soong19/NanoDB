@@ -134,6 +134,7 @@ public class HeapTupleFile implements TupleFile {
         // So we can break out of the outer loop from inside the inner one
         for (int iPage = 1; /* nothing */ ; iPage++) {
             // Try to load the page.  If it doesn't exist, exit the loop.
+            // implicitly: dbPage.pin()
             DBPage dbPage = storageManager.loadDBPage(dbFile, iPage);
             if (dbPage == null)
                 break;
@@ -178,6 +179,7 @@ public class HeapTupleFile implements TupleFile {
     @Override
     public Tuple getTuple(FilePointer fptr) throws InvalidFilePointerException {
 
+        // implicitly: dbPage.pin()
         DBPage dbPage = storageManager.loadDBPage(dbFile, fptr.getPageNo());
         if (dbPage == null) {
             throw new InvalidFilePointerException(String.format(
@@ -203,6 +205,9 @@ public class HeapTupleFile implements TupleFile {
             throw new InvalidFilePointerException("Slot " + slot +
                 " on page " + fptr.getPageNo() + " is empty.");
         }
+
+        // Unpin dbPage since getTuple implicitly pin both tuple and dbPage
+        dbPage.unpin();
 
         return new HeapFilePageTuple(schema, dbPage, slot, offset);
     }
@@ -246,6 +251,7 @@ public class HeapTupleFile implements TupleFile {
         // The page will come back pinned on behalf of the caller.  (If the
         // page is still in the Buffer Manager's cache, it will not be read
         // from disk, so this won't be expensive in that case.)
+        // implicitly dbPage.pin()
         DBPage dbPage = storageManager.loadDBPage(dbFile, prevPageNo);
         if (dbPage == null)
             throw new DataFormatException("Couldn't load the tuple's page");
@@ -268,6 +274,8 @@ public class HeapTupleFile implements TupleFile {
                     // Thus, we unpin the page after creating this tuple.
                     nextTup = new HeapFilePageTuple(schema, dbPage, nextSlot,
                         nextOffset);
+                    // Find the tuple, everything done
+                    dbPage.unpin();
                     break page_scan;
                 }
 
@@ -277,6 +285,10 @@ public class HeapTupleFile implements TupleFile {
             // If we got here then we reached the end of this page with no
             // tuples.  Go on to the next data-page, and start with the first
             // tuple in that page.
+
+            // Didn't find any tuples in this page, so unpin before we
+            // move on to the next page.
+            dbPage.unpin();
 
             dbPage = storageManager.loadDBPage(dbFile, dbPage.getPageNo() + 1);
             if (dbPage == null)
@@ -330,6 +342,7 @@ public class HeapTupleFile implements TupleFile {
         DBPage dbPage;
         while (true) {
             // Try to load the page without creating a new one.
+            // implicitly: dbPage.pin()
             dbPage = storageManager.loadDBPage(dbFile, pageNo);
             if (dbPage == null) {
                 // Couldn't load the current page, because it doesn't exist.
@@ -353,6 +366,7 @@ public class HeapTupleFile implements TupleFile {
 
             // If we reached this point then the page doesn't have enough
             // space, so go on to the next data page.
+            dbPage.unpin();
             pageNo++;
         }
 
@@ -361,6 +375,7 @@ public class HeapTupleFile implements TupleFile {
             // circumstance, pageNo is *just past* the last page in the data
             // file.
             logger.debug("Creating new page " + pageNo + " to store new tuple.");
+            // implicitly: dbPage.pin()
             dbPage = storageManager.loadDBPage(dbFile, pageNo,
                 /* create */ true);
             DataPage.initNewPage(dbPage);
@@ -372,10 +387,15 @@ public class HeapTupleFile implements TupleFile {
         logger.debug(String.format(
             "New tuple will reside on page %d, slot %d.", pageNo, slot));
 
+        // Unpin dbPage since storeNewTuple implicitly pin both tuple and dbPage
+        dbPage.unpin();
+
         HeapFilePageTuple pageTup =
             HeapFilePageTuple.storeNewTuple(schema, dbPage, slot, tupOffset, tup);
 
         DataPage.sanityCheck(dbPage);
+        // Unpin dbPage since we do not need it
+        dbPage.unpin();
 
         return pageTup;
     }

@@ -2,6 +2,7 @@
 
 > [Assignment 1](http://courses.cms.caltech.edu/cs122/assignments/lab1.html):
 > NanoDB Set-Up and Storage Layer
+> ([Telegraph](https://telegra.ph/Assignment-1-NanoDB-Set-Up-and-Storage-Layer-10-28))
 
 * Add support for tuple updates and deletion in NanoDB
 * Add code to pin/unpin pages and tuples for proper buffer management
@@ -85,3 +86,7 @@ To implement tuple updating, we need to implement two methods below:
 +              dbPage.writeInt(offset, (Integer) value);
 +              break;
 ```
+
+### Task #2: Unpinning Tuples and Pages
+
+> Add code to pin/unpin pages and tuples for proper buffer management
