@@ -33,12 +33,18 @@ High-level Architectures:
 ----------------------------------
 | ... | Tuple3 | Tuple2 | Tuple1 |
 ----------------------------------
+
+# PageTuple layout: example
+Low_Addr               ->                      High_Addr
+--------------------------------------------------------
+| Bitmap | INTEGER | SHORT | CHAR(5) | VARCHAR | FLOAT |
+--------------------------------------------------------
+    1        8        2        5       2+len       4
 ```
 
 ---
 
 `deleteTuple(DBPage dbPage, int slot)`
-
 1. Move data before `tuple[slot]` to cover the tuple
 2. Mark the tuple as deleted via making tuple to NULL
 3. Check the end of slots to find out whether it is NULL.
@@ -46,7 +52,13 @@ High-level Architectures:
 
 To implement tuple updating, we need to implement two methods below:
 
-TODO: some implementation details
+`setNonNullColumnValue(int iCol, Object value)`
+1. Clear specific null-bitmap
+2. Manipulate when value is VARCHAR<br/>
+   (1) NewSize > OldSize: insertTupleData, move all data before offset backward, low_addr-=delta<br/>
+   (2) NewSize < OldSize: deleteTupleData, move all data before offset forward, low_addr+=delta
+3. Write non-null value, aka. fill the manipulated space
+4. Update ValueOffsets
 
 ##### DEBUG
 

@@ -4,11 +4,6 @@ package edu.caltech.nanodb.storage;
 import edu.caltech.nanodb.expressions.TypeConverter;
 import edu.caltech.nanodb.relations.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 // TODO: Refactor all the code
 
 /**
@@ -579,30 +574,36 @@ public abstract class PageTuple implements Tuple {
 
         /* 1. set null-bitmap to false */
         if (isNullValue(iCol)) {
+            // TODO: Configure something with null value
             setNullFlag(iCol, false);
         }
 
-        /* 2. replace any existing value for the column with a new value */
+        /* 2. manipulate space */
         var colType = schema.getColumnInfo(iCol).getType();
         var offset = valueOffsets[iCol];
-
-        /* 3. update value offsets */
         if (colType.getBaseType() == SQLDataType.VARCHAR) {
-            // variable-size type: update behind/following offsets
+            // variable-size type
             var oldSize = getColumnValueSize(colType, offset);
-            var newSize = value.toString().length();
-            var delta = oldSize - newSize;
-            System.out.println("Befor:  " + this);
-            for (int i = iCol + 1; i < valueOffsets.length; i++) {
-                valueOffsets[i] -= delta;
+            var newSize = getStorageSize(colType, TypeConverter.getStringValue(value).length());
+            var delta = newSize - oldSize;
+            if (delta < 0) {
+                // [tupDataStart, off) to [tupDataStart + len, off + len)
+                // in DBPage's opinion, move forward
+                deleteTupleDataRange(offset, -delta);
+            } else if (delta > 0) {
+                // [tupDataStart, off) to [tupDataStart - len, off - len)
+                // in DBPage's opinion, move backward
+                insertTupleDataRange(offset, delta);
             }
-            System.out.println("Before: " + this);
+            pageOffset -= delta;
+            offset -= delta;
         }
 
-        var size = writeNonNullValue(dbPage, offset, colType, value);
+        /* 3. replace any existing value for the column with a new value */
+        writeNonNullValue(dbPage, offset, colType, value);
+        computeValueOffsets();
         if (colType.getBaseType() == SQLDataType.VARCHAR)
-            System.out.println("After:  " + this);
-//        computeValueOffsets();
+            System.out.println("After: " + this);
     }
 
 
