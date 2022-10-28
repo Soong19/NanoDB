@@ -46,4 +46,21 @@ High-level Architectures:
 
 To implement tuple updating, we need to implement two methods below:
 
-TODO:
+TODO: some implementation details
+
+##### DEBUG
+
+<b>*</b> StackOverflow when running UpdateCommand => bug01: Infinite Loop
+
+```diff
+    var colType = schema.getColumnInfo(iCol).getType();
+    var offset = valueOffsets[iCol];
+    var length = getColumnValueSize(colType, offset);
+    if (colType.getBaseType() != SQLDataType.VARCHAR) {
+        // fixed-size type
+-       setColumnValue(iCol, value);
++       switch (colType.getBaseType()) {
++           case INTEGER:
++              dbPage.writeInt(offset, (Integer) value);
++              break;
+```

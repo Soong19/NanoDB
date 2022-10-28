@@ -4,6 +4,11 @@ package edu.caltech.nanodb.storage;
 import edu.caltech.nanodb.expressions.TypeConverter;
 import edu.caltech.nanodb.relations.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 // TODO: Refactor all the code
 
 /**
@@ -526,7 +531,9 @@ public abstract class PageTuple implements Tuple {
         var length = getColumnValueSize(colType, offset);
         deleteTupleDataRange(offset, length);
 
-        computeValueOffsets();
+        /* 3. update value offsets */
+//        computeValueOffsets();
+        throw new UnsupportedOperationException("For now, setNull is forbidden");
     }
 
 
@@ -578,17 +585,24 @@ public abstract class PageTuple implements Tuple {
         /* 2. replace any existing value for the column with a new value */
         var colType = schema.getColumnInfo(iCol).getType();
         var offset = valueOffsets[iCol];
-        var length = getColumnValueSize(colType, offset);
-        if (colType.getBaseType() != SQLDataType.VARCHAR) {
-            // fixed-size type
-            setColumnValue(iCol, value);
-        } else {
-            // variable-size type
-            // TODO: [maybe] Allocate new space for the tuple
-            //       Think over it
+
+        /* 3. update value offsets */
+        if (colType.getBaseType() == SQLDataType.VARCHAR) {
+            // variable-size type: update behind/following offsets
+            var oldSize = getColumnValueSize(colType, offset);
+            var newSize = value.toString().length();
+            var delta = oldSize - newSize;
+            System.out.println("Befor:  " + this);
+            for (int i = iCol + 1; i < valueOffsets.length; i++) {
+                valueOffsets[i] -= delta;
+            }
+            System.out.println("Before: " + this);
         }
 
-        computeValueOffsets();
+        var size = writeNonNullValue(dbPage, offset, colType, value);
+        if (colType.getBaseType() == SQLDataType.VARCHAR)
+            System.out.println("After:  " + this);
+//        computeValueOffsets();
     }
 
 
