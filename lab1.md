@@ -53,12 +53,17 @@ Low_Addr               ->                      High_Addr
 To implement tuple updating, we need to implement two methods below:
 
 `setNonNullColumnValue(int iCol, Object value)`
-1. Clear specific null-bitmap
-2. Manipulate when value is VARCHAR<br/>
+1. Clear specific bit in null-bitmap
+2. Manipulate space when value is VARCHAR<br/>
    (1) NewSize > OldSize: insertTupleData, move all data before offset backward, low_addr-=delta<br/>
    (2) NewSize < OldSize: deleteTupleData, move all data before offset forward, low_addr+=delta
 3. Write non-null value, aka. fill the manipulated space
 4. Update ValueOffsets
+
+`setNullColumnValue(int iCol)`
+1. Set specific bit in null-bitmap
+2. Manipulate space: move all data before offset forward, low_addr+=length
+3. Update ValueOffsets
 
 ##### DEBUG
 

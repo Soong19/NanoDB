@@ -527,8 +527,8 @@ public abstract class PageTuple implements Tuple {
         deleteTupleDataRange(offset, length);
 
         /* 3. update value offsets */
-//        computeValueOffsets();
-        throw new UnsupportedOperationException("For now, setNull is forbidden");
+        pageOffset += length;
+        computeValueOffsets();
     }
 
 
@@ -602,8 +602,6 @@ public abstract class PageTuple implements Tuple {
         /* 3. replace any existing value for the column with a new value */
         writeNonNullValue(dbPage, offset, colType, value);
         computeValueOffsets();
-        if (colType.getBaseType() == SQLDataType.VARCHAR)
-            System.out.println("After: " + this);
     }
 
 
