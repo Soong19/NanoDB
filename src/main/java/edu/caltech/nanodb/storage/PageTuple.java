@@ -574,17 +574,17 @@ public abstract class PageTuple implements Tuple {
 
         /* 1. set null-bitmap to false */
         if (isNullValue(iCol)) {
-            // TODO: Configure something with null value
             setNullFlag(iCol, false);
         }
 
         /* 2. manipulate space */
-        var colType = schema.getColumnInfo(iCol).getType();
         var offset = valueOffsets[iCol];
-        if (colType.getBaseType() == SQLDataType.VARCHAR) {
+        var colType = schema.getColumnInfo(iCol).getType();
+        var newSize = getStorageSize(colType, TypeConverter.getStringValue(value).length());
+
+        if (offset != NULL_OFFSET && colType.getBaseType() == SQLDataType.VARCHAR) {
             // variable-size type
             var oldSize = getColumnValueSize(colType, offset);
-            var newSize = getStorageSize(colType, TypeConverter.getStringValue(value).length());
             var delta = newSize - oldSize;
             if (delta < 0) {
                 // [tupDataStart, off) to [tupDataStart + len, off + len)
@@ -597,6 +597,19 @@ public abstract class PageTuple implements Tuple {
             }
             pageOffset -= delta;
             offset -= delta;
+        } else if (offset == NULL_OFFSET) {
+            // update a NULL value => find a valid offset
+            offset = getEndOffset();
+            for (int i = iCol + 1; i < valueOffsets.length; i++) {
+                if (!getNullFlag(iCol)) {
+                    offset = valueOffsets[i];
+                    break;
+                }
+            }
+            // need to allocate new space for the value
+            insertTupleDataRange(offset, newSize);
+            pageOffset -= newSize;
+            offset -= newSize;
         }
 
         /* 3. replace any existing value for the column with a new value */
