@@ -76,6 +76,7 @@ public class HeapTupleFileManager implements TupleFileManager {
 
         // Table schema is stored into the header page, so get it and prepare
         // to write out the schema information.
+        // implicitly: headerPage.pin()
         DBPage headerPage = storageManager.loadDBPage(dbFile, 0);
         PageReader hpReader = new PageReader(headerPage);
         // Skip past the page-size value.
@@ -87,6 +88,9 @@ public class HeapTupleFileManager implements TupleFileManager {
 
         // Read in the statistics.
         TableStats stats = StatsWriter.readTableStats(hpReader, schema);
+
+        // Unpin header since no need for header
+        headerPage.unpin();
 
         return new HeapTupleFile(storageManager, this, dbFile, schema, stats);
     }
@@ -113,6 +117,7 @@ public class HeapTupleFileManager implements TupleFileManager {
 
         // Table schema is stored into the header page, so get it and prepare
         // to write out the schema information.
+        // implicitly: headerPage.pin()
         DBPage headerPage = storageManager.loadDBPage(dbFile, 0);
         PageWriter hpWriter = new PageWriter(headerPage);
         // Skip past the page-size value.
@@ -132,6 +137,9 @@ public class HeapTupleFileManager implements TupleFileManager {
         StatsWriter.writeTableStats(schema, stats, hpWriter);
         int statsSize = hpWriter.getPosition() - schemaEndPos;
         HeaderPage.setStatsSize(headerPage, statsSize);
+
+        // Unpin header since no need for header
+        headerPage.unpin();
     }
 
 
