@@ -90,3 +90,12 @@ To implement tuple updating, we need to implement two methods below:
 ### Task #2: Unpinning Tuples and Pages
 
 > Add code to pin/unpin pages and tuples for proper buffer management
+
+The pin scheme we need to implement is very trivial:
+* pin/unpin data page when getting, adding tuples in `HeapTupleFile`
+* pin/unpin header page in `HeapTupleFileManager`
+* unpin current tuple before Iterator/Volcano calling `getNext()`
+* unpin `currentTuple` when it is not what we want `SelectNode`
+
+To test buffer pool manager, add execute "set property 'nanodb.pagecache.size' =
+65536;" before a query involving a lot of tuples.

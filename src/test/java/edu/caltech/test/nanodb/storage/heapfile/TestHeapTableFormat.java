@@ -71,6 +71,7 @@ public class TestHeapTableFormat extends TableFormatTestCase {
      * @throws Exception if an IO error occurs, or if the test fails.
      */
     public void testHeapTableMultiPageInsertDelete() throws Exception {
+        tryDoCommand("set property 'nanodb.pagecache.size' = 65536;", false);
         tryDoCommand("CREATE TABLE heap_mp_insdel (a INTEGER, b VARCHAR(50)) " +
             "PROPERTIES (storage = 'heap', pagesize = 4096);", false);
 
