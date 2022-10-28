@@ -394,8 +394,6 @@ public class HeapTupleFile implements TupleFile {
             HeapFilePageTuple.storeNewTuple(schema, dbPage, slot, tupOffset, tup);
 
         DataPage.sanityCheck(dbPage);
-        // Unpin dbPage since we do not need it
-        dbPage.unpin();
 
         return pageTup;
     }
