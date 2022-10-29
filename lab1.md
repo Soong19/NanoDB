@@ -131,7 +131,7 @@ space.
 
 Something goes wrong: the maximum number of pages a tuple file is 65536, which
 acquires 8192 bytes for single bitmap. It is so huge an overhead that we cannot
-carry on.
+carry on in single page, which introduce more complexity.
 
 ---
 

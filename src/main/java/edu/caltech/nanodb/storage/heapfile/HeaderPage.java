@@ -184,8 +184,9 @@ public class HeaderPage {
      */
     public static void setFreeHead(DBPage dbPage, int pageNo) {
         verifyIsHeaderPage(dbPage);
-        if (pageNo == 0 || pageNo > 65536) {
-            throw new IllegalArgumentException("header page or no more pages" + pageNo);
+        // pageNo=0 means: no more free page in the list
+        if (/* pageNo == 0 is ok*/ pageNo > 65536) {
+            throw new IllegalArgumentException("no more pages" + pageNo);
         }
         dbPage.writeInt(OFFSET_FREE_HEAD, pageNo);
     }

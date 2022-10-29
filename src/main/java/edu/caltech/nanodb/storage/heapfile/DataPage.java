@@ -29,7 +29,12 @@ public class DataPage {
      */
     private static Logger logger = LogManager.getLogger(DataPage.class);
 
-    public static int OCCUPY_FREE_NEXT = 4;
+    /**
+     * Mark the page as full, no more free space here.
+     */
+    public static final int INVALID_PGNO = -1;
+
+    public static final int OCCUPY_FREE_NEXT = 4;
 
     /**
      * The offset in the data page where the number of slots in the slot table
@@ -609,6 +614,7 @@ public class DataPage {
      * @param pageNo the next page id
      */
     public static void setFreeNext(DBPage dbPage, int pageNo) {
+        // pageNo=0 means: no more free page in the list
         if (/* pageNo == 0 is ok*/ pageNo > 65536) {
             throw new IllegalArgumentException("header page or no more pages" + pageNo);
         }
