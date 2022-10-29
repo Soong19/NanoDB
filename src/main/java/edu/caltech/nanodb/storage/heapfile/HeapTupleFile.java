@@ -438,8 +438,20 @@ public class HeapTupleFile implements TupleFile {
         DataPage.deleteTuple(dbPage, ptup.getSlot());
         DataPage.sanityCheck(dbPage);
 
-        // Note that we don't invalidate the page-tuple when it is deleted,
-        // so that the tuple can still be unpinned, etc.
+        if (DataPage.getFreeNext(dbPage) != DataPage.INVALID_PGNO) {
+            // already in free list
+            return;
+        }
+
+        // implicitly: headerPage.pin()
+        var headerPage = storageManager.loadDBPage(dbFile, 0);
+
+        // Insert the page into head->next
+        var prev = HeaderPage.getFreeHead(headerPage);
+        HeaderPage.setFreeHead(headerPage, dbPage.getPageNo());
+        DataPage.setFreeNext(dbPage, prev);
+
+        headerPage.unpin();
     }
 
 

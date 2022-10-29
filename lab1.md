@@ -152,3 +152,7 @@ Prototype Re-design: Use a free page list to track which pages have free space
 ------------------------------------------------------------------
 0                                             PageSize - 4      PageSize
 ```
+
+* `addTuple`: Use the free page list to find free page or create a free page
+* `deleteTuple`: When deleting a tuple from a non-free page, add the page to
+  free page list
