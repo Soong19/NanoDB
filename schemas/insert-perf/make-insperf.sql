@@ -1,3 +1,5 @@
+DROP TABLE if EXISTS insert_perf;
+
 CREATE TABLE insert_perf (
     id  INTEGER,
     str VARCHAR(200),
@@ -5,4 +7,3 @@ CREATE TABLE insert_perf (
 );
 
 EXIT;
-

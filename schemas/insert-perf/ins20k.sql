@@ -19999,5 +19999,6 @@ INSERT INTO insert_perf VALUES (19998, 'trumpety lackbrainedness crotchy subcont
 INSERT INTO insert_perf VALUES (19999, 'suffront incrash telecomputing unvariant ovovivipara silkness iodohydrin nakhlite oxygas scowries thionium junonia notopodial tantalisms', 58.485);
 INSERT INTO insert_perf VALUES (20000, 'speedboatman stylopization exeeming carpomania pseudobrookite preterience autostethoscope pollachius unsubduably chuana plautine unstrangered premanifestation unchristianed', 30.3889);
 
-EXIT;
+SHOW 'STORAGE' STATS;
 
+EXIT;
