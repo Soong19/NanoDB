@@ -28,10 +28,9 @@ public interface ExpressionProcessor {
      * the method should return the passed-in node.
      *
      * @param node the {@code Expression} node being left
-     *
      * @return the {@code Expression} object to use for the node being left;
-     *         either {@code node} if no changes are to be made, or a new
-     *         {@code Expression} object if {@code node} should be replaced.
+     * either {@code node} if no changes are to be made, or a new
+     * {@code Expression} object if {@code node} should be replaced.
      */
     Expression leave(Expression node);
 }

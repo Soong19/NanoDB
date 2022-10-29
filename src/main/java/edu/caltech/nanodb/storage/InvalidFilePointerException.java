@@ -8,7 +8,9 @@ package edu.caltech.nanodb.storage;
  */
 public class InvalidFilePointerException extends StorageException {
 
-    /** Construct an invalid file-pointer exception with no message. */
+    /**
+     * Construct an invalid file-pointer exception with no message.
+     */
     public InvalidFilePointerException() {
         super();
     }

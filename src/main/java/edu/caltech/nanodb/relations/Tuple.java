@@ -47,8 +47,8 @@ public interface Tuple extends Pinnable {
      * results, etc.
      *
      * @return {@code true} if the tuple is backed by a disk page, or
-     *         {@code false} if the tuple's data is allocated in the memory
-     *         heap.
+     * {@code false} if the tuple's data is allocated in the memory
+     * heap.
      */
     boolean isDiskBacked();
 
@@ -65,9 +65,8 @@ public interface Tuple extends Pinnable {
      * Returns <tt>true</tt> if the specified column's value is <tt>NULL</tt>.
      *
      * @param colIndex the index of the column to check for <tt>NULL</tt>ness.
-     *
      * @return <tt>true</tt> if the specified column is <tt>NULL</tt>,
-     *         <tt>false</tt> otherwise.
+     * <tt>false</tt> otherwise.
      */
     boolean isNullValue(int colIndex);
 
@@ -78,7 +77,7 @@ public interface Tuple extends Pinnable {
      *
      * @param colIndex the index of the column to retrieve the value for
      * @return the value of the column, or <tt>null</tt> if the column is
-     *         <tt>NULL</tt>.
+     * <tt>NULL</tt>.
      */
     Object getColumnValue(int colIndex);
 
@@ -88,8 +87,8 @@ public interface Tuple extends Pinnable {
      * is set to the SQL <tt>NULL</tt> value.
      *
      * @param colIndex the index of the column to set the value for
-     * @param value the value to store for the column, or <tt>null</tt> if the
-     *        column should be set to <tt>NULL</tt>.
+     * @param value    the value to store for the column, or <tt>null</tt> if the
+     *                 column should be set to <tt>NULL</tt>.
      */
     void setColumnValue(int colIndex, Object value);
 
@@ -102,7 +101,6 @@ public interface Tuple extends Pinnable {
      * support an external reference.
      *
      * @return a file-pointer that can be used to look up this tuple
-     *
      * @throws UnsupportedOperationException if this operation is unsupported
      */
     public FilePointer getExternalReference();

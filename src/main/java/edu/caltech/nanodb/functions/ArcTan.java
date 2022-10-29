@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the arc-tangent of a single argument.  Returns <tt>NULL</tt> if
  * argument is <tt>NULL</tt>.
- * 
+ *
  * @author emil
  */
 public class ArcTan extends SimpleFunction {
@@ -29,8 +29,8 @@ public class ArcTan extends SimpleFunction {
     @Override
     public Object evaluate(Environment env, List<Expression> args) {
         if (args.size() != 1) {
-            throw new ExpressionException("Cannot call ATAN on " + args.size() 
-                    + " arguments");
+            throw new ExpressionException("Cannot call ATAN on " + args.size()
+                + " arguments");
         }
 
         Object argVal = args.get(0).evaluate(env);

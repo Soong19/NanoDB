@@ -18,14 +18,16 @@ import org.apache.logging.log4j.LogManager;
  * through SQL queries as well.
  *
  * @review (Donnie) I really don't like that this is a static class, because
- *         it prevents us from having multiple sets of performance counters.
- *         This is just the easiest way to add counters to NanoDB in the short
- *         run.  In the future, make this non-static, and maybe stick an
- *         instance of it on the NanoDB Server object.  We can put it into
- *         thread-local storage to make it easy to access.
+ * it prevents us from having multiple sets of performance counters.
+ * This is just the easiest way to add counters to NanoDB in the short
+ * run.  In the future, make this non-static, and maybe stick an
+ * instance of it on the NanoDB Server object.  We can put it into
+ * thread-local storage to make it easy to access.
  */
 public class PerformanceCounters {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(PerformanceCounters.class);
 
 

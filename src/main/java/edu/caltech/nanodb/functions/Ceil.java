@@ -14,7 +14,7 @@ import edu.caltech.nanodb.relations.Schema;
 
 
 /**
- * Computes the smallest whole number larger than the argument.  Returns NULL if 
+ * Computes the smallest whole number larger than the argument.  Returns NULL if
  * argument is NULL.  The result is always a double-precision number, even
  * though it is a whole number, since this is what {@link Math#ceil} returns.
  */
@@ -29,8 +29,8 @@ public class Ceil extends SimpleFunction {
     @Override
     public Object evaluate(Environment env, List<Expression> args) {
         if (args.size() != 1) {
-            throw new ExpressionException("Cannot call CEIL on " + args.size() 
-                    + " arguments");
+            throw new ExpressionException("Cannot call CEIL on " + args.size()
+                + " arguments");
         }
 
         Object argVal = args.get(0).evaluate(env);

@@ -72,14 +72,12 @@ public class SelectValue implements Cloneable {
      * Construct a select-value object from an expression and an optional
      * alias or nickname value.
      *
-     * @param e The expression that generates the select-value.
+     * @param e     The expression that generates the select-value.
      * @param alias If not <code>null</code>, this is the column name to
-     *        assign to the result value.
-     *
-     * @throws java.lang.NullPointerException if {@code e} is {@code null}
-     *
+     *              assign to the result value.
+     * @throws java.lang.NullPointerException     if {@code e} is {@code null}
      * @throws java.lang.IllegalArgumentException if {@code e} is a wildcard
-     *         expression, and {@code alias} is also specified
+     *                                            expression, and {@code alias} is also specified
      */
     public SelectValue(Expression e, String alias) {
         if (e == null)
@@ -98,8 +96,7 @@ public class SelectValue implements Cloneable {
                         "Wildcard expressions cannot have an alias");
                 }
             }
-        }
-        else if (e instanceof ScalarSubquery) {
+        } else if (e instanceof ScalarSubquery) {
             scalarSubquery = ((ScalarSubquery) e).getSubquery();
         }
     }
@@ -109,7 +106,6 @@ public class SelectValue implements Cloneable {
      * Construct a select-value object from an expression, with no alias.
      *
      * @param e The expression that generates the select-value.
-     *
      * @throws java.lang.NullPointerException if {@code e} is {@code null}
      */
     public SelectValue(Expression e) {
@@ -191,7 +187,7 @@ public class SelectValue implements Cloneable {
      * Sets this SelectValue's alias result name to the specifie string.
      *
      * @param alias the alias to use for the column, or {@code null} if no
-     *        alias should be used
+     *              alias should be used
      */
     public void setAlias(String alias) {
         resultAlias = alias;
@@ -227,15 +223,13 @@ public class SelectValue implements Cloneable {
      * also be renamed; this renaming is applied here.  However, if a complex
      * expression doesn't have a name then it will be assigned a unique name.
      *
-     * @param inputSchema the schema against which the select-value will be
-     *        evaluated
-     *
+     * @param inputSchema  the schema against which the select-value will be
+     *                     evaluated
      * @param resultSchema the current result schema "so far".  This is
-     *        provided so that if the select-value is unnamed then a unique
-     *        name can be generated.
-     *
+     *                     provided so that if the select-value is unnamed then a unique
+     *                     name can be generated.
      * @return a collection of one or more column-information objects
-     *         containing the schema for this select-value.
+     * containing the schema for this select-value.
      */
     public List<ColumnInfo> getColumnInfos(Schema inputSchema, Schema resultSchema) {
         ArrayList<ColumnInfo> results = new ArrayList<>();
@@ -244,15 +238,13 @@ public class SelectValue implements Cloneable {
             // The values matching the wildcard column-name will appear in the
             // SELECT clause's output.
             results.addAll(inputSchema.findColumns(wildcardColumnName).values());
-        }
-        else if (expression != null) {
+        } else if (expression != null) {
             ColumnInfo colInfo = expression.getColumnInfo(inputSchema);
             if (resultAlias != null) {
                 // The result has an alias specified, so set the column name
                 // to be that alias.
                 colInfo = new ColumnInfo(resultAlias, colInfo.getType());
-            }
-            else if (colInfo.getName() == null) {
+            } else if (colInfo.getName() == null) {
                 // The column didn't have a name specified, so generate one
                 // that is unique in the result schema.
 
@@ -269,12 +261,10 @@ public class SelectValue implements Cloneable {
                 }
             }
             results.add(colInfo);
-        }
-        else if (scalarSubquery != null) {
+        } else if (scalarSubquery != null) {
             throw new UnsupportedOperationException(
                 "Support for scalar subqueries is currently incomplete.");
-        }
-        else {
+        } else {
             throw new IllegalStateException(
                 "Select-value doesn't specify any values");
         }
@@ -294,8 +284,8 @@ public class SelectValue implements Cloneable {
             SelectValue other = (SelectValue) obj;
 
             return Objects.equals(expression, other.expression) &&
-                   Objects.equals(resultAlias, other.resultAlias) &&
-                   Objects.equals(wildcardColumnName, other.wildcardColumnName);
+                Objects.equals(resultAlias, other.resultAlias) &&
+                Objects.equals(wildcardColumnName, other.wildcardColumnName);
         }
 
         return false;
@@ -313,13 +303,15 @@ public class SelectValue implements Cloneable {
         hash = 31 * hash + (expression != null ? expression.hashCode() : 0);
         hash = 31 * hash + (resultAlias != null ? resultAlias.hashCode() : 0);
         hash = 31 * hash + (wildcardColumnName != null ?
-                            wildcardColumnName.hashCode() : 0);
+            wildcardColumnName.hashCode() : 0);
 
         return hash;
     }
 
 
-    /** Creates a copy of a select value. */
+    /**
+     * Creates a copy of a select value.
+     */
     @Override
     public Object clone() throws CloneNotSupportedException {
         SelectValue sel = (SelectValue) super.clone();

@@ -44,15 +44,21 @@ public class CommandResult implements Serializable {
     }
 
 
-    /** The system time when command execution started. */
+    /**
+     * The system time when command execution started.
+     */
     private long startTimestamp = -1;
 
 
-    /** The system time when command execution ended. */
+    /**
+     * The system time when command execution ended.
+     */
     private long endTimestamp = -1;
 
 
-    /** A flag recording whether the command was an exit command or not. */
+    /**
+     * A flag recording whether the command was an exit command or not.
+     */
     private boolean exitCommand = false;
 
 
@@ -63,8 +69,9 @@ public class CommandResult implements Serializable {
     private Exception failure = null;
 
 
-
-    /** The time to the first result being produced. */
+    /**
+     * The time to the first result being produced.
+     */
     private long firstResultTimestamp = -1;
 
 

@@ -53,8 +53,7 @@ public class StdDevVarAggregate extends AggregateFunction {
         if (sum == null) {
             // This is the first value.  Store it.
             sum = value;
-        }
-        else {
+        } else {
             // Add in the new value.
             sum = ArithmeticOperator.evalObjects(ArithmeticOperator.Type.ADD,
                 sum, value);
@@ -89,8 +88,7 @@ public class StdDevVarAggregate extends AggregateFunction {
             if (computeStdDev) {
                 return ArithmeticOperator.evalObjects(
                     ArithmeticOperator.Type.POWER, var, Double.valueOf(.5));
-            }
-            else {
+            } else {
                 return var;
             }
         }
@@ -102,7 +100,7 @@ public class StdDevVarAggregate extends AggregateFunction {
         if (args.size() != 1) {
             throw new IllegalArgumentException(
                 "Stddev/variance aggregate function takes 1 argument; got " +
-                args.size());
+                    args.size());
         }
 
         // When finding the min or max, the resulting aggregate column is the

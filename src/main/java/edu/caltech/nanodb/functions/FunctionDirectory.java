@@ -80,11 +80,10 @@ public class FunctionDirectory {
      * reported.
      *
      * @param funcName the name of the function
-     * @param impl the {@link Function} object that implements this function
-     *
+     * @param impl     the {@link Function} object that implements this function
      * @throws IllegalArgumentException if the name or implementation is
-     *         <tt>null</tt>, or if the function already appears in the
-     *         directory
+     *                                  <tt>null</tt>, or if the function already appears in the
+     *                                  directory
      */
     public void addFunction(String funcName, Class<? extends Function> impl) {
         if (funcName == null)
@@ -116,7 +115,6 @@ public class FunctionDirectory {
      * and then returns it.
      *
      * @param funcName the name of the function to get
-     *
      * @return an object that can compute the function
      */
     public Function getFunction(String funcName) {
@@ -129,10 +127,9 @@ public class FunctionDirectory {
 
         try {
             return impl.getConstructor().newInstance();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Couldn't instantiate function " +
-                                       funcName, e);
+                funcName, e);
         }
     }
 }

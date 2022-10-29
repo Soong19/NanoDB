@@ -35,8 +35,7 @@ public class IndexUtils {
      * the index can reference columns in the table.
      *
      * @param tableSchema the schema of the table that the index is for
-     * @param indexDesc a specification of the index
-     *
+     * @param indexDesc   a specification of the index
      * @return the schema of the index
      */
     public static Schema makeIndexSchema(Schema tableSchema,
@@ -87,16 +86,16 @@ public class IndexUtils {
      *         specified multiple times in the input list.
      * /
     public static ColumnRefs makeIndex(Schema tableSchema,
-                                       List<String> columnNames) {
-        if (columnNames == null)
-            throw new IllegalArgumentException("columnNames must be specified");
+    List<String> columnNames) {
+    if (columnNames == null)
+    throw new IllegalArgumentException("columnNames must be specified");
 
-        if (columnNames.isEmpty()) {
-            throw new IllegalArgumentException(
-                "columnNames must specify at least one column");
-        }
+    if (columnNames.isEmpty()) {
+    throw new IllegalArgumentException(
+    "columnNames must specify at least one column");
+    }
 
-        return new ColumnRefs(tableSchema.getColumnIndexes(columnNames));
+    return new ColumnRefs(tableSchema.getColumnIndexes(columnNames));
     }
 
 
@@ -115,19 +114,19 @@ public class IndexUtils {
      *         specified multiple times in the input list.
      * /
     public static KeyColumnRefs makeKey(Schema tableSchema,
-                                        List<String> columnNames) {
-        if (columnNames == null)
-            throw new IllegalArgumentException("columnNames must be specified");
+    List<String> columnNames) {
+    if (columnNames == null)
+    throw new IllegalArgumentException("columnNames must be specified");
 
-        if (columnNames.isEmpty()) {
-            throw new IllegalArgumentException(
-                "columnNames must specify at least one column");
-        }
-
-        int[] colIndexes = tableSchema.getColumnIndexes(columnNames);
-        return new KeyColumnRefs(colIndexes);
+    if (columnNames.isEmpty()) {
+    throw new IllegalArgumentException(
+    "columnNames must specify at least one column");
     }
-    */
+
+    int[] colIndexes = tableSchema.getColumnIndexes(columnNames);
+    return new KeyColumnRefs(colIndexes);
+    }
+     */
 
 
     /**
@@ -152,20 +151,17 @@ public class IndexUtils {
      * the table that owns the index.
      * </p>
      *
-     * @param columnRefs the columns that the index is built on
-     *
-     * @param tuple the tuple from the original table, that the key will be
-     *        created from.
-     *
+     * @param columnRefs     the columns that the index is built on
+     * @param tuple          the tuple from the original table, that the key will be
+     *                       created from.
      * @param findExactTuple if {@code true}, this method will include the
-     *        {@code tuple}'s file-pointer so that the exact tuple can be
-     *        found in the index.
-     *
+     *                       {@code tuple}'s file-pointer so that the exact tuple can be
+     *                       found in the index.
      * @return a tuple-literal that can be used for storing, looking up, or
-     *         deleting the specific tuple {@code ptup}.
+     * deleting the specific tuple {@code ptup}.
      */
     public static TupleLiteral makeTableSearchKey(ColumnRefs columnRefs,
-        Tuple tuple, boolean findExactTuple) {
+                                                  Tuple tuple, boolean findExactTuple) {
 
         // Build up a new tuple-literal containing the search key.
         TupleLiteral searchKeyVal = new TupleLiteral();
@@ -186,12 +182,10 @@ public class IndexUtils {
      * Given an index tuple-file and a search key, this method attempts to
      * find the first tuple in the index that matches the search key.
      *
-     * @param key the search-key value to probe the index with
-     *
+     * @param key          the search-key value to probe the index with
      * @param idxTupleFile the index to probe with the search-key
-     *
      * @return the first matching tuple in the index, or {@code null} if
-     *         no matching tuple could be found
+     * no matching tuple could be found
      */
     public static PageTuple findTupleInIndex(Tuple key, TupleFile idxTupleFile) {
 
@@ -200,12 +194,10 @@ public class IndexUtils {
         if (idxTupleFile instanceof SequentialTupleFile) {
             SequentialTupleFile seqTupleFile = (SequentialTupleFile) idxTupleFile;
             idxPageTup = (PageTuple) seqTupleFile.findFirstTupleEquals(key);
-        }
-        else if (idxTupleFile instanceof HashedTupleFile) {
+        } else if (idxTupleFile instanceof HashedTupleFile) {
             HashedTupleFile hashTupleFile = (HashedTupleFile) idxTupleFile;
             idxPageTup = (PageTuple) hashTupleFile.findFirstTupleEquals(key);
-        }
-        else {
+        } else {
             throw new IllegalStateException("Index files must " +
                 "be sequential or hashing tuple files.");
         }
@@ -225,13 +217,12 @@ public class IndexUtils {
      *
      * @param tableTupleFile the tuple file holding the table data
      * @param indexTupleFile the tuple file holding the index data
-     *
      * @return A list of string error messages identified during the
-     *         verification scan.  This list will be empty if there are no
-     *         errors.
+     * verification scan.  This list will be empty if there are no
+     * errors.
      */
     public static List<String> verifyIndex(TupleFile tableTupleFile,
-        TupleFile indexTupleFile) {
+                                           TupleFile indexTupleFile) {
 
         ArrayList<String> errors = new ArrayList<>();
         HashSet<FilePointer> tableTuples = new HashSet<>();
@@ -268,7 +259,7 @@ public class IndexUtils {
             if (!tableTuples.contains(fptr)) {
                 errors.add(
                     "Index references a nonexistent tuple at location " +
-                    fptr + ".");
+                        fptr + ".");
             }
 
             indexTuples.add(fptr);
@@ -282,7 +273,7 @@ public class IndexUtils {
         if (!diff.isEmpty()) {
             for (FilePointer fptr : diff) {
                 errors.add("Tuple at location " + fptr +
-                           " wasn't referenced by the index.");
+                    " wasn't referenced by the index.");
             }
         }
 

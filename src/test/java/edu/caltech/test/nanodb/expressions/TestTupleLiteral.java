@@ -17,7 +17,7 @@ import edu.caltech.nanodb.relations.SQLDataType;
  * This test class exercises the functionality of the
  * {@link edu.caltech.nanodb.expressions.TupleLiteral} class.
  **/
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestTupleLiteral {
 
     public void testSimpleCtors() {
@@ -35,7 +35,9 @@ public class TestTupleLiteral {
     }
 
 
-    /** This test exercises the <code>addValue()</code> methods. */
+    /**
+     * This test exercises the <code>addValue()</code> methods.
+     */
     public void testAddValues() {
         TupleLiteral tuple = new TupleLiteral();
 
@@ -50,7 +52,7 @@ public class TestTupleLiteral {
         assert !tuple.isNullValue(0);
         assert !tuple.isNullValue(1);
         assert !tuple.isNullValue(2);
-        assert  tuple.isNullValue(3);
+        assert tuple.isNullValue(3);
         assert !tuple.isNullValue(4);
 
         assert tuple.getColumnValue(0).equals(Integer.valueOf(3));
@@ -61,7 +63,9 @@ public class TestTupleLiteral {
     }
 
 
-    /** This test exercises the constructor that duplicates a tuple. */
+    /**
+     * This test exercises the constructor that duplicates a tuple.
+     */
     public void testTupleCtor() {
         TupleLiteral tuple1 = new TupleLiteral();
         tuple1.addValue(Integer.valueOf(5));
@@ -69,18 +73,20 @@ public class TestTupleLiteral {
         tuple1.addValue("hello");
 
         TupleLiteral tuple2 = TupleLiteral.fromTuple(tuple1);
-        assert(tuple2.getColumnCount() == 3);
+        assert (tuple2.getColumnCount() == 3);
 
-        assert(tuple2.getColumnValue(0).equals(Integer.valueOf(5)));
+        assert (tuple2.getColumnValue(0).equals(Integer.valueOf(5)));
 
-        assert(tuple2.isNullValue(1));
-        assert(tuple2.getColumnValue(1) == null);
+        assert (tuple2.isNullValue(1));
+        assert (tuple2.getColumnValue(1) == null);
 
-        assert(tuple2.getColumnValue(2).equals("hello"));
+        assert (tuple2.getColumnValue(2).equals("hello"));
     }
 
 
-    /** This test exercises the <tt>appendTuple()</tt> method. */
+    /**
+     * This test exercises the <tt>appendTuple()</tt> method.
+     */
     public void testAppendTuple() {
         TupleLiteral tuple1 = new TupleLiteral();
         tuple1.addValue(Integer.valueOf(5));
@@ -90,14 +96,13 @@ public class TestTupleLiteral {
         TupleLiteral tuple2 = new TupleLiteral();
         tuple2.appendTuple(tuple1);
 
-        assert(tuple2.getColumnCount() == 3);
+        assert (tuple2.getColumnCount() == 3);
 
-        assert(tuple2.getColumnValue(0).equals(Integer.valueOf(5)));
+        assert (tuple2.getColumnValue(0).equals(Integer.valueOf(5)));
 
-        assert(tuple2.isNullValue(1));
-        assert(tuple2.getColumnValue(1) == null);
+        assert (tuple2.isNullValue(1));
+        assert (tuple2.getColumnValue(1) == null);
 
-        assert(tuple2.getColumnValue(2).equals("hello"));
+        assert (tuple2.getColumnValue(2).equals("hello"));
     }
 }
-

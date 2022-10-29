@@ -47,7 +47,9 @@ public class ArithmeticOperator extends Expression {
         POWER("^");
 
 
-        /** The string representation for each operator.  Used for printing. */
+        /**
+         * The string representation for each operator.  Used for printing.
+         */
         private final String stringRep;
 
         /**
@@ -74,10 +76,9 @@ public class ArithmeticOperator extends Expression {
          * method returns the corresponding {@code Type} value.
          *
          * @param stringRep the string representation of the arithmetic
-         *        operator
-         *
+         *                  operator
          * @return the operator's corresponding type, or {@code null} if the
-         *         type cannot be found
+         * type cannot be found
          */
         public static Type find(String stringRep) {
             for (Type t : values()) {
@@ -91,15 +92,20 @@ public class ArithmeticOperator extends Expression {
     }
 
 
-    /** The kind of comparison, such as "subtract" or "multiply." */
+    /**
+     * The kind of comparison, such as "subtract" or "multiply."
+     */
     private Type type;
 
-    /** The left expression in the comparison. */
+    /**
+     * The left expression in the comparison.
+     */
     private Expression leftExpr;
 
-    /** The right expression in the comparison. */
+    /**
+     * The right expression in the comparison.
+     */
     private Expression rightExpr;
-
 
 
     public ArithmeticOperator(Type type, Expression lhs, Expression rhs) {
@@ -171,9 +177,7 @@ public class ArithmeticOperator extends Expression {
      * @param type the arithmetic operation to perform
      * @param aObj the first operand value for the operation
      * @param bObj the second operand value for the operation
-     *
      * @return the result of the arithmetic operation
-     *
      * @throws ExpressionException if the operand type is unrecognized
      */
     public static Object evalObjects(Type type, Object aObj, Object bObj) {
@@ -185,74 +189,59 @@ public class ArithmeticOperator extends Expression {
 
         if (coerced.value1 instanceof BigInteger) {
             result = evalBigIntegers(type, (BigInteger) coerced.value1,
-                                           (BigInteger) coerced.value2);
-        }
-        else if (coerced.value1 instanceof BigDecimal) {
+                (BigInteger) coerced.value2);
+        } else if (coerced.value1 instanceof BigDecimal) {
             result = evalBigDecimals(type, (BigDecimal) coerced.value1,
-                                           (BigDecimal) coerced.value2);
-        }
-        else if (coerced.value1 instanceof Double) {
+                (BigDecimal) coerced.value2);
+        } else if (coerced.value1 instanceof Double) {
             result = evalDoubles(type, (Double) coerced.value1,
-                                       (Double) coerced.value2);
-        }
-        else if (coerced.value1 instanceof Float) {
+                (Double) coerced.value2);
+        } else if (coerced.value1 instanceof Float) {
             result = evalFloats(type, (Float) coerced.value1,
-                                      (Float) coerced.value2);
-        }
-        else if (coerced.value1 instanceof Long) {
+                (Float) coerced.value2);
+        } else if (coerced.value1 instanceof Long) {
             result = evalLongs(type, (Long) coerced.value1,
-                                     (Long) coerced.value2);
-        }
-        else if (coerced.value1 instanceof Integer) {
+                (Long) coerced.value2);
+        } else if (coerced.value1 instanceof Integer) {
             result = evalIntegers(type, (Integer) coerced.value1,
-                                        (Integer) coerced.value2);
-        }
-        else if (coerced.value1 instanceof LocalDate &&
-                 coerced.value2 instanceof LocalDate) {
+                (Integer) coerced.value2);
+        } else if (coerced.value1 instanceof LocalDate &&
+            coerced.value2 instanceof LocalDate) {
             result = evalDates(type, (LocalDate) coerced.value1,
-                                     (LocalDate) coerced.value2);
-        }
-        else if (coerced.value1 instanceof LocalTime &&
-                 coerced.value2 instanceof LocalTime) {
+                (LocalDate) coerced.value2);
+        } else if (coerced.value1 instanceof LocalTime &&
+            coerced.value2 instanceof LocalTime) {
             result = evalTimes(type, (LocalTime) coerced.value1,
-                                     (LocalTime) coerced.value2);
-        }
-        else if (coerced.value1 instanceof LocalDateTime &&
-                 coerced.value2 instanceof LocalDateTime) {
+                (LocalTime) coerced.value2);
+        } else if (coerced.value1 instanceof LocalDateTime &&
+            coerced.value2 instanceof LocalDateTime) {
             result = evalDateTimes(type, (LocalDateTime) coerced.value1,
-                                         (LocalDateTime) coerced.value2);
-        }
-        else if (coerced.value1 instanceof LocalDate &&
+                (LocalDateTime) coerced.value2);
+        } else if (coerced.value1 instanceof LocalDate &&
             coerced.value2 instanceof TemporalAmount) {
             result = evalDateInterval(type, (LocalDate) coerced.value1,
                 (TemporalAmount) coerced.value2);
-        }
-        else if (coerced.value1 instanceof LocalTime &&
+        } else if (coerced.value1 instanceof LocalTime &&
             coerced.value2 instanceof TemporalAmount) {
             result = evalTimeInterval(type, (LocalTime) coerced.value1,
                 (TemporalAmount) coerced.value2);
-        }
-        else if (coerced.value1 instanceof LocalDateTime &&
+        } else if (coerced.value1 instanceof LocalDateTime &&
             coerced.value2 instanceof TemporalAmount) {
             result = evalDateTimeInterval(type, (LocalDateTime) coerced.value1,
                 (TemporalAmount) coerced.value2);
-        }
-        else if (coerced.value1 instanceof TemporalAmount &&
+        } else if (coerced.value1 instanceof TemporalAmount &&
             coerced.value2 instanceof LocalDate) {
             result = evalIntervalDate(type, (TemporalAmount) coerced.value1,
                 (LocalDate) coerced.value2);
-        }
-        else if (coerced.value1 instanceof TemporalAmount &&
+        } else if (coerced.value1 instanceof TemporalAmount &&
             coerced.value2 instanceof LocalTime) {
             result = evalIntervalTime(type, (TemporalAmount) coerced.value1,
                 (LocalTime) coerced.value2);
-        }
-        else if (coerced.value1 instanceof TemporalAmount &&
+        } else if (coerced.value1 instanceof TemporalAmount &&
             coerced.value2 instanceof LocalDateTime) {
             result = evalIntervalDateTime(type, (TemporalAmount) coerced.value1,
                 (LocalDateTime) coerced.value2);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Cannot perform arithmetic on " +
                 coerced.value1.getClass() + " and " + coerced.value2.getClass());
         }
@@ -265,38 +254,38 @@ public class ArithmeticOperator extends Expression {
         BigDecimal result;
 
         switch (type) {
-        case ADD:
-            result = a.add(b);
-            break;
+            case ADD:
+                result = a.add(b);
+                break;
 
-        case SUBTRACT:
-            result = a.subtract(b);
-            break;
+            case SUBTRACT:
+                result = a.subtract(b);
+                break;
 
-        case MULTIPLY:
-            result = a.multiply(b);
-            break;
+            case MULTIPLY:
+                result = a.multiply(b);
+                break;
 
-        case DIVIDE:
-            if (b.equals(BigDecimal.ZERO))
-                throw new DivideByZeroException();
+            case DIVIDE:
+                if (b.equals(BigDecimal.ZERO))
+                    throw new DivideByZeroException();
 
-            int scale = 10;  // TODO:  Scale?
-            result = a.divide(b, scale, RoundingMode.HALF_UP);
-            break;
+                int scale = 10;  // TODO:  Scale?
+                result = a.divide(b, scale, RoundingMode.HALF_UP);
+                break;
 
-        case REMAINDER:
-            if (b.equals(BigDecimal.ZERO))
-                throw new DivideByZeroException();
+            case REMAINDER:
+                if (b.equals(BigDecimal.ZERO))
+                    throw new DivideByZeroException();
 
-            result = a.remainder(b);
-            break;
+                result = a.remainder(b);
+                break;
 
-        case POWER:
-            throw new ExpressionException("POWER is unsupported for BigDecimal");
+            case POWER:
+                throw new ExpressionException("POWER is unsupported for BigDecimal");
 
-        default:
-            throw new ExpressionException("Unrecognized arithmetic type " + type);
+            default:
+                throw new ExpressionException("Unrecognized arithmetic type " + type);
         }
 
         return result;
@@ -307,37 +296,37 @@ public class ArithmeticOperator extends Expression {
         BigInteger result;
 
         switch (type) {
-        case ADD:
-            result = a.add(b);
-            break;
+            case ADD:
+                result = a.add(b);
+                break;
 
-        case SUBTRACT:
-            result = a.subtract(b);
-            break;
+            case SUBTRACT:
+                result = a.subtract(b);
+                break;
 
-        case MULTIPLY:
-            result = a.multiply(b);
-            break;
+            case MULTIPLY:
+                result = a.multiply(b);
+                break;
 
-        case DIVIDE:
-            if (b.equals(BigInteger.ZERO))
-                throw new DivideByZeroException();
+            case DIVIDE:
+                if (b.equals(BigInteger.ZERO))
+                    throw new DivideByZeroException();
 
-            result = a.divide(b);
-            break;
+                result = a.divide(b);
+                break;
 
-        case REMAINDER:
-            if (b.equals(BigInteger.ZERO))
-                throw new DivideByZeroException();
+            case REMAINDER:
+                if (b.equals(BigInteger.ZERO))
+                    throw new DivideByZeroException();
 
-            result = a.remainder(b);
-            break;
+                result = a.remainder(b);
+                break;
 
-        case POWER:
-            throw new ExpressionException("POWER is unsupported for BigInteger");
+            case POWER:
+                throw new ExpressionException("POWER is unsupported for BigInteger");
 
-        default:
-            throw new ExpressionException("Unrecognized arithmetic type " + type);
+            default:
+                throw new ExpressionException("Unrecognized arithmetic type " + type);
         }
 
         return result;
@@ -350,52 +339,50 @@ public class ArithmeticOperator extends Expression {
      * <tt>Double</tt>.
      *
      * @param type the arithmetic operation to perform
-     * @param a the first operand value for the operation
-     * @param b the second operand value for the operation
-     *
+     * @param a    the first operand value for the operation
+     * @param b    the second operand value for the operation
      * @return the result of the arithmetic operation
-     *
      * @throws ExpressionException if the operand type is unrecognized
      */
     private static Double evalDoubles(Type type, Double a, Double b) {
         double result;
 
         switch (type) {
-        case ADD:
-            result = a + b;
-            break;
+            case ADD:
+                result = a + b;
+                break;
 
-        case SUBTRACT:
-            result = a - b;
-            break;
+            case SUBTRACT:
+                result = a - b;
+                break;
 
-        case MULTIPLY:
-            result = a * b;
-            break;
+            case MULTIPLY:
+                result = a * b;
+                break;
 
-        case DIVIDE:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case DIVIDE:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a / b;
-            break;
+                result = a / b;
+                break;
 
-        case REMAINDER:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case REMAINDER:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a % b;
-            break;
+                result = a % b;
+                break;
 
-        case POWER:
-            if (a == 0 && b == 0)
-                throw new ExpressionException("0**0 is undefined");
+            case POWER:
+                if (a == 0 && b == 0)
+                    throw new ExpressionException("0**0 is undefined");
 
-            result = Math.pow(a, b);
-            break;
+                result = Math.pow(a, b);
+                break;
 
-        default:
-            throw new ExpressionException("Unrecognized arithmetic type " + type);
+            default:
+                throw new ExpressionException("Unrecognized arithmetic type " + type);
         }
 
         return result;
@@ -408,52 +395,50 @@ public class ArithmeticOperator extends Expression {
      * <tt>Float</tt>.
      *
      * @param type the arithmetic operation to perform
-     * @param a the first operand value for the operation
-     * @param b the second operand value for the operation
-     *
+     * @param a    the first operand value for the operation
+     * @param b    the second operand value for the operation
      * @return the result of the arithmetic operation
-     *
      * @throws ExpressionException if the operand type is unrecognized
      */
     private static Float evalFloats(Type type, Float a, Float b) {
         float result;
 
         switch (type) {
-        case ADD:
-            result = a + b;
-            break;
+            case ADD:
+                result = a + b;
+                break;
 
-        case SUBTRACT:
-            result = a - b;
-            break;
+            case SUBTRACT:
+                result = a - b;
+                break;
 
-        case MULTIPLY:
-            result = a * b;
-            break;
+            case MULTIPLY:
+                result = a * b;
+                break;
 
-        case DIVIDE:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case DIVIDE:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a / b;
-            break;
+                result = a / b;
+                break;
 
-        case REMAINDER:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case REMAINDER:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a % b;
-            break;
+                result = a % b;
+                break;
 
-        case POWER:
-            if (a == 0 && b == 0)
-                throw new ExpressionException("0**0 is undefined");
+            case POWER:
+                if (a == 0 && b == 0)
+                    throw new ExpressionException("0**0 is undefined");
 
-            result = (float) Math.pow(a, b);
-            break;
+                result = (float) Math.pow(a, b);
+                break;
 
-        default:
-            throw new ExpressionException("Unrecognized arithmetic type " + type);
+            default:
+                throw new ExpressionException("Unrecognized arithmetic type " + type);
         }
 
         return result;  // Rely on boxing
@@ -466,52 +451,50 @@ public class ArithmeticOperator extends Expression {
      * <tt>Double</tt>, not a <tt>Long</tt>.
      *
      * @param type the arithmetic operation to perform
-     * @param a the first operand value for the operation
-     * @param b the second operand value for the operation
-     *
+     * @param a    the first operand value for the operation
+     * @param b    the second operand value for the operation
      * @return the result of the arithmetic operation
-     *
      * @throws ExpressionException if the operand type is unrecognized
      */
     private static Object evalLongs(Type type, Long a, Long b) {
         long result;
 
         switch (type) {
-        case ADD:
-            result = a + b;
-            break;
+            case ADD:
+                result = a + b;
+                break;
 
-        case SUBTRACT:
-            result = a - b;
-            break;
+            case SUBTRACT:
+                result = a - b;
+                break;
 
-        case MULTIPLY:
-            result = a * b;
-            break;
+            case MULTIPLY:
+                result = a * b;
+                break;
 
-        case DIVIDE:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case DIVIDE:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a / b;
-            break;
+                result = a / b;
+                break;
 
-        case REMAINDER:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case REMAINDER:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a % b;
-            break;
+                result = a % b;
+                break;
 
-        case POWER:
-            if (a == 0 && b == 0)
-                throw new ExpressionException("0**0 is undefined");
+            case POWER:
+                if (a == 0 && b == 0)
+                    throw new ExpressionException("0**0 is undefined");
 
-            result = (long) Math.pow(a, b);
-            break;
+                result = (long) Math.pow(a, b);
+                break;
 
-        default:
-            throw new ExpressionException("Unrecognized arithmetic type " + type);
+            default:
+                throw new ExpressionException("Unrecognized arithmetic type " + type);
         }
 
         return result;  // Rely on boxing
@@ -524,52 +507,50 @@ public class ArithmeticOperator extends Expression {
      * <tt>Double</tt>, not an <tt>Integer</tt>.
      *
      * @param type the arithmetic operation to perform
-     * @param a the first operand value for the operation
-     * @param b the second operand value for the operation
-     *
+     * @param a    the first operand value for the operation
+     * @param b    the second operand value for the operation
      * @return the result of the arithmetic operation
-     *
      * @throws ExpressionException if the operand type is unrecognized
      */
     private static Object evalIntegers(Type type, Integer a, Integer b) {
         int result;
 
         switch (type) {
-        case ADD:
-            result = a + b;
-            break;
+            case ADD:
+                result = a + b;
+                break;
 
-        case SUBTRACT:
-            result = a - b;
-            break;
+            case SUBTRACT:
+                result = a - b;
+                break;
 
-        case MULTIPLY:
-            result = a * b;
-            break;
+            case MULTIPLY:
+                result = a * b;
+                break;
 
-        case DIVIDE:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case DIVIDE:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a / b;
-            break;
+                result = a / b;
+                break;
 
-        case REMAINDER:
-            if (b == 0)
-                throw new DivideByZeroException();
+            case REMAINDER:
+                if (b == 0)
+                    throw new DivideByZeroException();
 
-            result = a % b;
-            break;
+                result = a % b;
+                break;
 
-        case POWER:
-            if (a == 0 && b == 0)
-                throw new ExpressionException("0**0 is undefined");
+            case POWER:
+                if (a == 0 && b == 0)
+                    throw new ExpressionException("0**0 is undefined");
 
-            result = (int) Math.pow(a, b);
-            break;
+                result = (int) Math.pow(a, b);
+                break;
 
-        default:
-            throw new ExpressionException("Unrecognized arithmetic type " + type);
+            default:
+                throw new ExpressionException("Unrecognized arithmetic type " + type);
         }
 
         return result;  // Rely on boxing
@@ -582,11 +563,10 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.SUBTRACT) {
             return Duration.between(b, a);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
-                " on LocalDateTime objects");
+                    " on LocalDateTime objects");
         }
     }
 
@@ -597,8 +577,7 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.SUBTRACT) {
             return Period.between(b, a);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on LocalDate objects");
@@ -612,8 +591,7 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.SUBTRACT) {
             return Duration.between(b, a);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on LocalTime objects");
@@ -627,11 +605,9 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.ADD) {
             return a.plus(b);
-        }
-        else if (type == Type.SUBTRACT) {
+        } else if (type == Type.SUBTRACT) {
             return a.minus(b);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on LocalDate and TemporalAmount objects");
@@ -646,11 +622,9 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.ADD) {
             return a.plus(b);
-        }
-        else if (type == Type.SUBTRACT) {
+        } else if (type == Type.SUBTRACT) {
             return a.minus(b);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on LocalTime and TemporalAmount objects");
@@ -665,11 +639,9 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.ADD) {
             return a.plus(b);
-        }
-        else if (type == Type.SUBTRACT) {
+        } else if (type == Type.SUBTRACT) {
             return a.minus(b);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on LocalDateTime and TemporalAmount objects");
@@ -684,8 +656,7 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.ADD) {
             return b.plus(a);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on TemporalAmount and LocalDate objects");
@@ -700,8 +671,7 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.ADD) {
             return b.plus(a);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on TemporalAmount and LocalTime objects");
@@ -716,8 +686,7 @@ public class ArithmeticOperator extends Expression {
 
         if (type == Type.ADD) {
             return b.plus(a);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                 "Cannot perform requested operation " + type +
                     " on TemporalAmount and LocalDateTime objects");
@@ -799,8 +768,8 @@ public class ArithmeticOperator extends Expression {
         if (obj instanceof ArithmeticOperator) {
             ArithmeticOperator other = (ArithmeticOperator) obj;
             return (type.equals(other.type) &&
-                    leftExpr.equals(other.leftExpr) &&
-                    rightExpr.equals(other.rightExpr));
+                leftExpr.equals(other.leftExpr) &&
+                rightExpr.equals(other.rightExpr));
         }
         return false;
     }
@@ -823,10 +792,12 @@ public class ArithmeticOperator extends Expression {
     }
 
 
-    /** Creates a copy of expression. */
+    /**
+     * Creates a copy of expression.
+     */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        ArithmeticOperator expr = (ArithmeticOperator)super.clone();
+        ArithmeticOperator expr = (ArithmeticOperator) super.clone();
 
         // Type is immutable, copy it.
         expr.type = this.type;

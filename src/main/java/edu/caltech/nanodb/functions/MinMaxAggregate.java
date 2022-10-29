@@ -73,7 +73,7 @@ public class MinMaxAggregate extends AggregateFunction {
         if (args.size() != 1) {
             throw new IllegalArgumentException(
                 "Min/max aggregate function takes 1 argument; got " +
-                args.size());
+                    args.size());
         }
 
         // When finding the min or max, the resulting aggregate column is the

@@ -25,7 +25,7 @@ import edu.caltech.test.nanodb.sql.SqlTestCase;
  * This test class exercises the B<sup>+</sup>-tree file format so that we can
  * have some confidence that it actually works correctly.
  */
-@Test(groups={"storage", "hw6"})
+@Test(groups = {"storage", "hw6"})
 public class TestBTreeFile extends SqlTestCase {
 
     /**

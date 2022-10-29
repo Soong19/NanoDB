@@ -17,7 +17,9 @@ import java.io.PrintStream;
  */
 public class ForwardingOutputStream extends ByteArrayOutputStream {
 
-    /** The underlying output stream over which objects are serialized. */
+    /**
+     * The underlying output stream over which objects are serialized.
+     */
     private ObjectOutputStream objectOutput;
 
     /**

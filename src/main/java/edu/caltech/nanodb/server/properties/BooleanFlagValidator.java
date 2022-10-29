@@ -20,31 +20,25 @@ public class BooleanFlagValidator implements PropertyValidator {
 
             if ("off".equals(s) || "false".equals(s) || "no".equals(s)) {
                 value = Boolean.FALSE;
-            }
-            else if ("on".equals(s) || "true".equals(s) || "yes".equals(s)) {
+            } else if ("on".equals(s) || "true".equals(s) || "yes".equals(s)) {
                 value = Boolean.TRUE;
-            }
-            else {
+            } else {
                 throw new PropertyException("Unrecognized string value \"" +
                     value + "\" for Boolean property.  Accepted values are " +
                     "on/off, true/false, yes/no (case insensitive).");
             }
-        }
-        else if (value instanceof Number) {
+        } else if (value instanceof Number) {
             int n = ((Number) value).intValue();
 
             if (n == 0) {
                 value = Boolean.FALSE;
-            }
-            else if (n == 1) {
+            } else if (n == 1) {
                 value = Boolean.TRUE;
-            }
-            else {
+            } else {
                 throw new PropertyException("Unrecognized int value " + n +
                     " for Boolean property.  Accepted values are 1/0.");
             }
-        }
-        else {
+        } else {
             throw new PropertyException("Unrecognized value-type " +
                 value.getClass().getName() + " for Boolean property.");
         }

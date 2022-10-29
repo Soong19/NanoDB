@@ -15,7 +15,7 @@ public class NoCopyByteArrayOutputStream extends ByteArrayOutputStream {
      * output stream.
      *
      * @return a reference to the internal byte-buffer used by this byte-array
-     *         output stream.
+     * output stream.
      */
     public byte[] getBuf() {
         return buf;

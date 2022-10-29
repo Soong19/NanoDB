@@ -22,11 +22,15 @@ import edu.caltech.nanodb.storage.TupleFileManager;
  * This class provides high-level operations on B<sup>+</sup> tree tuple files.
  */
 public class BTreeTupleFileManager implements TupleFileManager {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(BTreeTupleFileManager.class);
 
 
-    /** A reference to the storage manager. */
+    /**
+     * A reference to the storage manager.
+     */
     private StorageManager storageManager;
 
 
@@ -80,7 +84,7 @@ public class BTreeTupleFileManager implements TupleFileManager {
         int statsSize = hpWriter.getPosition() - schemaEndPos;
         HeaderPage.setStatsSize(headerPage, statsSize);
 
-        return new BTreeTupleFile(storageManager, this, dbFile,  schema, stats);
+        return new BTreeTupleFile(storageManager, this, dbFile, schema, stats);
     }
 
 

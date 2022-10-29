@@ -12,32 +12,44 @@ import java.util.ArrayList;
 
 
 /**
-* This implementation of the tuple-processor interface prints out the schema
-* and the tuples produced by the <tt>SELECT</tt> statement in a cooler,
-* prettier fashion.
-*
-* @author Angela Gong
-*/
+ * This implementation of the tuple-processor interface prints out the schema
+ * and the tuples produced by the <tt>SELECT</tt> statement in a cooler,
+ * prettier fashion.
+ *
+ * @author Angela Gong
+ */
 public class PrettyTuplePrinter implements TupleProcessor {
 
     private PrintStream out;
 
-    /** Contains the schema to be printed **/
+    /**
+     * Contains the schema to be printed
+     **/
     private ArrayList<String> schema;
 
-    /** Contains all the tuples to be printed **/
+    /**
+     * Contains all the tuples to be printed
+     **/
     private ArrayList<String> tuples;
 
-    /** Stores the maximum column widths for each column **/
+    /**
+     * Stores the maximum column widths for each column
+     **/
     private ArrayList<Integer> colWidths;
 
-    /** Stores the column type for each column **/
+    /**
+     * Stores the column type for each column
+     **/
     private ArrayList<ColumnType> colTypes;
 
-    /** The number of columns to print **/
+    /**
+     * The number of columns to print
+     **/
     private int numColumns;
 
-    /** Tools to aid in pretty printing **/
+    /**
+     * Tools to aid in pretty printing
+     **/
     PrettyPrintTools pTools;
 
 
@@ -66,7 +78,7 @@ public class PrettyTuplePrinter implements TupleProcessor {
             // Only print out the table name if there are multiple columns
             // with this column name.
             if (schema.numColumnsWithName(colName) > 1 && tblName != null)
-                 schemaName += tblName + ".";
+                schemaName += tblName + ".";
 
             // If table name is specified, always print it out.
             // if (tblName != null)

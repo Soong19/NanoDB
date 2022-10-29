@@ -26,7 +26,9 @@ import edu.caltech.nanodb.storage.TupleFileManager;
 
 
 public class BasicIndexManager implements IndexManager {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(BasicIndexManager.class);
 
 
@@ -45,7 +47,6 @@ public class BasicIndexManager implements IndexManager {
      * necessary.
      *
      * @param storageManager the storage manager that is using this table manager
-     *
      * @throws IllegalArgumentException if {@code storageManager} is {@code null}
      */
     public BasicIndexManager(StorageManager storageManager) {
@@ -63,7 +64,6 @@ public class BasicIndexManager implements IndexManager {
      *
      * @param tableName the name of the table that the index is on
      * @param indexName the name of the index to get the filename of
-     *
      * @return the name of the file that holds the index's data
      */
     private String getIndexFileName(String tableName, String indexName) {
@@ -83,7 +83,7 @@ public class BasicIndexManager implements IndexManager {
 
     @Override
     public IndexInfo addIndexToTable(TableInfo tableInfo,
-        IndexColumnRefs indexColRefs) {
+                                     IndexColumnRefs indexColRefs) {
 
         if (tableInfo == null)
             throw new IllegalArgumentException("tableInfo cannot be null");
@@ -115,7 +115,7 @@ public class BasicIndexManager implements IndexManager {
 
         String indexName = indexColRefs.getIndexName();
         logger.debug(String.format("Creating an IndexInfo object " +
-            "describing the new index %s on table %s.",
+                "describing the new index %s on table %s.",
             indexName != null ? indexName : "[unnamed]", tableName));
 
         IndexInfo indexInfo = new IndexInfo(tableInfo, indexColRefs);
@@ -123,8 +123,7 @@ public class BasicIndexManager implements IndexManager {
             // This is an unnamed index.
             logger.debug("Creating the new unnamed index on disk.");
             createUnnamedIndex(indexInfo);
-        }
-        else {
+        } else {
             // This is a named index.
             logger.debug("Creating the new index " + indexName + " on disk.");
             createIndex(indexInfo, indexName);
@@ -203,12 +202,12 @@ public class BasicIndexManager implements IndexManager {
      * new index.
      *
      * @param indexInfo This object is an in/out parameter.  It is used to
-     *        specify the name and details of the new index being created.  When
-     *        the index is successfully created, the object is updated with the
-     *        actual file that the index is stored in.
+     *                  specify the name and details of the new index being created.  When
+     *                  the index is successfully created, the object is updated with the
+     *                  actual file that the index is stored in.
      * @param indexName The name of the index created by the CREATE INDEX cmd.
-     *        If there is no idxName, use the createUnnamedIndex method
-     *        instead.
+     *                  If there is no idxName, use the createUnnamedIndex method
+     *                  instead.
      */
     @Override
     public void createIndex(IndexInfo indexInfo, String indexName) {
@@ -225,7 +224,7 @@ public class BasicIndexManager implements IndexManager {
         FileManager fileManager = storageManager.getFileManager();
         DBFile dbFile = fileManager.createDBFile(idxFileName, type, pageSize);
         logger.debug("Created new DBFile for index " + indexName +
-                     " at path " + dbFile.getDataFile());
+            " at path " + dbFile.getDataFile());
 
         // Generate a schema based on the index information.
         Schema indexSchema = IndexUtils.makeIndexSchema(
@@ -266,14 +265,12 @@ public class BasicIndexManager implements IndexManager {
                         "File %s for primary-key index %s already exists!",
                         f, indexName));
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new IndexException(String.format(
                     "Error creating file %s for primary-key index %s",
                     f, indexName), e);
             }
-        }
-        else {
+        } else {
             String pattern = prefix + "_%03d";
             int i = 0;
             f = null;
@@ -286,8 +283,7 @@ public class BasicIndexManager implements IndexManager {
                     f = new File(baseDir, indexFilename);
                 }
                 while (!f.createNewFile());
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new IndexException(String.format(
                     "Error creating file %s for index %s", f, indexName), e);
             }
@@ -308,13 +304,11 @@ public class BasicIndexManager implements IndexManager {
      * then the cached data is simply returned.
      *
      * @param tableInfo the table that the index is defined on
-     *
      * @param indexName the name of the index to open.  Indexes are not
-     *        referenced directly except by CREATE/ALTER/DROP INDEX statements,
-     *        so these index names are stored in the table schema files, and are
-     *        generally opened when the optimizer needs to know what indexes are
-     *        available.
-     *
+     *                  referenced directly except by CREATE/ALTER/DROP INDEX statements,
+     *                  so these index names are stored in the table schema files, and are
+     *                  generally opened when the optimizer needs to know what indexes are
+     *                  available.
      * @return an object representing the details of the open index
      */
     @Override
@@ -356,7 +350,6 @@ public class BasicIndexManager implements IndexManager {
      * generate these names.
      *
      * @param indexInfo the information describing the index to be named
-     *
      * @return a string containing a prefix to use for naming the index.
      */
     public String getUnnamedIndexPrefix(IndexInfo indexInfo) {
@@ -368,18 +361,18 @@ public class BasicIndexManager implements IndexManager {
             return "IDX_" + indexInfo.getTableName();
 
         switch (constraintType) {
-        case PRIMARY_KEY:
-            return "PK_" + indexInfo.getTableName();
+            case PRIMARY_KEY:
+                return "PK_" + indexInfo.getTableName();
 
-        case UNIQUE:
-            return "CK_" + indexInfo.getTableName();
+            case UNIQUE:
+                return "CK_" + indexInfo.getTableName();
 
-        case FOREIGN_KEY:
-            return "FK_" + indexInfo.getTableName();
+            case FOREIGN_KEY:
+                return "FK_" + indexInfo.getTableName();
 
-        default:
-            throw new IllegalArgumentException("Unrecognized constraint type " +
-                constraintType);
+            default:
+                throw new IllegalArgumentException("Unrecognized constraint type " +
+                    constraintType);
         }
     }
 

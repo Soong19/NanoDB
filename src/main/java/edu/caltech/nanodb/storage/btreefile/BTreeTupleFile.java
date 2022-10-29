@@ -55,7 +55,9 @@ import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.*;
  * </ul>
  */
 public class BTreeTupleFile implements SequentialTupleFile {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(BTreeTupleFile.class);
 
 
@@ -83,15 +85,21 @@ public class BTreeTupleFile implements SequentialTupleFile {
     private BTreeTupleFileManager btreeFileManager;
 
 
-    /** The schema of tuples in this tuple file. */
+    /**
+     * The schema of tuples in this tuple file.
+     */
     private Schema schema;
 
 
-    /** Statistics for this tuple file. */
+    /**
+     * Statistics for this tuple file.
+     */
     private TableStats stats;
 
 
-    /** The file that stores the tuples. */
+    /**
+     * The file that stores the tuples.
+     */
     private DBFile dbFile;
 
 
@@ -145,7 +153,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
         fileOps = new FileOperations(storageManager, dbFile);
         innerPageOps = new InnerPageOperations(storageManager, this, fileOps);
         leafPageOps = new LeafPageOperations(storageManager, this, fileOps,
-                                             innerPageOps);
+            innerPageOps);
     }
 
 
@@ -217,14 +225,13 @@ public class BTreeTupleFile implements SequentialTupleFile {
                 if (nextIndex >= leaf.getNumTuples()) {
                     throw new IllegalStateException(String.format(
                         "The \"next tuple\" field of deleted tuple is too " +
-                        "large (must be less than %d; got %d)",
+                            "large (must be less than %d; got %d)",
                         leaf.getNumTuples(), nextIndex));
                 }
 
                 nextTuple = leaf.getTuple(nextIndex);
             }
-        }
-        else {
+        } else {
             // Get the page that holds the current entry, and see where it
             // falls within the page.
             dbPage = tuple.getDBPage();
@@ -240,8 +247,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
             if (nextIndex < leaf.getNumTuples()) {
                 // Still more entries in this leaf.
                 nextTuple = leaf.getTuple(nextIndex);
-            }
-            else {
+            } else {
                 // No more entries in this leaf.  Must go to the next leaf.
                 int nextPageNo = leaf.getNextPageNo();
                 if (nextPageNo != 0) {
@@ -250,8 +256,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
                     leaf = new LeafPage(dbPage, schema);
                     if (leaf.getNumTuples() > 0) {
                         nextTuple = leaf.getTuple(0);
-                    }
-                    else {
+                    } else {
                         // This would be *highly* unusual.  Leaves are
                         // supposed to be at least 1/2 full, always!
                         logger.error(String.format(
@@ -332,8 +337,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
                     // Found it!
                     tup.pin();
                     return tup;
-                }
-                else if (cmp > 0) {
+                } else if (cmp > 0) {
                     // Subsequent tuples will appear after the search key, so
                     // there's no point in going on.
                     leaf.getDBPage().unpin();
@@ -343,7 +347,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
 
             int nextPageNo = leaf.getNextPageNo();
             logger.debug("Scanned through entire leaf page %d without " +
-                "finding tuple.  Next page is %d.", leaf.getPageNo(),
+                    "finding tuple.  Next page is %d.", leaf.getPageNo(),
                 nextPageNo);
 
             // If we get here, we need to go to the next leaf-page.
@@ -359,8 +363,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
                 }
 
                 leaf = new LeafPage(dbpNextLeaf, schema);
-            }
-            else {
+            } else {
                 logger.debug("Reached end of leaf pages");
                 leaf = null;
             }
@@ -447,26 +450,23 @@ public class BTreeTupleFile implements SequentialTupleFile {
      * determine whether the search-key actually exists; rather, it simply
      * navigates to the leaf in the file where the search-key would appear.
      *
-     * @param searchKey the search-key being used to navigate the
-     *        B<sup>+</sup> tree structure
-     *
+     * @param searchKey      the search-key being used to navigate the
+     *                       B<sup>+</sup> tree structure
      * @param createIfNeeded If the B<sup>+</sup> tree is currently empty
-     *        (i.e. not even containing leaf pages) then this argument can be
-     *        used to create a new leaf page where the search-key can be
-     *        stored.  This allows the method to be used for adding tuples to
-     *        the file.
-     *
-     * @param pagePath If this optional argument is specified, then the method
-     *        stores the sequence of page-numbers it visits as it navigates
-     *        from root to leaf.  If {@code null} is passed then nothing is
-     *        stored as the method traverses the B<sup>+</sup> tree structure.
-     *
+     *                       (i.e. not even containing leaf pages) then this argument can be
+     *                       used to create a new leaf page where the search-key can be
+     *                       stored.  This allows the method to be used for adding tuples to
+     *                       the file.
+     * @param pagePath       If this optional argument is specified, then the method
+     *                       stores the sequence of page-numbers it visits as it navigates
+     *                       from root to leaf.  If {@code null} is passed then nothing is
+     *                       stored as the method traverses the B<sup>+</sup> tree structure.
      * @return the leaf-page where the search-key would appear, or
-     *         {@code null} if the B<sup>+</sup> tree file is currently empty
-     *         and {@code createIfNeeded} is {@code false}.
+     * {@code null} if the B<sup>+</sup> tree file is currently empty
+     * and {@code createIfNeeded} is {@code false}.
      */
     private LeafPage navigateToLeafPage(Tuple searchKey,
-        boolean createIfNeeded, List<Integer> pagePath) {
+                                        boolean createIfNeeded, List<Integer> pagePath) {
 
         // The header page tells us where the root page starts.
         DBPage dbpHeader = storageManager.loadDBPage(dbFile, 0);
@@ -484,7 +484,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
             // We need to create a brand new leaf page and make it the root.
 
             logger.debug("BTree file currently has no data pages; " +
-                         "finding/creating one to use as the root!");
+                "finding/creating one to use as the root!");
 
             dbpRoot = fileOps.getNewDataPage();
             rootPageNo = dbpRoot.getPageNo();
@@ -496,8 +496,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
             LeafPage.init(dbpRoot, schema);
 
             logger.debug("New root pageNo is " + rootPageNo);
-        }
-        else {
+        } else {
             // The BTree file has a root page; load it.
             dbpRoot = storageManager.loadDBPage(dbFile, rootPageNo);
 

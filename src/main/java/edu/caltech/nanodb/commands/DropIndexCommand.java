@@ -12,11 +12,15 @@ import edu.caltech.nanodb.storage.TableManager;
  * This command-class represents the <tt>DROP INDEX</tt> DDL command.
  */
 public class DropIndexCommand extends Command {
-    /** The name of the index to drop. */
+    /**
+     * The name of the index to drop.
+     */
     private String indexName;
 
 
-    /** The name of the table that the index is built against. */
+    /**
+     * The name of the table that the index is built against.
+     */
     private String tableName;
 
 

@@ -23,7 +23,9 @@ import edu.caltech.nanodb.server.properties.ServerProperties;
  */
 public class IndexedTableManager implements TableManager {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(IndexedTableManager.class);
 
 
@@ -42,7 +44,6 @@ public class IndexedTableManager implements TableManager {
      * specifies where the table's data is stored.
      *
      * @param tableName the name of the table to get the filename of
-     *
      * @return the name of the file that holds the table's data
      */
     private String getTableFileName(String tableName) {
@@ -53,7 +54,7 @@ public class IndexedTableManager implements TableManager {
     public Set<String> getTables() {
         HashSet<String> tableNames = new HashSet<>();
         FileManager fileManager = storageManager.getFileManager();
-        for(File dbFile : fileManager.getDBFiles()) {
+        for (File dbFile : fileManager.getDBFiles()) {
             // Note that in getTableFileName all we do is add a .tbl at the end,
             // so that's all we have to account for.
             tableNames.add(dbFile.getName().replaceAll("\\.tbl$", ""));
@@ -75,7 +76,7 @@ public class IndexedTableManager implements TableManager {
     // Inherit interface docs.
     @Override
     public TableInfo createTable(String tableName, Schema schema,
-        CommandProperties properties) {
+                                 CommandProperties properties) {
 
         int pageSize = storageManager.getServer().getPropertyRegistry().getIntProperty(ServerProperties.PROP_PAGE_SIZE);
         String storageType = "heap";
@@ -100,11 +101,9 @@ public class IndexedTableManager implements TableManager {
         DBFileType type;
         if ("heap".equals(storageType)) {
             type = DBFileType.HEAP_TUPLE_FILE;
-        }
-        else if ("btree".equals(storageType)) {
+        } else if ("btree".equals(storageType)) {
             type = DBFileType.BTREE_TUPLE_FILE;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Unrecognized table file " +
                 "type:  " + storageType);
         }

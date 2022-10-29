@@ -6,10 +6,14 @@ import edu.caltech.nanodb.relations.Schema;
 import edu.caltech.nanodb.relations.SchemaNameException;
 
 
-/** This class implements unary negation. */
+/**
+ * This class implements unary negation.
+ */
 public class NegateOperator extends Expression {
 
-    /** The expression being negated. */
+    /**
+     * The expression being negated.
+     */
     private Expression expr;
 
 
@@ -117,7 +121,9 @@ public class NegateOperator extends Expression {
     }
 
 
-    /** Creates a copy of expression. */
+    /**
+     * Creates a copy of expression.
+     */
     @Override
     protected Object clone() throws CloneNotSupportedException {
         NegateOperator copy = (NegateOperator) super.clone();

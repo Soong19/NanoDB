@@ -4,7 +4,9 @@ package edu.caltech.nanodb.queryeval;
 import java.util.ArrayList;
 
 
-/** This class is a simple wrapper for table-file statistics. */
+/**
+ * This class is a simple wrapper for table-file statistics.
+ */
 public class TableStats {
 
     /**
@@ -40,9 +42,9 @@ public class TableStats {
      * of elements as the table's schema has columns.
      *
      * @param numDataPages the number of data pages in the table file
-     * @param numTuples the number of tuples in the table file
+     * @param numTuples    the number of tuples in the table file
      * @param avgTupleSize the average tuple-size in bytes
-     * @param columnStats an array of column-statistics generated from the table
+     * @param columnStats  an array of column-statistics generated from the table
      */
     public TableStats(int numDataPages, int numTuples, float avgTupleSize,
                       ArrayList<ColumnStats> columnStats) {
@@ -78,7 +80,6 @@ public class TableStats {
      * Returns the column-statistics for the specified column.
      *
      * @param index the index of the column to retrieve the stats for
-     *
      * @return the column-stats object for the specified column
      */
     public ColumnStats getColumnStats(int index) {
@@ -98,7 +99,7 @@ public class TableStats {
 
     @Override
     public String toString() {
-      return "TableStats[numDataPages=" + numDataPages + ", numTuples=" +
-        numTuples + ", avgTupleSize=" + avgTupleSize + "]";
+        return "TableStats[numDataPages=" + numDataPages + ", numTuples=" +
+            numTuples + ", avgTupleSize=" + avgTupleSize + "]";
     }
 }

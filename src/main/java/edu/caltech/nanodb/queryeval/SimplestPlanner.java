@@ -28,15 +28,21 @@ import edu.caltech.nanodb.storage.StorageManager;
  */
 public class SimplestPlanner implements Planner {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(SimplestPlanner.class);
 
 
-    /** The storage manager used during query planning. */
+    /**
+     * The storage manager used during query planning.
+     */
     protected StorageManager storageManager;
 
 
-    /** Sets the server to be used during query planning. */
+    /**
+     * Sets the server to be used during query planning.
+     */
     public void setStorageManager(StorageManager storageManager) {
         if (storageManager == null)
             throw new IllegalArgumentException("storageManager cannot be null");
@@ -50,7 +56,6 @@ public class SimplestPlanner implements Planner {
      * query.
      *
      * @param selClause an object describing the query to be performed
-     *
      * @return a plan tree for executing the specified query
      */
     @Override
@@ -94,10 +99,8 @@ public class SimplestPlanner implements Planner {
      * page data.
      *
      * @param tableName The name of the table that is being selected from.
-     *
      * @param predicate An optional selection predicate, or {@code null} if
-     *        no filtering is desired.
-     *
+     *                  no filtering is desired.
      * @return A new plan-node for evaluating the select operation.
      */
     public SelectNode makeSimpleSelect(String tableName, Expression predicate,
@@ -125,4 +128,3 @@ public class SimplestPlanner implements Planner {
         return selectNode;
     }
 }
-

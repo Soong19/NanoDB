@@ -9,7 +9,9 @@ import edu.caltech.nanodb.relations.SchemaNameException;
 
 public class IsNullOperator extends Expression {
 
-    /** The expression to evaluate for "nullness". */
+    /**
+     * The expression to evaluate for "nullness".
+     */
     private Expression expr;
 
     /**
@@ -65,7 +67,6 @@ public class IsNullOperator extends Expression {
     }
 
 
-
     @Override
     public Expression traverse(ExpressionProcessor p) {
         p.enter(this);
@@ -97,7 +98,9 @@ public class IsNullOperator extends Expression {
     }
 
 
-    /** Creates a copy of expression. */
+    /**
+     * Creates a copy of expression.
+     */
     @Override
     protected Object clone() throws CloneNotSupportedException {
         IsNullOperator dup = (IsNullOperator) super.clone();

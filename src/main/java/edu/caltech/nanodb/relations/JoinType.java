@@ -1,10 +1,14 @@
 package edu.caltech.nanodb.relations;
 
 
-/** An enumeration specifying the different types of join operation. */
+/**
+ * An enumeration specifying the different types of join operation.
+ */
 public enum JoinType {
 
-    /** Inner joins, where only matching rows are included in the result. */
+    /**
+     * Inner joins, where only matching rows are included in the result.
+     */
     INNER,
 
     /**
@@ -25,7 +29,9 @@ public enum JoinType {
      */
     FULL_OUTER,
 
-    /** Cross joins, which are simply a Cartesian product. */
+    /**
+     * Cross joins, which are simply a Cartesian product.
+     */
     CROSS,
 
     /**

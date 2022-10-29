@@ -15,8 +15,7 @@ public class QueryUtils {
      *
      * @param tableName the name of the table to select from
      * @param whereExpr the predicate to use for selecting rows, or
-     *        {@code null} if no predicate should be applied
-     *
+     *                  {@code null} if no predicate should be applied
      * @return a query AST for selecting the rows from the table
      */
     public static SelectClause makeSelectStar(String tableName,

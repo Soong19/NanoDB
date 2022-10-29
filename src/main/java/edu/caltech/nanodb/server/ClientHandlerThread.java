@@ -24,38 +24,54 @@ import edu.caltech.nanodb.commands.SelectCommand;
  * server.
  */
 public class ClientHandlerThread extends Thread {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(ClientHandlerThread.class);
 
-    /** A reference to the NanoDB server object. */
+    /**
+     * A reference to the NanoDB server object.
+     */
     private NanoDBServer server;
 
-    /** The unique ID assigned to this client. */
+    /**
+     * The unique ID assigned to this client.
+     */
     private int id;
 
-    /** The socket this client-handler uses to interact with its client. */
+    /**
+     * The socket this client-handler uses to interact with its client.
+     */
     private Socket sock;
 
-    /** An input-stream for de-serializing objects sent from the client. */
+    /**
+     * An input-stream for de-serializing objects sent from the client.
+     */
     private ObjectInputStream objectInput;
 
-    /** An output-stream for serializing objects to send to the client. */
+    /**
+     * An output-stream for serializing objects to send to the client.
+     */
     private ObjectOutputStream objectOutput;
 
 
     private ForwardingOutputStream commandOutput;
 
-    /** A print-stream that will send printed output to the client. */
+    /**
+     * A print-stream that will send printed output to the client.
+     */
     private PrintStream printOutput;
 
-    /** A tuple-processor for sending tuples to the client. */
+    /**
+     * A tuple-processor for sending tuples to the client.
+     */
     private TupleSender tupleSender;
 
 
     /**
      * Initialize a new client handler with the specified ID and socket.
      *
-     * @param id The unique ID assigned to this client.
+     * @param id   The unique ID assigned to this client.
      * @param sock The socket used to communicate with the client.
      */
     public ClientHandlerThread(NanoDBServer server, int id, Socket sock) {
@@ -118,20 +134,17 @@ public class ClientHandlerThread extends Thread {
                         logger.info(String.format("Client %d is exiting.", id));
                         break;
                     }
-                }
-                catch (EOFException e) {
+                } catch (EOFException e) {
                     logger.info(String.format("Client %d disconnected.%n", id));
                     break;
-                }
-                catch (RecognitionException e) {
+                } catch (RecognitionException e) {
                     System.out.println("Parser error:  " + e.getMessage());
                     logger.error("Parser error", e);
 
                     // Send error back to the client.
                     objectOutput.writeObject(e);
                     continue;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     // This could be an IOException, a ClassNotFoundException,
                     // or a ClassCastException.
                     logger.error(String.format("Error communicating with " +
@@ -143,8 +156,7 @@ public class ClientHandlerThread extends Thread {
                 objectOutput.writeObject(CommandState.COMMAND_COMPLETED);
                 commandOutput.reset();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             logger.error(String.format(
                 "Communication error interacting with client %d!%n", id), e);
         }
@@ -171,8 +183,7 @@ public class ClientHandlerThread extends Thread {
 
         try {
             cmd.execute(server);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Encountered error during command execution", e);
             objectOutput.writeObject(e);
         }

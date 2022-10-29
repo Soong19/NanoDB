@@ -27,14 +27,20 @@ import edu.caltech.nanodb.storage.TableManager;
  * </p>
  */
 class SubquerySchemaComputer implements ExpressionProcessor {
-    /** A logging object for reporting anything interesting that happens. **/
+    /**
+     * A logging object for reporting anything interesting that happens.
+     **/
     private static Logger logger = LogManager.getLogger(SubquerySchemaComputer.class);
 
 
-    /** This is the parent query that may contain subqueries. */
+    /**
+     * This is the parent query that may contain subqueries.
+     */
     private SelectClause selectClause;
 
-    /** This is the table-manager used to access table schemas. */
+    /**
+     * This is the table-manager used to access table schemas.
+     */
     private TableManager tableManager;
 
 
@@ -82,7 +88,6 @@ class SubquerySchemaComputer implements ExpressionProcessor {
      * This method is a no-op for this expression processor.
      *
      * @param e the expression node being left
-     *
      * @return the passed-in expression {@code e}.
      */
     public Expression leave(Expression e) {

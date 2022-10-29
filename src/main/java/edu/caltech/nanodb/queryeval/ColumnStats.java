@@ -47,13 +47,13 @@ public class ColumnStats {
      * Initializes a column-stats object with the specified values.
      *
      * @param numUniqueValues the number of unique values in the column, or -1
-     *        if unknown
-     * @param numNullValues the number of <tt>NULL</tt> values in the column, or
-     *        -1 if unknown
-     * @param minValue the minimum value in the column, or <tt>null</tt> if
-     *        unknown
-     * @param maxValue the maximum value in the column, or <tt>null</tt> if
-     *        unknown
+     *                        if unknown
+     * @param numNullValues   the number of <tt>NULL</tt> values in the column, or
+     *                        -1 if unknown
+     * @param minValue        the minimum value in the column, or <tt>null</tt> if
+     *                        unknown
+     * @param maxValue        the maximum value in the column, or <tt>null</tt> if
+     *                        unknown
      */
     public ColumnStats(int numUniqueValues, int numNullValues,
                        Object minValue, Object maxValue) {
@@ -64,16 +64,20 @@ public class ColumnStats {
     }
 
 
-    /** Initializes a column-stats object to all "unknown" values. */
+    /**
+     * Initializes a column-stats object to all "unknown" values.
+     */
     public ColumnStats() {
         this(-1, -1, null, null);
     }
 
 
-    /** Copies another column-stats object into this object. */
+    /**
+     * Copies another column-stats object into this object.
+     */
     public ColumnStats(ColumnStats stats) {
         this(stats.numUniqueValues, stats.numNullValues,
-             stats.minValue, stats.maxValue);
+            stats.minValue, stats.maxValue);
     }
 
 
@@ -82,7 +86,7 @@ public class ColumnStats {
      * is unknown
      *
      * @return the number of unique values for the column, or -1 if the number
-     *         is unknown
+     * is unknown
      */
     public int getNumUniqueValues() {
         return numUniqueValues;
@@ -93,7 +97,7 @@ public class ColumnStats {
      * Sets the number of unique values for the column.
      *
      * @param num the number of unique values in the table for the column, or
-     *        -1 if the number if unknown
+     *            -1 if the number if unknown
      */
     public void setNumUniqueValues(int num) {
         if (num < -1) {
@@ -110,7 +114,7 @@ public class ColumnStats {
      * number is unknown
      *
      * @return the number of <tt>NULL</tt> values for the column, or -1 if the
-     *         number is unknown
+     * number is unknown
      */
     public int getNumNullValues() {
         return numNullValues;
@@ -121,7 +125,7 @@ public class ColumnStats {
      * Sets the number of <tt>NULL</tt> values for the column.
      *
      * @param num the number of <tt>NULL</tt> values in the table for the
-     *        column, or -1 if the number if unknown
+     *            column, or -1 if the number if unknown
      */
     public void setNumNullValues(int num) {
         if (num < -1) {
@@ -131,7 +135,6 @@ public class ColumnStats {
 
         numNullValues = num;
     }
-
 
 
     /**
@@ -179,7 +182,7 @@ public class ColumnStats {
      * maximum values.
      *
      * @return <tt>true</tt> if this column-stats object has both minimum and
-     *         maximum values
+     * maximum values
      */
     public boolean hasMinMaxValues() {
         return (minValue != null && maxValue != null);
@@ -191,7 +194,7 @@ public class ColumnStats {
      * maximum values, and they are actually different values.
      *
      * @return <tt>true</tt> if this column-stats object has both minimum and
-     *         maximum values, and they are actually different values.
+     * maximum values, and they are actually different values.
      */
     public boolean hasDifferentMinMaxValues() {
         return hasMinMaxValues() && (!minValue.equals(maxValue));

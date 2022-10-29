@@ -17,7 +17,7 @@ public interface BufferManagerObserver {
      * collection of pages.
      *
      * @param pages a collection of <tt>DBPage</tt> objects that are about to
-     *        be written back to disk
+     *              be written back to disk
      */
     void beforeWriteDirtyPages(List<DBPage> pages);
 }

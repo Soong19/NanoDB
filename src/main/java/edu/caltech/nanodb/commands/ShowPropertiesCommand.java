@@ -53,8 +53,7 @@ public class ShowPropertiesCommand extends Command {
             if (valueStr == null) {
                 if (maxValueLength < 4)
                     maxValueLength = 4;
-            }
-            else if (valueStr.length() > maxValueLength) {
+            } else if (valueStr.length() > maxValueLength) {
                 maxValueLength = valueStr.length();
             }
         }

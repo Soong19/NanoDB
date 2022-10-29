@@ -10,7 +10,9 @@ import edu.caltech.nanodb.server.NanoDBServer;
  */
 public class ExplainCommand extends Command {
 
-    /** The command to explain! */
+    /**
+     * The command to explain!
+     */
     private QueryCommand cmdToExplain;
 
 

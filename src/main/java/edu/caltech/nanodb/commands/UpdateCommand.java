@@ -35,12 +35,16 @@ public class UpdateCommand extends QueryCommand {
      * {@link UpdateCommand} to update each tuple.
      */
     private static class TupleUpdater implements TupleProcessor {
-        /** The table whose tuples will be modified. */
+        /**
+         * The table whose tuples will be modified.
+         */
         private TableInfo tableInfo;
 
         private TupleFile tupleFile;
 
-        /** The event dispatcher for firing row-update events. */
+        /**
+         * The event dispatcher for firing row-update events.
+         */
         private EventDispatcher eventDispatcher;
 
         /**
@@ -72,9 +76,8 @@ public class UpdateCommand extends QueryCommand {
          * modify tuples in the specified table.
          *
          * @param tableInfo details of the table that will be modified
-         *
-         * @param values the list of columns to be updated, along with the
-         *        corresponding expressions to generate the new values
+         * @param values    the list of columns to be updated, along with the
+         *                  corresponding expressions to generate the new values
          */
         TupleUpdater(EventDispatcher eventDispatcher,
                      TableInfo tableInfo, List<UpdateValue> values) {
@@ -136,7 +139,9 @@ public class UpdateCommand extends QueryCommand {
     }
 
 
-    /** The name of the table that the rows will be updated on. */
+    /**
+     * The name of the table that the rows will be updated on.
+     */
     private String tableName;
 
 
@@ -194,7 +199,7 @@ public class UpdateCommand extends QueryCommand {
      * value indicates that the UPDATE command has no WHERE condition.
      *
      * @param whereExpr the where-expression that constrains which rows will be
-     *        updated
+     *                  updated
      */
     public void setWhereExpr(Expression whereExpr) {
         this.whereExpr = whereExpr;

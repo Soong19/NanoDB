@@ -58,7 +58,9 @@ public class TupleComparator implements Comparator<Tuple> {
     private Schema schema;
 
 
-    /** The specification of how to order the tuples being compared. */
+    /**
+     * The specification of how to order the tuples being compared.
+     */
     private ArrayList<OrderByExpression> orderSpec;
 
 
@@ -79,11 +81,10 @@ public class TupleComparator implements Comparator<Tuple> {
     /**
      * Construct a new tuple-comparator with the given ordering specification.
      *
-     * @param schema the schema of the tuples that will be compared by this
-     *        comparator object
-     *
+     * @param schema    the schema of the tuples that will be compared by this
+     *                  comparator object
      * @param orderSpec a series of order-by expressions used to order the
-     *        tuples being compared
+     *                  tuples being compared
      */
     public TupleComparator(Schema schema, List<OrderByExpression> orderSpec) {
         if (schema == null)
@@ -101,16 +102,15 @@ public class TupleComparator implements Comparator<Tuple> {
      * Performs the comparison of two tuples based on the configuration of
      * this tuple-comparator object.
      *
-     * @design (Donnie) We have to suppress "unchecked operation" warnings on
-     *         this code, since {@link Comparable} is a generic (and thus allows
-     *         us to specify the type of object being compared), but we want to
-     *         use it without specifying any types.
-     *
      * @param a the first tuple to compare.
      * @param b the second tuple to compare.
      * @return a negative, zero, or positive value, corresponding to whether
-     *         tuple <tt>a</tt> is less than, equal to, or greater than tuple
-     *         <tt>b</tt>.
+     * tuple <tt>a</tt> is less than, equal to, or greater than tuple
+     * <tt>b</tt>.
+     * @design (Donnie) We have to suppress "unchecked operation" warnings on
+     * this code, since {@link Comparable} is a generic (and thus allows
+     * us to specify the type of object being compared), but we want to
+     * use it without specifying any types.
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -142,11 +142,9 @@ public class TupleComparator implements Comparator<Tuple> {
                     compareResult = -1;
                 else
                     compareResult = 0;
-            }
-            else if (valueB == null) {
+            } else if (valueB == null) {
                 compareResult = 1;
-            }
-            else {
+            } else {
                 compareResult = valueA.compareTo(valueB);
             }
 
@@ -171,7 +169,7 @@ public class TupleComparator implements Comparator<Tuple> {
      * @param t1 the first tuple to compare
      * @param t2 the second tuple to compare
      * @return true if the two tuples have the same number of columns, and the
-     *         values from <tt>t1</tt> and <tt>t2</tt> compare equal.
+     * values from <tt>t1</tt> and <tt>t2</tt> compare equal.
      */
     public static boolean areTuplesEqual(Tuple t1, Tuple t2) {
         return areTuplesEqual(t1, t2, 0.00001);
@@ -184,13 +182,12 @@ public class TupleComparator implements Comparator<Tuple> {
      * {@link TypeConverter#coerceComparison} method.  Note that the schemas
      * of the tuples are not considered.
      *
-     * @param t1 the first tuple to compare
-     * @param t2 the second tuple to compare
+     * @param t1      the first tuple to compare
+     * @param t2      the second tuple to compare
      * @param epsilon how close two float or double arguments must be to each
-     *        other to compare as "equal"
-     *
+     *                other to compare as "equal"
      * @return true if the two tuples have the same number of columns, and the
-     *         values from <tt>t1</tt> and <tt>t2</tt> compare equal.
+     * values from <tt>t1</tt> and <tt>t2</tt> compare equal.
      */
     public static boolean areTuplesEqual(Tuple t1, Tuple t2, double epsilon) {
         if (t1 == null)
@@ -214,12 +211,10 @@ public class TupleComparator implements Comparator<Tuple> {
                 }
 
                 // If we got here, both obj1 and obj2 are null.
-            }
-            else if (obj2 == null) {
+            } else if (obj2 == null) {
                 // obj1 isn't null, but obj2 is.
                 return false;
-            }
-            else {
+            } else {
                 // Both objects are non-null.
                 Pair p = TypeConverter.coerceComparison(obj1, obj2);
 
@@ -229,15 +224,12 @@ public class TupleComparator implements Comparator<Tuple> {
                     double value2 = (Double) p.value2;
                     if (Math.abs(value1 - value2) > epsilon)
                         return false;
-                }
-                else if (p.value1 instanceof Float) {
+                } else if (p.value1 instanceof Float) {
                     float value1 = (Float) p.value1;
                     float value2 = (Float) p.value2;
                     if (Math.abs(value1 - value2) > epsilon)
                         return false;
-                }
-
-                else if (!p.value1.equals(p.value2))
+                } else if (!p.value1.equals(p.value2))
                     return false;
             }
         }
@@ -268,12 +260,10 @@ public class TupleComparator implements Comparator<Tuple> {
      *
      * @param t1 the first tuple to compare.  Must not be {@code null}.
      * @param t2 the second tuple to compare.  Must not be {@code null}.
-     *
      * @return a negative, positive, or zero value indicating the ordering of
-     *         the two inputs
-     *
+     * the two inputs
      * @throws IllegalArgumentException if the two input tuples are different
-     *         sizes.
+     *                                  sizes.
      */
     public static int compareTuples(Tuple t1, Tuple t2) {
         return _compareTuples(t1, t2, CompareMode.SAME_LENGTH);
@@ -306,9 +296,8 @@ public class TupleComparator implements Comparator<Tuple> {
      *
      * @param t1 the first tuple to compare.  Must not be {@code null}.
      * @param t2 the second tuple to compare.  Must not be {@code null}.
-     *
      * @return a negative, positive, or zero value indicating the ordering of
-     *         the two inputs
+     * the two inputs
      */
     public static int comparePartialTuples(Tuple t1, Tuple t2) {
         return comparePartialTuples(t1, t2, CompareMode.IGNORE_LENGTH);
@@ -327,14 +316,11 @@ public class TupleComparator implements Comparator<Tuple> {
      * method.  Its behavior with respect to tuples with different numbers of
      * columns is controlled with a Boolean argument.
      *
-     * @param t1 the first tuple to compare.  Must not be {@code null}.
-     *
-     * @param t2 the second tuple to compare.  Must not be {@code null}.
-     *
+     * @param t1          the first tuple to compare.  Must not be {@code null}.
+     * @param t2          the second tuple to compare.  Must not be {@code null}.
      * @param compareMode specifies how to handle tuples of different sizes.
-     *
      * @return a negative, positive, or zero value indicating the ordering of
-     *         the two inputs
+     * the two inputs
      */
     @SuppressWarnings("unchecked")
     private static int _compareTuples(Tuple t1, Tuple t2,
@@ -377,12 +363,10 @@ public class TupleComparator implements Comparator<Tuple> {
                     compareResult = -1;
                 else
                     compareResult = 0;
-            }
-            else if (valueB == null) {
+            } else if (valueB == null) {
                 // We know that valueA != null here.
                 compareResult = 1;
-            }
-            else {
+            } else {
                 compareResult = valueA.compareTo(valueB);
             }
 

@@ -11,7 +11,9 @@ import edu.caltech.nanodb.server.NanoDBException;
  */
 public class StorageException extends NanoDBException {
 
-    /** Construct a storage exception with no message. */
+    /**
+     * Construct a storage exception with no message.
+     */
     public StorageException() {
         super();
     }
@@ -39,4 +41,3 @@ public class StorageException extends NanoDBException {
         super(msg, cause);
     }
 }
-

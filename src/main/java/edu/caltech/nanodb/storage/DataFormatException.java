@@ -7,7 +7,9 @@ package edu.caltech.nanodb.storage;
  */
 public class DataFormatException extends StorageException {
 
-    /** Construct a data format exception with no message. */
+    /**
+     * Construct a data format exception with no message.
+     */
     public DataFormatException() {
         super();
     }
@@ -35,4 +37,3 @@ public class DataFormatException extends StorageException {
         super(msg, cause);
     }
 }
-

@@ -22,7 +22,9 @@ import edu.caltech.nanodb.server.NanoDBServer;
  */
 public class DumpTableCommand extends DumpCommand {
 
-    /** The name of the table to dump. */
+    /**
+     * The name of the table to dump.
+     */
     private String tableName;
 
 
@@ -30,12 +32,9 @@ public class DumpTableCommand extends DumpCommand {
      * Constructs a new dump-table command.
      *
      * @param tableName the name of the table to dump
-     *
-     * @param fileName the path and file to dump the data to.  The console
-     *        will be used if this is @code{null}.
-     *
-     * @param format the format to dump the data in
-     *
+     * @param fileName  the path and file to dump the data to.  The console
+     *                  will be used if this is @code{null}.
+     * @param format    the format to dump the data in
      * @throws IllegalArgumentException if tableName is null.
      */
     public DumpTableCommand(String tableName, String fileName, String format) {

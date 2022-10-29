@@ -18,10 +18,12 @@ import edu.caltech.nanodb.storage.FileManagerImpl;
  * This test class exercises the functionality of the
  * {@link edu.caltech.nanodb.storage.DBPage} class.
  **/
-@Test(groups={"storage", "framework"})
+@Test(groups = {"storage", "framework"})
 public class TestDBPage extends StorageTestCase {
 
-    /** This is the file-manager instance used for the tests in this class. */
+    /**
+     * This is the file-manager instance used for the tests in this class.
+     */
     private FileManager fileMgr;
 
 
@@ -78,10 +80,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// a boolean is 1 byte long.
+        int positionValue = 1;    // a boolean is 1 byte long.
         int position2 = 3;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -104,10 +106,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// a short is 2 bytes long.
+        int positionValue = 1;    // a short is 2 bytes long.
         int position2 = 3;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -137,10 +139,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// an int is 4 bytes long.
+        int positionValue = 1;    // an int is 4 bytes long.
         int position2 = 5;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -169,10 +171,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// Long is 8 bytes.
+        int positionValue = 1;    // Long is 8 bytes.
         int position2 = 9;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -200,10 +202,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// float is 4 bytes.
+        int positionValue = 1;    // float is 4 bytes.
         int position2 = 5;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -240,10 +242,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// Double is 8 bytes.
+        int positionValue = 1;    // Double is 8 bytes.
         int position2 = 9;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -281,10 +283,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// a char is 2 bytes long
+        int positionValue = 1;    // a char is 2 bytes long
         int position2 = 3;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -314,10 +316,10 @@ public class TestDBPage extends StorageTestCase {
         // Write two canary bytes at position1 and position2
         int position1 = 0;
         int positionValue = 1;
-        int strlength = 18;		// We test string of length 18
+        int strlength = 18;        // We test string of length 18
         int position2 = 19;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -346,10 +348,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// The total length is 255 + 1, the length
+        int positionValue = 1;    // The total length is 255 + 1, the length
         int position2 = 257;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 
@@ -386,10 +388,10 @@ public class TestDBPage extends StorageTestCase {
 
         // Write two canary bytes at position1 and position2
         int position1 = 0;
-        int positionValue = 1;	// The total length is 8188 + 2, the length
+        int positionValue = 1;    // The total length is 8188 + 2, the length
         int position2 = 8191;
-        int canary1 = 0xCC;		// = 204
-        int canary2 = 0xAA;		// = 170
+        int canary1 = 0xCC;        // = 204
+        int canary2 = 0xAA;        // = 170
         dbPage.writeByte(position1, canary1);
         dbPage.writeByte(position2, canary2);
 

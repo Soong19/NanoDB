@@ -6,13 +6,19 @@ import edu.caltech.nanodb.server.NanoDBServer;
 import edu.caltech.nanodb.server.properties.PropertyRegistry;
 
 
-/** Implements the "SET VARIABLE ..." command. */
+/**
+ * Implements the "SET VARIABLE ..." command.
+ */
 public class SetPropertyCommand extends Command {
 
-    /** The name of the property to set. */
+    /**
+     * The name of the property to set.
+     */
     private String propertyName;
 
-    /** The value to set the property to. */
+    /**
+     * The value to set the property to.
+     */
     private Expression valueExpr;
 
 

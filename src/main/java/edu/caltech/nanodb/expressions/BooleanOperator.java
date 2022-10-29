@@ -31,7 +31,9 @@ public class BooleanOperator extends Expression {
         OR_EXPR("OR"),
         NOT_EXPR("NOT");
 
-        /** The string representation for each operator.  Used for printing. **/
+        /**
+         * The string representation for each operator.  Used for printing.
+         **/
         private final String stringRep;
 
         /**
@@ -54,7 +56,9 @@ public class BooleanOperator extends Expression {
     }
 
 
-    /** Specifies the type of this Boolean operator. */
+    /**
+     * Specifies the type of this Boolean operator.
+     */
     private Type type;
 
 
@@ -145,8 +149,7 @@ public class BooleanOperator extends Expression {
 
             // ...then negate it.
             boolResult = !boolResult;
-        }
-        else {
+        } else {
             // AND/OR expression.
 
             if (terms.size() < 1) {
@@ -156,8 +159,7 @@ public class BooleanOperator extends Expression {
 
             if (type == Type.AND_EXPR) {
                 boolResult = true;
-            }
-            else {
+            } else {
                 assert type == Type.OR_EXPR : "Unexpected type value " + type + "!";
                 boolResult = false;
             }
@@ -176,8 +178,7 @@ public class BooleanOperator extends Expression {
                     // AND term is false, so we are done.  Answer is false.
                     boolResult = false;
                     break;
-                }
-                else if (type == Type.OR_EXPR && termValue) {
+                } else if (type == Type.OR_EXPR && termValue) {
                     // OR term is true, so we are done.  Answer is true.
                     boolResult = true;
                     break;
@@ -228,12 +229,11 @@ public class BooleanOperator extends Expression {
             }
 
             buf.append(termStr);
-        }
-        else if (type == Type.AND_EXPR) {
+        } else if (type == Type.AND_EXPR) {
             assert terms.size() >= 1 : "AND expressions must have at least one term";
 
             boolean first = true;
-                for (Expression term : terms) {
+            for (Expression term : terms) {
                 if (first)
                     first = false;
                 else
@@ -249,8 +249,7 @@ public class BooleanOperator extends Expression {
 
                 buf.append(termStr);
             }
-        }
-        else {  // OR_EXPR
+        } else {  // OR_EXPR
             assert type == Type.OR_EXPR;
             assert terms.size() >= 1 : "OR expressions must have at least one term";
 
@@ -275,16 +274,14 @@ public class BooleanOperator extends Expression {
      * the documentation for {@link #getTermsReferencingAllTables} for more
      * details on what is considered to be a "matching" term by this method.
      *
-     * @design This method is <em>slightly</em> more efficient than the
-     *         get/remove methods, since it stops after it has found the first
-     *         term that satisfies the specified conditions.  However, if there
-     *         will be a subsequent call to the get or remove method, it's
-     *         probably most efficient to just call it directly.
-     *
      * @param tableNames a collection of table-names to look for in the terms.
-     *
      * @return A list of terms that reference all of the tables specified in the
-     *         input list, and no others.
+     * input list, and no others.
+     * @design This method is <em>slightly</em> more efficient than the
+     * get/remove methods, since it stops after it has found the first
+     * term that satisfies the specified conditions.  However, if there
+     * will be a subsequent call to the get or remove method, it's
+     * probably most efficient to just call it directly.
      */
     public boolean hasTermsReferencingAllTables(String... tableNames) {
 
@@ -324,9 +321,8 @@ public class BooleanOperator extends Expression {
      * then it will not be returned.
      *
      * @param tableNames a collection of table-names to look for in the terms.
-     *
      * @return A list of terms that reference all of the tables specified in the
-     *         input list, and no others.
+     * input list, and no others.
      */
     public List<Expression> getTermsReferencingAllTables(String... tableNames) {
         // Call the helper, with "remove" flag set to false.
@@ -346,10 +342,9 @@ public class BooleanOperator extends Expression {
      * expression object.
      *
      * @param tableNames a collection of table-names to look for in the terms.
-     *
      * @return A list of terms that reference all of the tables specified in the
-     *         input list, and no others.  These terms are also removed from the
-     *         Boolean expression object.
+     * input list, and no others.  These terms are also removed from the
+     * Boolean expression object.
      */
     public List<Expression> removeTermsReferencingAllTables(String... tableNames) {
         // Call the helper, with "remove" flag set to true.
@@ -363,14 +358,13 @@ public class BooleanOperator extends Expression {
      * {@link #removeTermsReferencingAllTables} methods.
      *
      * @param tableNames an array of table-names to look for in the terms.
-     * @param remove if <tt>true</tt> then matching terms will be removed from
-     *        this Boolean operator's list of terms.
-     *
+     * @param remove     if <tt>true</tt> then matching terms will be removed from
+     *                   this Boolean operator's list of terms.
      * @return A list of terms that reference all of the tables specified in the
-     *         input list, and no others.
+     * input list, and no others.
      */
     private List<Expression> _getTermsReferencingAllTables(String[] tableNames,
-        boolean remove) {
+                                                           boolean remove) {
 
         ArrayList<Expression> found = new ArrayList<>();
 
@@ -422,7 +416,6 @@ public class BooleanOperator extends Expression {
      * Removes the i<sup>th</sup> term, starting from 0.
      *
      * @param i the index of the term to remove.
-     *
      * @throws IllegalArgumentException if the specified index is invalid.
      */
     public void removeTerm(int i) {
@@ -482,8 +475,7 @@ public class BooleanOperator extends Expression {
                 if (b.type == type) {
                     terms.remove(i);
                     terms.addAll(i, b.terms);
-                }
-                else {
+                } else {
                     i++;
                 }
 
@@ -491,8 +483,7 @@ public class BooleanOperator extends Expression {
                 // check/lift process for any child nodes we just lifted up,
                 // that are also BooleanOperators of the same type, since
                 // the new nodes will now be at index i.
-            }
-            else {
+            } else {
                 // Some other kind of term - skip it.
                 i++;
             }

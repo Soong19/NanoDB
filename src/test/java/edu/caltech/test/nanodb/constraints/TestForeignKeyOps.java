@@ -15,7 +15,7 @@ import edu.caltech.nanodb.server.NanoDBServer;
  * on tables with FOREIGN KEY constraints, to see if the FOREIGN KEY
  * constraint works propertly.
  */
-@Test(groups={"constraints"}, dependsOnGroups={"framework"})
+@Test(groups = {"constraints"}, dependsOnGroups = {"framework"})
 public class TestForeignKeyOps extends SqlTestCase {
 
     public TestForeignKeyOps() {
@@ -52,18 +52,18 @@ public class TestForeignKeyOps extends SqlTestCase {
         tryDoCommand("INSERT INTO test_fkey_parent1_ops VALUES (2)", false);
         /* Create a child table with RESTRICT options as default */
         tryDoCommand("CREATE TABLE test_fkey_child1_ops (id1 INTEGER, " +
-                     "FOREIGN KEY (id1) REFERENCES test_fkey_parent1_ops(a))", false);
+            "FOREIGN KEY (id1) REFERENCES test_fkey_parent1_ops(a))", false);
         tryDoCommand("INSERT INTO test_fkey_child1_ops VALUES (1)", false);
 
         /* Try deleting/updating from the parent table, this should fail
          * due to RESTRICT options */
         result = server.doCommand(
-                "DELETE FROM test_fkey_parent1_ops WHERE a=1", false);
+            "DELETE FROM test_fkey_parent1_ops WHERE a=1", false);
         if (!result.failed())
             assert false;
 
         result = server.doCommand(
-                "UPDATE test_fkey_parent1_ops SET a=5 WHERE a=1", false);
+            "UPDATE test_fkey_parent1_ops SET a=5 WHERE a=1", false);
         if (!result.failed())
             assert false;
     }
@@ -79,13 +79,13 @@ public class TestForeignKeyOps extends SqlTestCase {
     public void testCascadeOption() throws Throwable {
         CommandResult result;
         tryDoCommand("CREATE TABLE test_fkey_parent2_ops (a INTEGER, b INTEGER, " +
-                     "UNIQUE (a,b))", false);
+            "UNIQUE (a,b))", false);
         tryDoCommand("INSERT INTO test_fkey_parent2_ops VALUES (1, 10)", false);
         tryDoCommand("INSERT INTO test_fkey_parent2_ops VALUES (2, 20)", false);
         /* Create a child table with CASCADE options */
         tryDoCommand("CREATE TABLE test_fkey_child2_ops (id1 INTEGER, id2 INTEGER, " +
-                     "FOREIGN KEY (id1, id2) REFERENCES test_fkey_parent2_ops(a, b) " +
-                     "ON DELETE CASCADE ON UPDATE CASCADE)", false);
+            "FOREIGN KEY (id1, id2) REFERENCES test_fkey_parent2_ops(a, b) " +
+            "ON DELETE CASCADE ON UPDATE CASCADE)", false);
         tryDoCommand("INSERT INTO test_fkey_child2_ops VALUES (1, 10)", false);
         tryDoCommand("INSERT INTO test_fkey_child2_ops VALUES (1, 10)", false);
         tryDoCommand("INSERT INTO test_fkey_child2_ops VALUES (2, 20)", false);
@@ -125,8 +125,8 @@ public class TestForeignKeyOps extends SqlTestCase {
 
         /* Create a child table with SET NULL options */
         tryDoCommand("CREATE TABLE test_fkey_child3_ops (id1 INTEGER, id2 INTEGER, " +
-                     "FOREIGN KEY (id2) REFERENCES test_fkey_parent3_ops(a) " +
-                     "ON DELETE SET NULL ON UPDATE SET NULL)", false);
+            "FOREIGN KEY (id2) REFERENCES test_fkey_parent3_ops(a) " +
+            "ON DELETE SET NULL ON UPDATE SET NULL)", false);
         tryDoCommand("INSERT INTO test_fkey_child3_ops VALUES (10, 1)", false);
         tryDoCommand("INSERT INTO test_fkey_child3_ops VALUES (100, 1)", false);
         tryDoCommand("INSERT INTO test_fkey_child3_ops VALUES (20, 2)", false);
@@ -160,13 +160,13 @@ public class TestForeignKeyOps extends SqlTestCase {
     public void testFKeySize() throws Throwable {
         CommandResult result;
         tryDoCommand("CREATE TABLE test_fkey_parent4_ops" +
-                     " (a INTEGER, b INTEGER, UNIQUE (a, b))", false);
+            " (a INTEGER, b INTEGER, UNIQUE (a, b))", false);
 
         // Create a child table that tries to create a foreign key, but the
         // column numbers don't match.
         result = server.doCommand(
             "CREATE TABLE test_fkey_child4_ops (id1 INTEGER, id2 INTEGER, " +
-            "FOREIGN KEY (id1) REFERENCES test_fkey_parent4_ops(a, b))", false);
+                "FOREIGN KEY (id1) REFERENCES test_fkey_parent4_ops(a, b))", false);
 
         if (!result.failed())
             assert false;
@@ -182,11 +182,11 @@ public class TestForeignKeyOps extends SqlTestCase {
         CommandResult result;
         result = tryDoCommand(
             "CREATE TABLE test_fkey_parent5_ops (a VARCHAR(20), " +
-            "b VARCHAR(20), UNIQUE (a, b))", false);
+                "b VARCHAR(20), UNIQUE (a, b))", false);
         /* Create a child table that tries to create a foreign key, but the
          * column numbers don't match */
         result = server.doCommand(
-                "CREATE TABLE test_fkey_child5_ops (id1 INTEGER, id2 INTEGER, " +
+            "CREATE TABLE test_fkey_child5_ops (id1 INTEGER, id2 INTEGER, " +
                 "FOREIGN KEY (id1) REFERENCES test_fkey_parent5_ops(a, b))", false);
 
         if (!result.failed())

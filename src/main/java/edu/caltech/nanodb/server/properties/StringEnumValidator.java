@@ -10,7 +10,9 @@ import edu.caltech.nanodb.expressions.TypeConverter;
  * collection of valid values, then an error will be reported.
  */
 public class StringEnumValidator implements PropertyValidator {
-    /** An array of valid values for the string enumeration. */
+    /**
+     * An array of valid values for the string enumeration.
+     */
     private String[] validValues;
 
 

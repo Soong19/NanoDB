@@ -45,20 +45,16 @@ public interface IndexManager {
      * then the cached data is simply returned.
      *
      * @param tableInfo the table that the index is defined on
-     *
      * @param indexName the name of the index to open.  Indexes are not
-     *        referenced directly except by CREATE/ALTER/DROP INDEX statements,
-     *        so these index names are stored in the table schema files, and are
-     *        generally opened when the optimizer needs to know what indexes are
-     *        available.
-     *
+     *                  referenced directly except by CREATE/ALTER/DROP INDEX statements,
+     *                  so these index names are stored in the table schema files, and are
+     *                  generally opened when the optimizer needs to know what indexes are
+     *                  available.
      * @return an object representing the details of the open index
-     *
      * @throws java.io.FileNotFoundException if no index-file exists for the
-     *         index; in other words, it doesn't yet exist.
-     *
-     * @throws IOException if an IO error occurs when attempting to open the
-     *         index.
+     *                                       index; in other words, it doesn't yet exist.
+     * @throws IOException                   if an IO error occurs when attempting to open the
+     *                                       index.
      */
     IndexInfo openIndex(TableInfo tableInfo, String indexName);
 
@@ -67,12 +63,11 @@ public interface IndexManager {
      * This method loads the details for the specified index.
      *
      * @param indexInfo the index information object to populate.  When this
-     *        is passed in, it only contains the index's name, the name of the
-     *        table the index is specified on, and the opened database file to
-     *        read the data from.
-     *
+     *                  is passed in, it only contains the index's name, the name of the
+     *                  table the index is specified on, and the opened database file to
+     *                  read the data from.
      * @throws IOException if an IO error occurs when attempting to load the
-     *         index's details.
+     *                     index's details.
      */
     void loadIndexInfo(IndexInfo indexInfo);
 
@@ -82,12 +77,11 @@ public interface IndexManager {
      * specified in the passed-in <tt>IndexInfo</tt> object.
      *
      * @param indexInfo This object is an in/out parameter.  It is used to
-     *        specify the name and details of the new index being created.  When
-     *        the index is successfully created, the object is updated with the
-     *        actual file that the index's data is stored in.
-     *
+     *                  specify the name and details of the new index being created.  When
+     *                  the index is successfully created, the object is updated with the
+     *                  actual file that the index's data is stored in.
      * @throws IOException if the file cannot be created, or if an error occurs
-     *         while storing the initial index data.
+     *                     while storing the initial index data.
      */
     void saveIndexInfo(IndexInfo indexInfo);
 
@@ -97,9 +91,7 @@ public interface IndexManager {
      * contents.
      *
      * @param indexInfo the index to verify
-     *
      * @throws IOException if an IO error occurs while verifying the index
-     *
      * @todo Should this be in this interface?
      */
     List<String> verifyIndex(IndexInfo indexInfo);
@@ -115,9 +107,7 @@ public interface IndexManager {
      * that kind of issue.
      *
      * @param indexInfo the index to optimize
-     *
      * @throws IOException if an IO error occurs while optimizing the index
-     *
      * @todo Should this be in this interface?
      */
     void optimizeIndex(IndexInfo indexInfo);

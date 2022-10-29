@@ -31,15 +31,21 @@ import edu.caltech.nanodb.storage.TupleFile;
  */
 public class IndexScanNode extends PlanNode {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(IndexScanNode.class);
 
 
-    /** The index-info for the index being scanned. */
+    /**
+     * The index-info for the index being scanned.
+     */
     private IndexInfo indexInfo;
 
 
-    /** The index being used for the index scan. */
+    /**
+     * The index being used for the index scan.
+     */
     private TupleFile indexTupleFile;
 
 
@@ -95,7 +101,9 @@ public class IndexScanNode extends PlanNode {
     private int idxTuplePtr;
 
 
-    /** True if we have finished scanning or pulling tuples from children. */
+    /**
+     * True if we have finished scanning or pulling tuples from children.
+     */
     private boolean done;
 
 
@@ -156,9 +164,8 @@ public class IndexScanNode extends PlanNode {
      * the same predicate and table.
      *
      * @param obj the object to check for equality
-     *
      * @return true if the passed-in object is equal to this object; false
-     *         otherwise
+     * otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -239,7 +246,9 @@ public class IndexScanNode extends PlanNode {
     }
 
 
-    /** This node supports marking. */
+    /**
+     * This node supports marking.
+     */
     public boolean supportsMarking() {
         return true;
     }
@@ -290,12 +299,10 @@ public class IndexScanNode extends PlanNode {
             logger.debug("Resuming at previously marked tuple.");
             currentIndexTuple = indexTupleFile.getTuple(markedTuple);
             jumpToMarkedTuple = false;
-        }
-        else if (currentIndexTuple == null) {
+        } else if (currentIndexTuple == null) {
             // Navigate to the first tuple.
             currentIndexTuple = findFirstIndexTuple();
-        }
-        else {
+        } else {
             // Go ahead and navigate to the next tuple.
             currentIndexTuple = findNextIndexTuple(currentIndexTuple);
             if (currentIndexTuple == null)
@@ -322,8 +329,8 @@ public class IndexScanNode extends PlanNode {
      * predicate, just in case the two predicates are mutually exclusive.
      *
      * @return the first tuple in the index that satisfies the starting
-     *         criteria, or {@code null} if no tuples in the index satisfy
-     *         the criteria.
+     * criteria, or {@code null} if no tuples in the index satisfy
+     * the criteria.
      */
     private Tuple findFirstIndexTuple() {
         Tuple tup;
@@ -333,13 +340,11 @@ public class IndexScanNode extends PlanNode {
             SequentialTupleFile seqTupFile =
                 (SequentialTupleFile) indexTupleFile;
             tup = seqTupFile.findFirstTupleEquals(startLookupValue);
-        }
-        else if (indexTupleFile instanceof HashedTupleFile) {
+        } else if (indexTupleFile instanceof HashedTupleFile) {
             HashedTupleFile hashTupFile =
                 (HashedTupleFile) indexTupleFile;
             tup = hashTupFile.findFirstTupleEquals(startLookupValue);
-        }
-        else {
+        } else {
             throw new IllegalStateException("indexTupleFile is neither a " +
                 "SequentialTupleFile or a HashedTupleFile (got " +
                 indexTupleFile.getClass().getName() + ")");
@@ -381,10 +386,9 @@ public class IndexScanNode extends PlanNode {
      * predicate.
      *
      * @param tuple the "current" tuple in the index
-     *
      * @return the next tuple in the index that follows the specified tuple,
-     *         or {@code null} if no more tuples in the index satisfy the
-     *         criteria.
+     * or {@code null} if no more tuples in the index satisfy the
+     * criteria.
      */
     private Tuple findNextIndexTuple(Tuple tuple) {
         // Get the next tuple from the index file.  If it still satisfies the

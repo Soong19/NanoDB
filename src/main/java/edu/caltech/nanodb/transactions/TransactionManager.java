@@ -30,7 +30,9 @@ import edu.caltech.nanodb.storage.writeahead.WALRecordType;
  * other components of the Storage Manager to make this happen correctly.
  */
 public class TransactionManager implements BufferManagerObserver {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(TransactionManager.class);
 
 
@@ -55,7 +57,9 @@ public class TransactionManager implements BufferManagerObserver {
     private StorageManager storageManager;
 
 
-    /** The write-ahead logger that records transaction details. */
+    /**
+     * The write-ahead logger that records transaction details.
+     */
     private WALManager walManager;
 
 
@@ -96,7 +100,7 @@ public class TransactionManager implements BufferManagerObserver {
      * durability.
      *
      * @return a {@code DBFile} object for the newly created and initialized
-     *         transaction-state file.
+     * transaction-state file.
      */
     private TransactionStatePage createTxnStateFile() {
         // Create a brand new transaction-state file for the Transaction Manager
@@ -288,8 +292,7 @@ public class TransactionManager implements BufferManagerObserver {
             // Then, we must force the WAL to include this commit record.
             walManager.writeTxnRecord(WALRecordType.COMMIT_TXN);
             forceWAL(walManager.getNextLSN());
-        }
-        else {
+        } else {
             logger.debug("Transaction " + txnID + " has made no changes; not " +
                 "recording transaction-commit to WAL.");
         }
@@ -319,8 +322,7 @@ public class TransactionManager implements BufferManagerObserver {
         if (txnState.hasLoggedTxnStart()) {
             // Must rollback the transaction using the write-ahead log.
             walManager.rollbackTransaction();
-        }
-        else {
+        } else {
             logger.debug("Transaction " + txnID + " has made no changes; not " +
                 "recording transaction-rollback to WAL.");
         }
@@ -368,15 +370,14 @@ public class TransactionManager implements BufferManagerObserver {
     }
 
 
-
     /**
      * This method forces the write-ahead log out to at least the specified
      * log sequence number, syncing the log to ensure that all essential
      * records have reached the disk itself.
      *
      * @param lsn All WAL data up to this value must be forced to disk and
-     *        sync'd.  This value may be one past the end of the current WAL
-     *        file during normal operation.
+     *            sync'd.  This value may be one past the end of the current WAL
+     *            file during normal operation.
      */
     public void forceWAL(LogSequenceNumber lsn) {
         // TODO:  IMPLEMENT
@@ -396,8 +397,8 @@ public class TransactionManager implements BufferManagerObserver {
      * processing in order to record all WAL changes to disk.
      *
      * @throws IOException if an IO error occurs while attempting to force the
-     *         WAL file to disk.  If a failure occurs, the database is probably
-     *         going to be broken.
+     *                     WAL file to disk.  If a failure occurs, the database is probably
+     *                     going to be broken.
      */
     public void forceWAL() {
         forceWAL(walManager.getNextLSN());

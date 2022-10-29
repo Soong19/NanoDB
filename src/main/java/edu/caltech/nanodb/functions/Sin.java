@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the sine of a single argument. Returns  NULL if argument
  * is NULL.
- * 
+ *
  * @author emil
  */
 public class Sin extends SimpleFunction {
@@ -34,7 +34,7 @@ public class Sin extends SimpleFunction {
         }
 
         Object argVal = args.get(0).evaluate(env);
-        
+
         if (argVal == null)
             return null;
 

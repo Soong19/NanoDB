@@ -77,11 +77,9 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>Boolean</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to
-     *         a Boolean value.
+     *                           a Boolean value.
      */
     public static Boolean getBooleanValue(Object obj) {
         if (obj == null)
@@ -91,13 +89,11 @@ public class TypeConverter {
 
         if (obj instanceof Boolean) {
             result = (Boolean) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // If it's a nonzero number, return TRUE.  Otherwise, FALSE.
             Number num = (Number) obj;
             result = (num.intValue() != 0);
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type " +
                 obj.getClass() + " to byte.");
         }
@@ -116,9 +112,7 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>Byte</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to a byte.
      */
     public static Byte getByteValue(Object obj) {
@@ -129,23 +123,19 @@ public class TypeConverter {
 
         if (obj instanceof Byte) {
             result = (Byte) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // TODO:  Would be nice to detect overflow or truncation issues and
             //        log warnings about them!
 
             Number num = (Number) obj;
             result = num.byteValue();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = Byte.valueOf((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to byte.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to byte.");
         }
@@ -164,9 +154,7 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>Short</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to a short.
      */
     public static Short getShortValue(Object obj) {
@@ -177,23 +165,19 @@ public class TypeConverter {
 
         if (obj instanceof Short) {
             result = (Short) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // TODO:  Would be nice to detect overflow or truncation issues and log
             //        warnings about them!
 
             Number num = (Number) obj;
             result = num.shortValue();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = Short.valueOf((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to short.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to short.");
         }
@@ -212,9 +196,7 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to an <tt>Integer</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to an integer.
      */
     public static Integer getIntegerValue(Object obj) {
@@ -225,23 +207,19 @@ public class TypeConverter {
 
         if (obj instanceof Integer) {
             result = (Integer) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // TODO:  Would be nice to detect overflow or truncation issues and log
             //        warnings about them!
 
             Number num = (Number) obj;
             result = num.intValue();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = Integer.valueOf((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to integer.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to integer.");
         }
@@ -260,9 +238,7 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>Long</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to a long.
      */
     public static Long getLongValue(Object obj) {
@@ -273,23 +249,19 @@ public class TypeConverter {
 
         if (obj instanceof Long) {
             result = (Long) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // TODO:  Would be nice to detect overflow or truncation issues and log
             //        warnings about them!
 
             Number num = (Number) obj;
             result = num.longValue();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = Long.valueOf((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to long.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to long.");
         }
@@ -308,9 +280,7 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>Float</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to a float.
      */
     public static Float getFloatValue(Object obj) {
@@ -321,23 +291,19 @@ public class TypeConverter {
 
         if (obj instanceof Float) {
             result = (Float) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // TODO:  Would be nice to detect overflow or truncation issues and log
             //        warnings about them!
 
             Number num = (Number) obj;
             result = num.floatValue();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = Float.valueOf((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to float.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to float.");
         }
@@ -356,9 +322,7 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>Double</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to a double.
      */
     public static Double getDoubleValue(Object obj) {
@@ -369,8 +333,7 @@ public class TypeConverter {
 
         if (obj instanceof Double) {
             result = (Double) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // This is the only conversion that doesn't have the chance of
             // truncating or overflowing, as long as primitive types are
             // involved.  The conversion may lose precision when converting
@@ -382,16 +345,13 @@ public class TypeConverter {
 
             Number num = (Number) obj;
             result = num.doubleValue();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = Double.valueOf((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to double.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to double.");
         }
@@ -410,11 +370,9 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>BigInteger</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to a
-     *         BigInteger.
+     *                           BigInteger.
      */
     public static BigInteger getBigIntegerValue(Object obj) {
         if (obj == null)
@@ -424,22 +382,18 @@ public class TypeConverter {
 
         if (obj instanceof BigInteger) {
             result = (BigInteger) obj;
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             // TODO:  This could go wrong in lots of ways, and we should
             //        probably think about exactly how to handle them.
             Number num = (Number) obj;
             result = BigInteger.valueOf(num.longValue());
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = new BigInteger((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to BigInteger.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to BigInteger.");
         }
@@ -458,11 +412,9 @@ public class TypeConverter {
      * {@link TypeCastException} is thrown.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>BigInteger</tt>
-     *
      * @throws TypeCastException if the input value cannot be cast to a
-     *         BigInteger.
+     *                           BigInteger.
      */
     public static BigDecimal getBigDecimalValue(Object obj) {
         if (obj == null)
@@ -472,25 +424,19 @@ public class TypeConverter {
 
         if (obj instanceof BigDecimal) {
             result = (BigDecimal) obj;
-        }
-        else if (obj instanceof BigInteger) {
+        } else if (obj instanceof BigInteger) {
             result = new BigDecimal((BigInteger) obj);
-        }
-        else if (obj instanceof Double || obj instanceof Float) {
+        } else if (obj instanceof Double || obj instanceof Float) {
             result = new BigDecimal(((Number) obj).doubleValue());
-        }
-        else if (obj instanceof Number) {
+        } else if (obj instanceof Number) {
             result = new BigDecimal(((Number) obj).longValue());
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             try {
                 result = new BigDecimal((String) obj);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 throw new TypeCastException("Cannot convert string to BigDecimal.", nfe);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to BigDecimal.");
         }
@@ -504,7 +450,6 @@ public class TypeConverter {
      * value by calling {@link java.lang.Object#toString} on the input.
      *
      * @param obj the input value to cast
-     *
      * @return the input value cast to a <tt>String</tt>
      */
     public static String getStringValue(Object obj) {
@@ -521,11 +466,9 @@ public class TypeConverter {
 
         if (obj instanceof LocalDate) {
             result = (LocalDate) obj;
-        }
-        else if (obj instanceof LocalDateTime) {
+        } else if (obj instanceof LocalDateTime) {
             result = ((LocalDateTime) obj).toLocalDate();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             // Only try to convert date strings.  If we convert date/time
             // strings and throw away the time, this is truncation.  Would be
             // better to provide a helper function to make a date from a
@@ -533,13 +476,11 @@ public class TypeConverter {
             String s = (String) obj;
             try {
                 result = DateTimeUtils.parseDate(s);
-            }
-            catch (DateTimeParseException e) {
+            } catch (DateTimeParseException e) {
                 throw new TypeCastException("Cannot convert string \"" +
                     s + "\" to LocalDate.", e);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to LocalDate.");
         }
@@ -556,11 +497,9 @@ public class TypeConverter {
 
         if (obj instanceof LocalTime) {
             result = (LocalTime) obj;
-        }
-        else if (obj instanceof LocalDateTime) {
+        } else if (obj instanceof LocalDateTime) {
             result = ((LocalDateTime) obj).toLocalTime();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             // Only try to convert time strings.  If we convert date/time
             // strings and throw away the date, this is truncation.  Would be
             // better to provide a helper function to make a time from a
@@ -568,13 +507,11 @@ public class TypeConverter {
             String s = (String) obj;
             try {
                 result = DateTimeUtils.parseTime(s);
-            }
-            catch (DateTimeParseException e) {
+            } catch (DateTimeParseException e) {
                 throw new TypeCastException("Cannot convert string \"" +
                     s + "\" to LocalTime.", e);
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to LocalTime.");
         }
@@ -591,31 +528,26 @@ public class TypeConverter {
 
         if (obj instanceof LocalDateTime) {
             result = (LocalDateTime) obj;
-        }
-        else if (obj instanceof LocalDate) {
+        } else if (obj instanceof LocalDate) {
             // Convert from LocalDate to LocalDateTime by assuming 12:00AM
             result = ((LocalDate) obj).atStartOfDay();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             String s = (String) obj;
             try {
                 // First try converting to LocalDateTime
                 result = DateTimeUtils.parseDateTime(s);
-            }
-            catch (DateTimeParseException e1) {
+            } catch (DateTimeParseException e1) {
                 try {
                     // If that didn't work, try converting to LocalDate, then
                     // convert to LocalDateTime by assuming 12:00AM.
                     LocalDate d = DateTimeUtils.parseDate(s);
                     result = d.atStartOfDay();
-                }
-                catch (DateTimeParseException e2) {
+                } catch (DateTimeParseException e2) {
                     throw new TypeCastException("Cannot convert string \"" +
                         s + "\" to LocalDateTime.");
                 }
             }
-        }
-        else {
+        } else {
             throw new TypeCastException("Cannot convert type \"" +
                 obj.getClass() + "\" to LocalDateTime.");
         }
@@ -636,12 +568,10 @@ public class TypeConverter {
      *
      * @param obj1 the first input value to cast
      * @param obj2 the second input value to cast
-     *
      * @return an object holding the two input values, both converted to a type
-     *         suitable for arithmetic
-     *
+     * suitable for arithmetic
      * @throws TypeCastException if both inputs are non-<tt>null</tt> and they
-     *         cannot both be cast to types suitable for arithmetic.
+     *                           cannot both be cast to types suitable for arithmetic.
      */
     public static Pair coerceArithmetic(Object obj1, Object obj2)
         throws TypeCastException {
@@ -652,28 +582,23 @@ public class TypeConverter {
                     // At least one is a BigDecimal, so convert both to BigDecimals.
                     obj1 = getBigDecimalValue(obj1);
                     obj2 = getBigDecimalValue(obj2);
-                }
-                else if (obj1 instanceof BigInteger || obj2 instanceof BigInteger) {
+                } else if (obj1 instanceof BigInteger || obj2 instanceof BigInteger) {
                     // At least one is a BigInteger, so convert both to BigIntegers.
                     obj1 = getBigIntegerValue(obj1);
                     obj2 = getBigIntegerValue(obj2);
-                }
-                else if (obj1 instanceof Double || obj2 instanceof Double) {
+                } else if (obj1 instanceof Double || obj2 instanceof Double) {
                     // At least one is a Double, so convert both to Doubles.
                     obj1 = getDoubleValue(obj1);
                     obj2 = getDoubleValue(obj2);
-                }
-                else if (obj1 instanceof Float || obj2 instanceof Float) {
+                } else if (obj1 instanceof Float || obj2 instanceof Float) {
                     // At least one is a Float, so convert both to Floats.
                     obj1 = getFloatValue(obj1);
                     obj2 = getFloatValue(obj2);
-                }
-                else if (obj1 instanceof Long || obj2 instanceof Long) {
+                } else if (obj1 instanceof Long || obj2 instanceof Long) {
                     // At least one is a Long, so convert both to Longs.
                     obj1 = getLongValue(obj1);
                     obj2 = getLongValue(obj2);
-                }
-                else {
+                } else {
                     // Any other integer-type (e.g. shorts or bytes or chars)
                     // we will just coerce into being Integers.
                     obj1 = getIntegerValue(obj1);
@@ -681,26 +606,21 @@ public class TypeConverter {
                 }
 
                 assert obj1.getClass().equals(obj2.getClass());
-            }
-            else if (obj1 instanceof Temporal) {
+            } else if (obj1 instanceof Temporal) {
                 // LHS is a date, time or datetime.
                 return coerceTemporalArithmetic((Temporal) obj1, obj2);
-            }
-            else if (obj2 instanceof Temporal) {
+            } else if (obj2 instanceof Temporal) {
                 Pair p = coerceTemporalArithmetic((Temporal) obj2, obj1);
                 return p.swap();
-            }
-            else if (obj1 instanceof TemporalAmount) {
+            } else if (obj1 instanceof TemporalAmount) {
                 // LHS is an interval.
                 return coerceTemporalAmountArithmetic(
                     (TemporalAmount) obj1, obj2);
-            }
-            else if (obj2 instanceof TemporalAmount) {
+            } else if (obj2 instanceof TemporalAmount) {
                 Pair p = coerceTemporalAmountArithmetic(
                     (TemporalAmount) obj2, obj1);
                 return p.swap();
-            }
-            else {
+            } else {
                 throw new TypeCastException(String.format(
                     "Cannot coerce types \"%s\" and \"%s\" for arithmetic.",
                     obj1.getClass(), obj2.getClass()));
@@ -720,29 +640,24 @@ public class TypeConverter {
             if (obj1 instanceof LocalDateTime || obj2 instanceof LocalDateTime) {
                 obj1 = getDateTimeValue(obj1);
                 obj2 = getDateTimeValue(obj2);
-            }
-            else if (obj1 instanceof LocalDate || obj2 instanceof LocalDate) {
+            } else if (obj1 instanceof LocalDate || obj2 instanceof LocalDate) {
                 obj1 = getDateValue(obj1);
                 obj2 = getDateValue(obj2);
-            }
-            else if (obj1 instanceof LocalTime || obj2 instanceof LocalTime) {
+            } else if (obj1 instanceof LocalTime || obj2 instanceof LocalTime) {
                 obj1 = getTimeValue(obj1);
                 obj2 = getTimeValue(obj2);
-            }
-            else {
+            } else {
                 throw new TypeCastException(String.format(
                     "Cannot coerce types \"%s\" and \"%s\" for arithmetic.",
                     obj1.getClass(), obj2.getClass()));
             }
-        }
-        else if (obj2 instanceof String) {
+        } else if (obj2 instanceof String) {
             // RHS is a String; try to convert it into a Temporal.  (We do
             // this instead of trying to convert it to a TemporalAmount,
             // because TemporalAmounts are already identified by the parser
             // with the "INTERVAL '...'" keyword.
             obj2 = DateTimeUtils.parseTemporal((String) obj2);
-        }
-        else if (!(obj2 instanceof TemporalAmount)) {
+        } else if (!(obj2 instanceof TemporalAmount)) {
             throw new TypeCastException(String.format(
                 "Cannot coerce types \"%s\" and \"%s\" for arithmetic.",
                 obj1.getClass(), obj2.getClass()));
@@ -763,8 +678,7 @@ public class TypeConverter {
             // identified by the parser with the "INTERVAL '...'"
             // keyword.
             obj2 = DateTimeUtils.parseTemporal((String) obj2);
-        }
-        else if (!(obj2 instanceof Temporal)) {
+        } else if (!(obj2 instanceof Temporal)) {
             throw new TypeCastException(String.format(
                 "Cannot coerce types \"%s\" and \"%s\" for arithmetic.",
                 obj1.getClass(), obj2.getClass()));
@@ -785,17 +699,14 @@ public class TypeConverter {
      * this is that the comparison will simply evaluate to <tt>UNKNOWN</tt>, so
      * no coercion is required.
      *
-     * @design When new types are added in the future (e.g. date and/or time
-     *         values), this function will need to be updated with the new types.
-     *
      * @param obj1 the first input value to cast
      * @param obj2 the second input value to cast
-     *
      * @return an object holding the two input values, both converted to a type
-     *         suitable for comparison
-     *
+     * suitable for comparison
      * @throws TypeCastException if both inputs are non-<tt>null</tt> and they
-     *         cannot both be cast to types suitable for comparison.
+     *                           cannot both be cast to types suitable for comparison.
+     * @design When new types are added in the future (e.g. date and/or time
+     * values), this function will need to be updated with the new types.
      */
     public static Pair coerceComparison(Object obj1, Object obj2)
         throws TypeCastException {
@@ -808,24 +719,20 @@ public class TypeConverter {
             if (obj1 instanceof Number || obj2 instanceof Number) {
                 // Reuse the same logic in the arithmetic coercion code.
                 return coerceArithmetic(obj1, obj2);
-            }
-            else if (obj1 instanceof Boolean || obj2 instanceof Boolean) {
+            } else if (obj1 instanceof Boolean || obj2 instanceof Boolean) {
                 obj1 = getBooleanValue(obj1);
                 obj2 = getBooleanValue(obj2);
-            }
-            else if (obj1 instanceof String || obj2 instanceof String) {
+            } else if (obj1 instanceof String || obj2 instanceof String) {
                 obj1 = getStringValue(obj1);
                 obj2 = getStringValue(obj2);
-            }
-            else if (obj1 instanceof Temporal && obj2 instanceof Temporal) {
+            } else if (obj1 instanceof Temporal && obj2 instanceof Temporal) {
                 // The temporal objects need to be the same type for
                 // comparisons.  Since we know they are both Temporals then
                 // coerceArithmetic() will make them into the same type.
                 // (If one were a Temporal and the other were a TemporalAmount
                 // then this might be left unchanged.)
                 return coerceArithmetic(obj1, obj2);
-            }
-            else {
+            } else {
                 // Inputs are different types, and we don't know how to make
                 // them the same.
                 throw new TypeCastException(String.format(
@@ -846,9 +753,8 @@ public class TypeConverter {
      * data type then <tt>null</tt> is returned.
      *
      * @param obj The object to determine a SQL data type for.
-     *
      * @return The corresponding SQL data type, or <tt>null</tt> if the input
-     *         value's type doesn't have an obvious corresponding SQL data type.
+     * value's type doesn't have an obvious corresponding SQL data type.
      */
     public static SQLDataType getSQLType(Object obj) {
         if (obj == null)
@@ -864,61 +770,59 @@ public class TypeConverter {
 
         switch (colType.getBaseType()) {
 
-        case INTEGER:
-            return getIntegerValue(obj);
+            case INTEGER:
+                return getIntegerValue(obj);
 
-        case SMALLINT:
-            return getShortValue(obj);
+            case SMALLINT:
+                return getShortValue(obj);
 
-        case BIGINT:
-            return getLongValue(obj);
+            case BIGINT:
+                return getLongValue(obj);
 
-        case TINYINT:
-            return getByteValue(obj);
+            case TINYINT:
+                return getByteValue(obj);
 
-        case FLOAT:
-            return getFloatValue(obj);
+            case FLOAT:
+                return getFloatValue(obj);
 
-        case DOUBLE:
-            return getDoubleValue(obj);
+            case DOUBLE:
+                return getDoubleValue(obj);
 
-        case NUMERIC:
-        {
-            BigDecimal v = getBigDecimalValue(obj);
+            case NUMERIC: {
+                BigDecimal v = getBigDecimalValue(obj);
 
-            // Truncate the value if it exceeds the column-type's specified
-            // scale.
-            if (v.scale() > colType.getScale())
-                v = v.setScale(colType.getScale(), RoundingMode.HALF_UP);
+                // Truncate the value if it exceeds the column-type's specified
+                // scale.
+                if (v.scale() > colType.getScale())
+                    v = v.setScale(colType.getScale(), RoundingMode.HALF_UP);
 
-            return v;
-        }
+                return v;
+            }
 
-        case CHAR:
-        case VARCHAR:
-        {
-            // TODO:  Complain instead?
-            String s = getStringValue(obj);
-            if (s.length() > colType.getLength())
-                s = s.substring(0, colType.getLength());
+            case CHAR:
+            case VARCHAR: {
+                // TODO:  Complain instead?
+                String s = getStringValue(obj);
+                if (s.length() > colType.getLength())
+                    s = s.substring(0, colType.getLength());
 
-            return s;
-        }
+                return s;
+            }
 
-        case DATE:
-            return getDateValue(obj);
+            case DATE:
+                return getDateValue(obj);
 
-        case TIME:
-            return getTimeValue(obj);
+            case TIME:
+                return getTimeValue(obj);
 
-        case DATETIME:
-        case TIMESTAMP:
-            return getDateTimeValue(obj);
+            case DATETIME:
+            case TIMESTAMP:
+                return getDateTimeValue(obj);
 
-        case FILE_POINTER: // TODO!
-        default:
-            throw new TypeCastException("Cannot coerce object " + obj +
-                " to ColumnType " + colType);
+            case FILE_POINTER: // TODO!
+            default:
+                throw new TypeCastException("Cannot coerce object " + obj +
+                    " to ColumnType " + colType);
         }
     }
 }

@@ -19,10 +19,14 @@ import edu.caltech.nanodb.relations.ColumnType;
  */
 public class PageReader {
 
-    /** The page that the reader will read from. */
+    /**
+     * The page that the reader will read from.
+     */
     protected DBPage dbPage;
 
-    /** The current position in the page where reads will occur from. */
+    /**
+     * The current position in the page where reads will occur from.
+     */
     protected int position;
 
 
@@ -86,10 +90,8 @@ public class PageReader {
      * Read a sequence of bytes into the provided byte-array, starting with the
      * specified offset, and reading the specified number of bytes.
      *
-     * @param b the byte-array to read bytes into
-     *
+     * @param b   the byte-array to read bytes into
      * @param off the offset to read the bytes into the array
-     *
      * @param len the number of bytes to read into the array
      */
     public void read(byte[] b, int off, int len) {
@@ -118,7 +120,9 @@ public class PageReader {
         return dbPage.readBoolean(position++);
     }
 
-    /** Reads and returns a signed byte from the current position. */
+    /**
+     * Reads and returns a signed byte from the current position.
+     */
     public byte readByte() {
         return dbPage.readByte(position++);
     }
@@ -146,7 +150,9 @@ public class PageReader {
     }
 
 
-    /** Reads and returns a signed short from the current position. */
+    /**
+     * Reads and returns a signed short from the current position.
+     */
     public short readShort() {
         short value = dbPage.readShort(position);
         position += 2;
@@ -155,7 +161,9 @@ public class PageReader {
     }
 
 
-    /** Reads and returns a two-byte char value from the current position. */
+    /**
+     * Reads and returns a two-byte char value from the current position.
+     */
     public char readChar() {
         char value = dbPage.readChar(position);
         position += 2;
@@ -176,7 +184,9 @@ public class PageReader {
     }
 
 
-    /** Reads and returns a four-byte integer value from the current position. */
+    /**
+     * Reads and returns a four-byte integer value from the current position.
+     */
     public int readInt() {
         int value = dbPage.readInt(position);
         position += 4;
@@ -287,45 +297,45 @@ public class PageReader {
         // position, so we have to apply the position-changes here.
         switch (colType.getBaseType()) {
 
-        case INTEGER:
-        case FLOAT:
-        case DATE:
-        case TIME:
-            position += 4;
-            break;
+            case INTEGER:
+            case FLOAT:
+            case DATE:
+            case TIME:
+                position += 4;
+                break;
 
-        case SMALLINT:
-            position += 2;
-            break;
+            case SMALLINT:
+                position += 2;
+                break;
 
-        case BIGINT:
-        case DOUBLE:
-        case DATETIME:
-        case TIMESTAMP:
-        case FILE_POINTER:
-            position += 8;
-            break;
+            case BIGINT:
+            case DOUBLE:
+            case DATETIME:
+            case TIMESTAMP:
+            case FILE_POINTER:
+                position += 8;
+                break;
 
-        case TINYINT:
-            position += 1;
-            break;
+            case TINYINT:
+                position += 1;
+                break;
 
-        case NUMERIC:
-            position += 16;
-            break;
+            case NUMERIC:
+                position += 16;
+                break;
 
-        case CHAR:
-            position += colType.getLength();
-            break;
+            case CHAR:
+                position += colType.getLength();
+                break;
 
-        case VARCHAR:
-            // TODO:  Assume it's always stored as a 64KB varchar, not 256B.
-            position += 2 + ((String) value).length();
-            break;
+            case VARCHAR:
+                // TODO:  Assume it's always stored as a 64KB varchar, not 256B.
+                position += 2 + ((String) value).length();
+                break;
 
-        default:
-            throw new UnsupportedOperationException(
-                "Cannot currently store type " + colType.getBaseType());
+            default:
+                throw new UnsupportedOperationException(
+                    "Cannot currently store type " + colType.getBaseType());
         }
 
         return value;

@@ -14,7 +14,9 @@ import edu.caltech.nanodb.relations.Schema;
 import edu.caltech.nanodb.server.performance.PerformanceCounters;
 
 
-/** Returns the current value of the specified performance counter. */
+/**
+ * Returns the current value of the specified performance counter.
+ */
 public class ReadPerfCounter extends SimpleFunction {
     @Override
     public ColumnType getReturnType(List<Expression> args, Schema schema) {

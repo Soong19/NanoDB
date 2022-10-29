@@ -19,7 +19,9 @@ import edu.caltech.nanodb.relations.Tuple;
 public class TupleBagNode extends PlanNode {
     private boolean prepared = false;
 
-    /** The collection of tuples that are returned by this plan node. */
+    /**
+     * The collection of tuples that are returned by this plan node.
+     */
     private ArrayList<Tuple> tuples = new ArrayList<>();
 
 

@@ -29,7 +29,9 @@ import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.*;
  * </p>
  */
 public class InnerPage implements DataPage {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(InnerPage.class);
 
 
@@ -41,19 +43,27 @@ public class InnerPage implements DataPage {
     public static final int OFFSET_NUM_POINTERS = 3;
 
 
-    /** The offset of the first pointer in the non-leaf page. */
+    /**
+     * The offset of the first pointer in the non-leaf page.
+     */
     public static final int OFFSET_FIRST_POINTER = 5;
 
 
-    /** The actual data page that holds the B<sup>+</sup> tree inner node. */
+    /**
+     * The actual data page that holds the B<sup>+</sup> tree inner node.
+     */
     private DBPage dbPage;
 
 
-    /** The schema of the tuples in the leaf page. */
+    /**
+     * The schema of the tuples in the leaf page.
+     */
     private Schema schema;
 
 
-    /** The number of pointers stored within this non-leaf page. */
+    /**
+     * The number of pointers stored within this non-leaf page.
+     */
     private int numPointers;
 
 
@@ -66,7 +76,9 @@ public class InnerPage implements DataPage {
     private int[] pointerOffsets;
 
 
-    /** An array of the tuples stored in this non-leaf page. */
+    /**
+     * An array of the tuples stored in this non-leaf page.
+     */
     private BTreeFilePageTuple[] keys;
 
 
@@ -107,9 +119,7 @@ public class InnerPage implements DataPage {
      * function creates an inner page that is initially empty.
      *
      * @param dbPage the page to initialize as an inner page.
-     *
      * @param schema the schema of the tuples in the leaf page
-     *
      * @return a newly initialized {@code InnerPage} object wrapping the page
      */
     public static InnerPage init(DBPage dbPage, Schema schema) {
@@ -128,18 +138,13 @@ public class InnerPage implements DataPage {
      * function creates an inner page that initially contains the specified
      * page-pointers and key value.
      *
-     * @param dbPage the page to initialize as an inner page.
-     *
-     * @param schema the schema of the tuples in the inner page
-     *
+     * @param dbPage   the page to initialize as an inner page.
+     * @param schema   the schema of the tuples in the inner page
      * @param pagePtr1 the first page-pointer to store in the inner page, to the
-     *        left of {@code key1}
-     *
-     * @param key1 the first key to store in the inner page
-     *
+     *                 left of {@code key1}
+     * @param key1     the first key to store in the inner page
      * @param pagePtr2 the second page-pointer to store in the inner page, to
-     *        the right of {@code key1}
-     *
+     *                 the right of {@code key1}
      * @return a newly initialized {@code InnerPage} object wrapping the page
      */
     public static InnerPage init(DBPage dbPage, Schema schema,
@@ -209,8 +214,7 @@ public class InnerPage implements DataPage {
             keyEndOffset = key.getEndOffset();
             pointerOffsets[numPointers - 1] = keyEndOffset;
             endOffset = keyEndOffset + 2;
-        }
-        else {
+        } else {
             // There are no entries (pointers + keys).
             endOffset = OFFSET_FIRST_POINTER;
             pointerOffsets = null;
@@ -245,14 +249,12 @@ public class InnerPage implements DataPage {
      *
      * @param pagePath the page path from root to this leaf page
      * @param innerOps the inner page ops that allows this method to
-     *        load inner pages and navigate the tree
-     *
+     *                 load inner pages and navigate the tree
      * @return the page number of the left sibling leaf-node, or -1 if there
-     *         is no left sibling
-     *
+     * is no left sibling
      * @review (Donnie) There is a lot of implementation-overlap between this
-     *         function and the {@link InnerPage#getLeftSibling}.  Maybe find
-     *         a way to combine the implementations.
+     * function and the {@link InnerPage#getLeftSibling}.  Maybe find
+     * a way to combine the implementations.
      */
     public int getLeftSibling(List<Integer> pagePath,
                               InnerPageOperations innerOps) {
@@ -260,7 +262,7 @@ public class InnerPage implements DataPage {
         // Verify that the last node in the page path is in fact this page.
         if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
             throw new IllegalArgumentException(
-                    "The page path provided does not terminate on this leaf page.");
+                "The page path provided does not terminate on this leaf page.");
         }
 
         // If this leaf doesn't have a parent, we already know it doesn't
@@ -276,8 +278,8 @@ public class InnerPage implements DataPage {
         int pageIndex = inner.getIndexOfPointer(getPageNo());
         if (pageIndex == -1) {
             throw new IllegalStateException(String.format(
-                    "Leaf node %d doesn't appear in parent inner node %d!",
-                    getPageNo(), parentPageNo));
+                "Leaf node %d doesn't appear in parent inner node %d!",
+                getPageNo(), parentPageNo));
         }
 
         int leftSiblingIndex = pageIndex - 1;
@@ -296,14 +298,12 @@ public class InnerPage implements DataPage {
      *
      * @param pagePath the page path from root to this leaf page
      * @param innerOps the inner page ops that allows this method to
-     *        load inner pages and navigate the tree
-     *
+     *                 load inner pages and navigate the tree
      * @return the page number of the right sibling leaf-node, or -1 if there
-     *         is no right sibling
-     *
+     * is no right sibling
      * @review (Donnie) There is a lot of implementation-overlap between this
-     *         function and the {@link InnerPage#getLeftSibling}.  Maybe find
-     *         a way to combine the implementations.
+     * function and the {@link InnerPage#getLeftSibling}.  Maybe find
+     * a way to combine the implementations.
      */
     public int getRightSibling(List<Integer> pagePath,
                                InnerPageOperations innerOps) {
@@ -311,7 +311,7 @@ public class InnerPage implements DataPage {
         // Verify that the last node in the page path is in fact this page.
         if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
             throw new IllegalArgumentException(
-                    "The page path provided does not terminate on this inner page.");
+                "The page path provided does not terminate on this inner page.");
         }
 
         // If this leaf doesn't have a parent, we already know it doesn't
@@ -327,8 +327,8 @@ public class InnerPage implements DataPage {
         int pageIndex = inner.getIndexOfPointer(getPageNo());
         if (pageIndex == -1) {
             throw new IllegalStateException(String.format(
-                    "Inner node %d doesn't appear in parent inner node %d!",
-                    getPageNo(), parentPageNo));
+                "Inner node %d doesn't appear in parent inner node %d!",
+                getPageNo(), parentPageNo));
         }
 
         int rightSiblingIndex = pageIndex + 1;
@@ -359,7 +359,6 @@ public class InnerPage implements DataPage {
      * each key must have a pointer on both sides.
      *
      * @return the number of keys in this inner page.
-     *
      * @throws IllegalStateException if the inner page contains 0 pointers
      */
     public int getNumKeys() {
@@ -387,7 +386,7 @@ public class InnerPage implements DataPage {
      * in bytes.
      *
      * @return the amount of space used by key/pointer entries in this page,
-     *         in bytes.
+     * in bytes.
      */
     public int getSpaceUsedByEntries() {
         return endOffset - OFFSET_FIRST_POINTER;
@@ -418,7 +417,6 @@ public class InnerPage implements DataPage {
      * Returns the pointer at the specified index.
      *
      * @param index the index of the pointer to retrieve
-     *
      * @return the pointer at that index
      */
     public int getPointer(int index) {
@@ -431,7 +429,7 @@ public class InnerPage implements DataPage {
      * This is used when the B<sup>+</sup> tree is being optimized, as the
      * layout of the data on disk is rearranged.
      *
-     * @param index the index of the pointer to replace
+     * @param index     the index of the pointer to replace
      * @param newPageNo the page number to store at the specified index
      */
     public void replacePointer(int index, int newPageNo) {
@@ -444,7 +442,6 @@ public class InnerPage implements DataPage {
      * Returns the key at the specified index.
      *
      * @param index the index of the key to retrieve
-     *
      * @return the key at that index
      */
     public BTreeFilePageTuple getKey(int index) {
@@ -458,7 +455,6 @@ public class InnerPage implements DataPage {
      * is not found.
      *
      * @param pointer the page-pointer to find in this inner page
-     *
      * @return the index of the page-pointer if found, or -1 if not found
      */
     public int getIndexOfPointer(int pointer) {
@@ -504,18 +500,15 @@ public class InnerPage implements DataPage {
      * verified that the new key and page-pointer are able to fit in the page.
      *
      * @param pagePtr1 the page-pointer which should appear before the new key
-     *        in the inner page.  <b>This is required to already appear within
-     *        the inner page.</b>
-     *
-     * @param key1 the new key to add to the inner page, immediately after the
-     *        {@code pagePtr1} value.
-     *
+     *                 in the inner page.  <b>This is required to already appear within
+     *                 the inner page.</b>
+     * @param key1     the new key to add to the inner page, immediately after the
+     *                 {@code pagePtr1} value.
      * @param pagePtr2 the new page-pointer to add to the inner page,
-     *        immediately after the {@code key1} value.
-     *
+     *                 immediately after the {@code key1} value.
      * @throws IllegalArgumentException if the specified {@code pagePtr1} value
-     *         cannot be found in the inner page, or if the new key and
-     *         page-pointer won't fit within the space available in the page.
+     *                                  cannot be found in the inner page, or if the new key and
+     *                                  page-pointer won't fit within the space available in the page.
      */
     public void addEntry(int pagePtr1, Tuple key1, int pagePtr2) {
 
@@ -536,7 +529,7 @@ public class InnerPage implements DataPage {
         if (i == numPointers) {
             throw new IllegalArgumentException(
                 "Can't find initial page-pointer " + pagePtr1 +
-                " in non-leaf page " + getPageNo());
+                    " in non-leaf page " + getPageNo());
         }
 
         // Figure out where to insert the new key and value.
@@ -546,8 +539,7 @@ public class InnerPage implements DataPage {
             // There's a key i associated with pointer i.  Use the key's offset,
             // since it's after the pointer.
             oldKeyStart = keys[i].getOffset();
-        }
-        else {
+        } else {
             // The pageNo1 pointer is the last pointer in the sequence.  Use
             // the end-offset of the data in the page.
             oldKeyStart = endOffset;
@@ -594,15 +586,14 @@ public class InnerPage implements DataPage {
      * up to the caller to determine whether the left key or the right key
      * should be deleted.
      *
-     * @param pagePtr the page-pointer value to identify and remove
-     *
+     * @param pagePtr        the page-pointer value to identify and remove
      * @param removeRightKey a flag specifying whether the key to the right
-     *        ({@code true}) or to the left ({@code false}) should be removed
+     *                       ({@code true}) or to the left ({@code false}) should be removed
      */
     public void deletePointer(int pagePtr, boolean removeRightKey) {
         logger.debug("Trying to delete page-pointer " + pagePtr +
             " from inner page " + getPageNo() + ", and remove the " +
-                (removeRightKey ? "right" : "left") + " key.");
+            (removeRightKey ? "right" : "left") + " key.");
 
         int ptrIndex = getIndexOfPointer(pagePtr);
         if (ptrIndex == -1) {
@@ -614,14 +605,14 @@ public class InnerPage implements DataPage {
         if (ptrIndex == 0 && !removeRightKey) {
             throw new IllegalArgumentException(String.format(
                 "Tried to delete page-pointer %d and the key to the left," +
-                " in inner page %d, but the pointer has no left key.",
+                    " in inner page %d, but the pointer has no left key.",
                 pagePtr, dbPage.getPageNo()));
         }
 
         if (ptrIndex == numPointers - 1 && removeRightKey) {
             throw new IllegalArgumentException(String.format(
                 "Tried to delete page-pointer %d and the key to the right," +
-                " in inner page %d, but the pointer has no right key.",
+                    " in inner page %d, but the pointer has no right key.",
                 pagePtr, dbPage.getPageNo()));
         }
 
@@ -638,20 +629,19 @@ public class InnerPage implements DataPage {
             end = keys[ptrIndex].getEndOffset();
 
             logger.debug(String.format("Removing right key, with size %d." +
-                "  Range being removed is [%d, %d).", keys[ptrIndex].getSize(),
+                    "  Range being removed is [%d, %d).", keys[ptrIndex].getSize(),
                 start, end));
-        }
-        else {
+        } else {
             // Remove the key to the left of the page-pointer.
             start = keys[ptrIndex - 1].getOffset();
 
             logger.debug(String.format("Removing left key, with size %d." +
-                "  Range being removed is [%d, %d).", keys[ptrIndex - 1].getSize(),
+                    "  Range being removed is [%d, %d).", keys[ptrIndex - 1].getSize(),
                 start, end));
         }
 
         logger.debug("Moving inner-page data in range [" + end + ", " +
-                endOffset + ") over by " + (end - start) + " bytes");
+            endOffset + ") over by " + (end - start) + " bytes");
         dbPage.moveDataRange(end, start, endOffset - end);
 
         // Decrement the total number of pointers.
@@ -682,23 +672,19 @@ public class InnerPage implements DataPage {
      * </p>
      *
      * @param leftSibling the left sibling of this inner node in the index file
-     *
-     * @param count the number of pointers to move to the left sibling
-     *
-     * @param parentKey If this inner node and the sibling already have a parent
-     *        node, this is the key between the two nodes' page-pointers in the
-     *        parent node.  If the two nodes don't have a parent (i.e. because
-     *        an inner node is being split into two nodes and the depth of the
-     *        tree is being increased) then this value will be {@code null}.
-     *
+     * @param count       the number of pointers to move to the left sibling
+     * @param parentKey   If this inner node and the sibling already have a parent
+     *                    node, this is the key between the two nodes' page-pointers in the
+     *                    parent node.  If the two nodes don't have a parent (i.e. because
+     *                    an inner node is being split into two nodes and the depth of the
+     *                    tree is being increased) then this value will be {@code null}.
      * @return the key that should go into the parent node, between the
-     *         page-pointers for this node and its sibling
-     *
+     * page-pointers for this node and its sibling
      * @todo (Donnie) When support for deletion is added to the index
-     *       implementation, we will need to support the case when the incoming
-     *       {@code parentKey} is non-{@code null}, but the returned key is
-     *       {@code null} because one of the two siblings' pointers will be
-     *       removed.
+     * implementation, we will need to support the case when the incoming
+     * {@code parentKey} is non-{@code null}, but the returned key is
+     * {@code null} because one of the two siblings' pointers will be
+     * removed.
      */
     public TupleLiteral movePointersLeft(InnerPage leftSibling, int count,
                                          Tuple parentKey) {
@@ -713,8 +699,7 @@ public class InnerPage implements DataPage {
         int parentKeyLen = 0;
         if (parentKey != null) {
             parentKeyLen = PageTuple.getTupleStorageSize(schema, parentKey);
-        }
-        else {
+        } else {
             if (leftSibling.getNumPointers() != 0) {
                 throw new IllegalStateException("Cannot move pointers to " +
                     "non-empty sibling if no parent-key is specified!");
@@ -752,56 +737,56 @@ public class InnerPage implements DataPage {
      * @return the page path to the right sibling leaf node
      *
     public List<Integer> getRightSibling(List<Integer> pagePath,
-        InnerPageOperations innerOps) {
-        // Verify that the last node in the page path is this leaf page.
-        if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
-            throw new IllegalArgumentException("The page path provided does" +
-                " not terminate on this leaf page.");
-        }
+    InnerPageOperations innerOps) {
+    // Verify that the last node in the page path is this leaf page.
+    if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
+    throw new IllegalArgumentException("The page path provided does" +
+    " not terminate on this leaf page.");
+    }
 
-        ArrayList<Integer> rightPath = new ArrayList<Integer>();
+    ArrayList<Integer> rightPath = new ArrayList<Integer>();
 
-        InnerPage inner = null;
-        int index = 0;
-        int i = pagePath.size() - 2;
-        try {
-            while (i >= 0) {
-                inner = innerOps.loadPage(idxFileInfo, pagePath.get(i));
-                index = inner.getIndexOfPointer(pagePath.get(i+1));
-                if (index != inner.getNumPointers() - 1) {
-                    // This means that the subtree this leaf is in has a right
-                    // sibling subtree from the current inner node.
-                    rightPath.addAll(pagePath.subList(0, i+1));
-                    break;
-                }
-                i--;
-            }
+    InnerPage inner = null;
+    int index = 0;
+    int i = pagePath.size() - 2;
+    try {
+    while (i >= 0) {
+    inner = innerOps.loadPage(idxFileInfo, pagePath.get(i));
+    index = inner.getIndexOfPointer(pagePath.get(i+1));
+    if (index != inner.getNumPointers() - 1) {
+    // This means that the subtree this leaf is in has a right
+    // sibling subtree from the current inner node.
+    rightPath.addAll(pagePath.subList(0, i+1));
+    break;
+    }
+    i--;
+    }
 
-            int nextPage;
-            if (inner == null || i == -1) {
-                return rightPath;
-            }
+    int nextPage;
+    if (inner == null || i == -1) {
+    return rightPath;
+    }
 
-            // Add to the rightPath the page corresponding to one to the
-            // right of the current index
-            rightPath.add(inner.getPointer(index + 1));
-            i++;
+    // Add to the rightPath the page corresponding to one to the
+    // right of the current index
+    rightPath.add(inner.getPointer(index + 1));
+    i++;
 
-            while (i <= pagePath.size() - 2) {
-                index = 0;
-                nextPage = inner.getPointer(index);
-                rightPath.add(nextPage);
-                inner = innerOps.loadPage(idxFileInfo, nextPage);
-                i++;
-            }
+    while (i <= pagePath.size() - 2) {
+    index = 0;
+    nextPage = inner.getPointer(index);
+    rightPath.add(nextPage);
+    inner = innerOps.loadPage(idxFileInfo, nextPage);
+    i++;
+    }
 
-        } catch (IOException e) {
-            throw new IllegalArgumentException("A page failed to load!");
-        }
+    } catch (IOException e) {
+    throw new IllegalArgumentException("A page failed to load!");
+    }
 
-        // Can assert that for the last entry, leaf.getNextLeafPage
-        // should be last pagePath entry here
-        return rightPath;
+    // Can assert that for the last entry, leaf.getNextLeafPage
+    // should be last pagePath entry here
+    return rightPath;
     }
 
 
@@ -816,56 +801,56 @@ public class InnerPage implements DataPage {
      * @return the page path to the left sibling leaf node
      *
     public List<Integer> getLeftSibling(List<Integer> pagePath, InnerPageOperations innerOps) {
-        // Verify that the last node in the page path is this leaf page.
-        if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
-            throw new IllegalArgumentException("The page path provided does" +
-                " not terminate on this leaf page.");
-        }
-
-        ArrayList<Integer> leftPath = new ArrayList<Integer>();
-        // Note to self - not sure on behavior for initializing a for loop
-        // with an i that does not satisfy condition.  If it doesn't do any
-        // iterations, then that would be ideal behavior.  That case should
-        // never occur anyways...
-        InnerPage inner = null;
-        int index = 0;
-        int i = pagePath.size() - 2;
-        try {
-            while (i >= 0) {
-                inner = innerOps.loadPage(idxFileInfo, pagePath.get(i));
-                index = inner.getIndexOfPointer(pagePath.get(i+1));
-                if (index != 0) {
-                    // This means that the subtree this leaf is in has a left
-                    // sibling subtree from the current inner node.
-                    leftPath.addAll(pagePath.subList(0, i+1));
-                    break;
-                }
-                i--;
-            }
-
-            int nextPage;
-            if (inner == null || i == -1) {
-                return leftPath;
-            }
-            // Add to the leftPath the page corresponding to one to the
-            // left of the current index
-            leftPath.add(inner.getPointer(index - 1));
-            i++;
-
-            while (i <= pagePath.size() - 2) {
-                index = inner.getNumPointers() - 1;
-                nextPage = inner.getPointer(index);
-                leftPath.add(nextPage);
-                inner = innerOps.loadPage(idxFileInfo, nextPage);
-                i++;
-            }
-        }
-        catch (IOException e) {
-            throw new IllegalArgumentException("A page failed to load!");
-        }
-        return leftPath;
+    // Verify that the last node in the page path is this leaf page.
+    if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
+    throw new IllegalArgumentException("The page path provided does" +
+    " not terminate on this leaf page.");
     }
-*/
+
+    ArrayList<Integer> leftPath = new ArrayList<Integer>();
+    // Note to self - not sure on behavior for initializing a for loop
+    // with an i that does not satisfy condition.  If it doesn't do any
+    // iterations, then that would be ideal behavior.  That case should
+    // never occur anyways...
+    InnerPage inner = null;
+    int index = 0;
+    int i = pagePath.size() - 2;
+    try {
+    while (i >= 0) {
+    inner = innerOps.loadPage(idxFileInfo, pagePath.get(i));
+    index = inner.getIndexOfPointer(pagePath.get(i+1));
+    if (index != 0) {
+    // This means that the subtree this leaf is in has a left
+    // sibling subtree from the current inner node.
+    leftPath.addAll(pagePath.subList(0, i+1));
+    break;
+    }
+    i--;
+    }
+
+    int nextPage;
+    if (inner == null || i == -1) {
+    return leftPath;
+    }
+    // Add to the leftPath the page corresponding to one to the
+    // left of the current index
+    leftPath.add(inner.getPointer(index - 1));
+    i++;
+
+    while (i <= pagePath.size() - 2) {
+    index = inner.getNumPointers() - 1;
+    nextPage = inner.getPointer(index);
+    leftPath.add(nextPage);
+    inner = innerOps.loadPage(idxFileInfo, nextPage);
+    i++;
+    }
+    }
+    catch (IOException e) {
+    throw new IllegalArgumentException("A page failed to load!");
+    }
+    return leftPath;
+    }
+     */
 
 
     /**
@@ -884,23 +869,19 @@ public class InnerPage implements DataPage {
      * </p>
      *
      * @param rightSibling the right sibling of this inner node in the index file
-     *
-     * @param count the number of pointers to move to the right sibling
-     *
-     * @param parentKey If this inner node and the sibling already have a parent
-     *        node, this is the key between the two nodes' page-pointers in the
-     *        parent node.  If the two nodes don't have a parent (i.e. because
-     *        an inner node is being split into two nodes and the depth of the
-     *        tree is being increased) then this value will be {@code null}.
-     *
+     * @param count        the number of pointers to move to the right sibling
+     * @param parentKey    If this inner node and the sibling already have a parent
+     *                     node, this is the key between the two nodes' page-pointers in the
+     *                     parent node.  If the two nodes don't have a parent (i.e. because
+     *                     an inner node is being split into two nodes and the depth of the
+     *                     tree is being increased) then this value will be {@code null}.
      * @return the key that should go into the parent node, between the
-     *         page-pointers for this node and its sibling
-     *
+     * page-pointers for this node and its sibling
      * @todo (Donnie) When support for deletion is added to the index
-     *       implementation, we will need to support the case when the incoming
-     *       {@code parentKey} is non-{@code null}, but the returned key is
-     *       {@code null} because one of the two siblings' pointers will be
-     *       removed.
+     * implementation, we will need to support the case when the incoming
+     * {@code parentKey} is non-{@code null}, but the returned key is
+     * {@code null} because one of the two siblings' pointers will be
+     * removed.
      */
     public TupleLiteral movePointersRight(InnerPage rightSibling, int count,
                                           Tuple parentKey) {
@@ -928,8 +909,7 @@ public class InnerPage implements DataPage {
         int parentKeyLen = 0;
         if (parentKey != null) {
             parentKeyLen = PageTuple.getTupleStorageSize(schema, parentKey);
-        }
-        else {
+        } else {
             if (rightSibling.getNumPointers() != 0) {
                 throw new IllegalStateException("Cannot move pointers to " +
                     "non-empty sibling if no parent-key is specified!");

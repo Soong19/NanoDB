@@ -26,7 +26,9 @@ package edu.caltech.nanodb.relations;
  */
 public enum SQLDataType {
 
-    /** A placeholder type for <tt>NULL</tt> literals */
+    /**
+     * A placeholder type for <tt>NULL</tt> literals
+     */
     NULL((byte) 0),
 
     // Number data-types:
@@ -77,29 +79,43 @@ public enum SQLDataType {
      */
     DOUBLE((byte) 6),
 
-    /** A decimal value with a specified precision and scale. */
+    /**
+     * A decimal value with a specified precision and scale.
+     */
     NUMERIC((byte) 7),
 
     // Character-sequence data-types:
 
-    /** A fixed-length character-sequence, with a specified length. */
+    /**
+     * A fixed-length character-sequence, with a specified length.
+     */
     CHAR((byte) 21),
 
-    /** A variable-length character-sequence, with a specified maximum length. */
+    /**
+     * A variable-length character-sequence, with a specified maximum length.
+     */
     VARCHAR((byte) 22),
 
-    /** A large character-sequence, with a very large maximum length. */
+    /**
+     * A large character-sequence, with a very large maximum length.
+     */
     TEXT((byte) 23),
 
-    /** A large byte-sequence, with a very large maximum length. */
+    /**
+     * A large byte-sequence, with a very large maximum length.
+     */
     BLOB((byte) 24),
 
     // Date and time data-types:
 
-    /** A date value containing year, month, and day. */
+    /**
+     * A date value containing year, month, and day.
+     */
     DATE((byte) 31),
 
-    /** A time value containing hours, minutes, and seconds. */
+    /**
+     * A time value containing hours, minutes, and seconds.
+     */
     TIME((byte) 32),
 
     /**
@@ -125,7 +141,9 @@ public enum SQLDataType {
     FILE_POINTER((byte) 41);
 
 
-    /** The ID of the datatype. */
+    /**
+     * The ID of the datatype.
+     */
     private final byte typeID;
 
 
@@ -158,8 +176,8 @@ public enum SQLDataType {
      *
      * @param typeID the ID of the type to search for
      * @return the <tt>SQLDataType</tt> value corresponding to the specified
-     *         type ID, or <tt>null</tt> if no corresponding value could be
-     *         found.
+     * type ID, or <tt>null</tt> if no corresponding value could be
+     * found.
      */
     public static SQLDataType findType(byte typeID) {
         for (SQLDataType s : SQLDataType.values()) {

@@ -13,7 +13,7 @@ import edu.caltech.nanodb.server.CommandResult;
  * on a table with UNIQUE constraints, to see if the UNIQUE constraint
  * works propertly.
  */
-@Test(groups={"constraints"}, dependsOnGroups={"framework"})
+@Test(groups = {"constraints"}, dependsOnGroups = {"framework"})
 public class TestUniqueOps extends SqlTestCase {
 
     @BeforeClass
@@ -39,7 +39,7 @@ public class TestUniqueOps extends SqlTestCase {
     }
 
 
-   	/**
+    /**
      * This test checks that the unique constraint added to column a is
      * enforced. It does this by trying to insert a duplicate value in
      * column a, and that the insert command should fail if the unique
@@ -83,6 +83,6 @@ public class TestUniqueOps extends SqlTestCase {
         result = server.doCommand(
             "INSERT INTO test_unique_2 VALUES (3, NULL, 50);", false);
         assert !result.failed() :
-               "Couldn't insert a row with NULL in a UNIQUE constraint";
+            "Couldn't insert a row with NULL in a UNIQUE constraint";
     }
 }

@@ -24,22 +24,18 @@ public class DDLUtils {
      * table and column names.  Note that this method <u>does not</u> update
      * the schema stored on disk, or create any other supporting files.
      *
-     * @param tableSchema the schema of the table that the foreign key
-     *        will be added to
-     *
-     * @param refTableInfo the table that the foreign key will reference
-     *
+     * @param tableSchema    the schema of the table that the foreign key
+     *                       will be added to
+     * @param refTableInfo   the table that the foreign key will reference
      * @param constraintDecl the parsed constraint declaration describing
-     *        the foreign key
-     *
+     *                       the foreign key
      * @return an object describing the foreign key
-     *
      * @throws SchemaNameException if a column-name cannot be found, or if a
-     *         column-name is ambiguous (unlikely), or if a column is
-     *         specified multiple times in the input list.
+     *                             column-name is ambiguous (unlikely), or if a column is
+     *                             specified multiple times in the input list.
      */
     public static ForeignKeyColumnRefs makeForeignKey(Schema tableSchema,
-        TableInfo refTableInfo, ConstraintDecl constraintDecl) {
+                                                      TableInfo refTableInfo, ConstraintDecl constraintDecl) {
 
         // if (tableInfo == null)
         //     throw new IllegalArgumentException("tableInfo must be specified");
@@ -62,8 +58,7 @@ public class DDLUtils {
             // The constraint declaration doesn't specify column names because
             // it wants to use the primary key of the referenced table.
             refColIndexes = refTableSchema.getPrimaryKey().getCols();
-        }
-        else {
+        } else {
             // The constraint declaration specifies column names, so convert
             // those names into the corresponding column indexes.
             refColIndexes = refTableSchema.getColumnIndexes(refColumnNames);

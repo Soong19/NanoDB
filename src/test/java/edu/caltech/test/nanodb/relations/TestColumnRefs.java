@@ -9,31 +9,28 @@ import org.testng.annotations.Test;
  * This test class exercises the functionality of the
  * {@link ColumnRefs} class.
  **/
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestColumnRefs {
 
     public void testCtorNegatives() {
         try {
-            ColumnRefs c = new ColumnRefs(new int[] {1, 2, 3, -4});
+            ColumnRefs c = new ColumnRefs(new int[]{1, 2, 3, -4});
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // This is expected.
         }
 
         try {
-            ColumnRefs c = new ColumnRefs(new int[] {-1, 2, 3, 4});
+            ColumnRefs c = new ColumnRefs(new int[]{-1, 2, 3, 4});
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // This is expected.
         }
 
         try {
-            ColumnRefs c = new ColumnRefs(new int[] {1, 2, -3, 4});
+            ColumnRefs c = new ColumnRefs(new int[]{1, 2, -3, 4});
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // This is expected.
         }
     }
@@ -41,41 +38,37 @@ public class TestColumnRefs {
 
     public void testCtorDuplicates() {
         try {
-            ColumnRefs c = new ColumnRefs(new int[] {1, 2, 3, 1});
+            ColumnRefs c = new ColumnRefs(new int[]{1, 2, 3, 1});
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // This is expected.
         }
 
         try {
-            ColumnRefs c = new ColumnRefs(new int[] {1, 2, 2, 4});
+            ColumnRefs c = new ColumnRefs(new int[]{1, 2, 2, 4});
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // This is expected.
         }
 
         try {
-            ColumnRefs c = new ColumnRefs(new int[] {1, 2, 1, 4});
+            ColumnRefs c = new ColumnRefs(new int[]{1, 2, 1, 4});
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // This is expected.
         }
 
         try {
-            ColumnRefs c = new ColumnRefs(new int[] {1, 4, 3, 4});
+            ColumnRefs c = new ColumnRefs(new int[]{1, 4, 3, 4});
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // This is expected.
         }
     }
 
 
     public void testSimpleAccess() {
-        ColumnRefs c = new ColumnRefs(new int[] {5, 3, 2, 4, 1});
+        ColumnRefs c = new ColumnRefs(new int[]{5, 3, 2, 4, 1});
         assert c.size() == 5;
 
         assert c.getCol(0) == 5;
@@ -87,9 +80,9 @@ public class TestColumnRefs {
 
 
     public void testEqualsColumns() {
-        ColumnRefs c1 = new ColumnRefs(new int[] {3, 1, 4});
-        ColumnRefs c2 = new ColumnRefs(new int[] {1, 3, 4});
-        ColumnRefs c3 = new ColumnRefs(new int[] {3, 1, 4});
+        ColumnRefs c1 = new ColumnRefs(new int[]{3, 1, 4});
+        ColumnRefs c2 = new ColumnRefs(new int[]{1, 3, 4});
+        ColumnRefs c3 = new ColumnRefs(new int[]{3, 1, 4});
 
         assert !c1.equalsColumns(c2);
         assert !c2.equalsColumns(c1);
@@ -101,11 +94,11 @@ public class TestColumnRefs {
 
 
     public void testHasSameColumns() {
-        ColumnRefs c1 = new ColumnRefs(new int[] {3, 1, 4});
-        ColumnRefs c2 = new ColumnRefs(new int[] {1, 3, 4});
-        ColumnRefs c3 = new ColumnRefs(new int[] {4, 3, 1});
-        ColumnRefs c4 = new ColumnRefs(new int[] {3, 2, 4, 1});
-        ColumnRefs c5 = new ColumnRefs(new int[] {1, 3, 4, 2});
+        ColumnRefs c1 = new ColumnRefs(new int[]{3, 1, 4});
+        ColumnRefs c2 = new ColumnRefs(new int[]{1, 3, 4});
+        ColumnRefs c3 = new ColumnRefs(new int[]{4, 3, 1});
+        ColumnRefs c4 = new ColumnRefs(new int[]{3, 2, 4, 1});
+        ColumnRefs c5 = new ColumnRefs(new int[]{1, 3, 4, 2});
 
         assert c1.hasSameColumns(c2);
         assert c1.hasSameColumns(c3);
@@ -121,4 +114,3 @@ public class TestColumnRefs {
         assert !c5.hasSameColumns(c3);
     }
 }
-

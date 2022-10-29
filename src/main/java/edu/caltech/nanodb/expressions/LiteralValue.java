@@ -18,7 +18,9 @@ import edu.caltech.nanodb.relations.SchemaNameException;
  */
 public class LiteralValue extends Expression {
 
-    /** The literal value of this expression. */
+    /**
+     * The literal value of this expression.
+     */
     private Object value;
 
 
@@ -76,10 +78,9 @@ public class LiteralValue extends Expression {
      * Checks if the argument is an expression with the same structure, but not
      * necessarily the same references.
      *
-     * @design This function operates correctly on the assumption that all
-     *         supported types override Object.equals().
-     *
      * @param obj the object to which we are comparing
+     * @design This function operates correctly on the assumption that all
+     * supported types override Object.equals().
      */
     @Override
     public boolean equals(Object obj) {
@@ -107,11 +108,11 @@ public class LiteralValue extends Expression {
      * Creates a copy of expression.
      *
      * @design The reference of the internal value is simply copied since the
-     *         value types are all immutable.
+     * value types are all immutable.
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        LiteralValue expr = (LiteralValue)super.clone();
+        LiteralValue expr = (LiteralValue) super.clone();
 
         // LiteralValue copies share the same reference because the value-object
         // won't be mutated in place.

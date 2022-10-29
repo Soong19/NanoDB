@@ -15,7 +15,9 @@ import edu.caltech.nanodb.storage.FilePointer;
  */
 public class TupleLiteral implements Tuple, Serializable {
 
-    /** The actual values of the columns in the tuple. */
+    /**
+     * The actual values of the columns in the tuple.
+     */
     private ArrayList<Object> values;
 
 
@@ -107,28 +109,36 @@ public class TupleLiteral implements Tuple, Serializable {
     }
 
 
-    /** For in-memory tuples, pinning and unpinning is a no-op. */
+    /**
+     * For in-memory tuples, pinning and unpinning is a no-op.
+     */
     @Override
     public void pin() {
         // No-op.
     }
 
 
-    /** For in-memory tuples, pinning and unpinning is a no-op. */
+    /**
+     * For in-memory tuples, pinning and unpinning is a no-op.
+     */
     @Override
     public void unpin() {
         // No-op.
     }
 
 
-    /** For in-memory tuples, pinning and unpinning is a no-op. */
+    /**
+     * For in-memory tuples, pinning and unpinning is a no-op.
+     */
     @Override
     public int getPinCount() {
         return 0;
     }
 
 
-    /** For in-memory tuples, pinning and unpinning is a no-op. */
+    /**
+     * For in-memory tuples, pinning and unpinning is a no-op.
+     */
     @Override
     public boolean isPinned() {
         return false;
@@ -149,7 +159,6 @@ public class TupleLiteral implements Tuple, Serializable {
      * Appends the specified tuple's contents to this tuple-literal object.
      *
      * @param tuple the tuple data to copy into this tuple-literal
-     *
      * @throws IllegalArgumentException if <tt>tuple</tt> is <tt>null</tt>.
      */
     public void appendTuple(Tuple tuple) {

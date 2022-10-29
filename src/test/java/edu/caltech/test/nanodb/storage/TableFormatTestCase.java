@@ -61,24 +61,25 @@ public class TableFormatTestCase extends SqlTestCase {
     /**
      * This helper function generates random rows to insert into a table,
      * and then verifies that the rows
-     * @param tableName The name of the table to insert rows into.
-     * @param numRowsToInsert The total number of rows to insert.
-     * @param maxAValue maximum integer value to generate for INTEGER column a.
-     *        This can be used to generate records that will collide, for
-     *        sequential and heap storage formats
-     * @param minBLen minimum string length for VARCHAR column b.
-     * @param maxBLen maximum string length for VARCHAR column b.
-     * @param ordered true if the storage format should produce the tuples in
-     *        order (a, b), false if the tuples will be unordered
+     *
+     * @param tableName            The name of the table to insert rows into.
+     * @param numRowsToInsert      The total number of rows to insert.
+     * @param maxAValue            maximum integer value to generate for INTEGER column a.
+     *                             This can be used to generate records that will collide, for
+     *                             sequential and heap storage formats
+     * @param minBLen              minimum string length for VARCHAR column b.
+     * @param maxBLen              maximum string length for VARCHAR column b.
+     * @param ordered              true if the storage format should produce the tuples in
+     *                             order (a, b), false if the tuples will be unordered
      * @param deleteWhileInserting if true, some tuples will periodically be
-     *        deleted.  The function records which tuples should be deleted
-     *        so that the actual contents of the table file can be compared
-     *        to the expected contents of the table file.
+     *                             deleted.  The function records which tuples should be deleted
+     *                             so that the actual contents of the table file can be compared
+     *                             to the expected contents of the table file.
      * @throws Exception if an IO error occurs, or if the test fails.
      */
     protected void insertRows(String tableName, int numRowsToInsert,
-        int maxAValue, int minBLen, int maxBLen, boolean ordered,
-        boolean deleteWhileInserting) throws Exception {
+                              int maxAValue, int minBLen, int maxBLen, boolean ordered,
+                              boolean deleteWhileInserting) throws Exception {
 
         ArrayList<TupleLiteral> inserted = new ArrayList<TupleLiteral>();
         for (int i = 0; i < numRowsToInsert; i++) {

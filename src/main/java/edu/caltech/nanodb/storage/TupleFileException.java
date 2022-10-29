@@ -6,7 +6,9 @@ package edu.caltech.nanodb.storage;
  */
 public class TupleFileException extends StorageException {
 
-    /** Construct a tuple-file exception with no message. */
+    /**
+     * Construct a tuple-file exception with no message.
+     */
     public TupleFileException() {
         super();
     }
@@ -34,4 +36,3 @@ public class TupleFileException extends StorageException {
         super(msg, cause);
     }
 }
-

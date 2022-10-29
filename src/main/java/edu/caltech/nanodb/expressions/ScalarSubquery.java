@@ -13,7 +13,9 @@ import edu.caltech.nanodb.relations.Tuple;
  * predicate.
  */
 public class ScalarSubquery extends SubqueryOperator {
-    /** The cached result of evaluating the scalar subquery. */
+    /**
+     * The cached result of evaluating the scalar subquery.
+     */
     Object result;
 
 
@@ -41,7 +43,7 @@ public class ScalarSubquery extends SubqueryOperator {
         if (numCols != 1) {
             throw new ExpressionException(
                 "Scalar subquery must produce exactly one column (got " +
-                numCols + " instead)");
+                    numCols + " instead)");
         }
 
         // Return whatever the subquery produces for its column.
@@ -111,10 +113,9 @@ public class ScalarSubquery extends SubqueryOperator {
      * Checks if the argument is an expression with the same structure, but not
      * necessarily the same references.
      *
-     * @design This function operates correctly on the assumption that all
-     *         supported types override Object.equals().
-     *
      * @param obj the object to which we are comparing
+     * @design This function operates correctly on the assumption that all
+     * supported types override Object.equals().
      */
     @Override
     public boolean equals(Object obj) {
@@ -139,7 +140,7 @@ public class ScalarSubquery extends SubqueryOperator {
      * Creates a copy of expression.
      *
      * @design The reference of the internal value is simply copied since the
-     *         value types are all immutable.
+     * value types are all immutable.
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
@@ -148,4 +149,3 @@ public class ScalarSubquery extends SubqueryOperator {
         return super.clone();
     }
 }
-

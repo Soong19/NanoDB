@@ -23,15 +23,17 @@ import org.apache.logging.log4j.LogManager;
  * </p>
  *
  * @design This class always has the current {@code DBPage} pinned, and it
- *         will unpin the current page when it moves into the next page.  This
- *         means that when the writer is closed, it may still have a page that
- *         is pinned.  Therefore, the class implements {@code AutoCloseable}
- *         so that users can call {@link #close} on a writer to unpin the last
- *         page, or they can use this type with the "try-with-resources" Java
- *         syntax.
+ * will unpin the current page when it moves into the next page.  This
+ * means that when the writer is closed, it may still have a page that
+ * is pinned.  Therefore, the class implements {@code AutoCloseable}
+ * so that users can call {@link #close} on a writer to unpin the last
+ * page, or they can use this type with the "try-with-resources" Java
+ * syntax.
  */
 public class DBFileWriter extends DBFileReader {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(DBFileWriter.class);
 
 
@@ -49,8 +51,7 @@ public class DBFileWriter extends DBFileReader {
         if (pagePosition + len <= pageSize) {
             dbPage.write(pagePosition, b, off, len);
             position += len;
-        }
-        else {
+        } else {
             // Write part of the data to this page, then load the next page and
             // write the remainder of the data.
             int page1Len = pageSize - pagePosition;
@@ -96,11 +97,10 @@ public class DBFileWriter extends DBFileReader {
             checkDBPage();
             dbPage.writeShort(pagePosition, v);
             position += 2;
-        }
-        else {
+        } else {
             // Need to write the bytes spanning this page and the next.
             tmpBuf[0] = (byte) (0xFF & (v >> 8));
-            tmpBuf[1] = (byte) (0xFF &  v);
+            tmpBuf[1] = (byte) (0xFF & v);
 
             // Note that write() moves the file position forward.
             write(tmpBuf, 0, 2);
@@ -120,13 +120,12 @@ public class DBFileWriter extends DBFileReader {
             checkDBPage();
             dbPage.writeInt(pagePosition, v);
             position += 4;
-        }
-        else {
+        } else {
             // Need to write the bytes spanning this page and the next.
             tmpBuf[0] = (byte) (0xFF & (v >> 24));
             tmpBuf[1] = (byte) (0xFF & (v >> 16));
-            tmpBuf[2] = (byte) (0xFF & (v >>  8));
-            tmpBuf[3] = (byte) (0xFF &  v);
+            tmpBuf[2] = (byte) (0xFF & (v >> 8));
+            tmpBuf[3] = (byte) (0xFF & v);
 
             // Note that write() moves the file position forward.
             write(tmpBuf, 0, 4);
@@ -141,8 +140,7 @@ public class DBFileWriter extends DBFileReader {
             checkDBPage();
             dbPage.writeLong(pagePosition, v);
             position += 8;
-        }
-        else {
+        } else {
             // Need to write the bytes spanning this page and the next.
 
             tmpBuf[0] = (byte) (0xFF & (v >> 56));
@@ -151,8 +149,8 @@ public class DBFileWriter extends DBFileReader {
             tmpBuf[3] = (byte) (0xFF & (v >> 32));
             tmpBuf[4] = (byte) (0xFF & (v >> 24));
             tmpBuf[5] = (byte) (0xFF & (v >> 16));
-            tmpBuf[6] = (byte) (0xFF & (v >>  8));
-            tmpBuf[7] = (byte) (0xFF &  v);
+            tmpBuf[6] = (byte) (0xFF & (v >> 8));
+            tmpBuf[7] = (byte) (0xFF & v);
 
             // Note that write() moves the file position forward.
             write(tmpBuf, 0, 8);
@@ -175,8 +173,7 @@ public class DBFileWriter extends DBFileReader {
 
         try {
             strBytes = value.getBytes("US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.
@@ -198,8 +195,7 @@ public class DBFileWriter extends DBFileReader {
 
         try {
             strBytes = value.getBytes("US-ASCII");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // According to the Java docs, the US-ASCII character-encoding is
             // required to be supported by all JVMs.  So, this is not supposed
             // to happen.

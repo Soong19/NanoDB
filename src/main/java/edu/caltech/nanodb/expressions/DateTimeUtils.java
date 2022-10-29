@@ -64,18 +64,15 @@ public class DateTimeUtils {
      * specified in {@link #DATETIME_FORMATS}.
      *
      * @param s the string to attempt to parse into a date/time
-     *
      * @return an object holding the date/time value
-     *
      * @throws DateTimeParseException if the string couldn't be parsed into a
-     *         date/time value.
+     *                                date/time value.
      */
     public static LocalDateTime parseDateTime(String s) {
         for (DateTimeFormatter fmt : DATETIME_FORMATS) {
             try {
                 return fmt.parse(s, LocalDateTime::from);
-            }
-            catch (DateTimeParseException e) {
+            } catch (DateTimeParseException e) {
                 // That didn't work.  Go on to the next one.
             }
         }
@@ -90,18 +87,15 @@ public class DateTimeUtils {
      * specified in {@link #DATE_FORMATS}.
      *
      * @param s the string to attempt to parse into a date
-     *
      * @return an object holding the date value
-     *
      * @throws DateTimeParseException if the string couldn't be parsed into a
-     *         date value.
+     *                                date value.
      */
     public static LocalDate parseDate(String s) {
         for (DateTimeFormatter fmt : DATE_FORMATS) {
             try {
                 return fmt.parse(s, LocalDate::from);
-            }
-            catch (DateTimeParseException e) {
+            } catch (DateTimeParseException e) {
                 // That didn't work.  Go on to the next one.
             }
         }
@@ -116,18 +110,15 @@ public class DateTimeUtils {
      * specified in {@link #TIME_FORMATS}.
      *
      * @param s the string to attempt to parse into a time
-     *
      * @return an object holding the time value
-     *
      * @throws DateTimeParseException if the string couldn't be parsed into a
-     *         time value.
+     *                                time value.
      */
     public static LocalTime parseTime(String s) {
         for (DateTimeFormatter fmt : TIME_FORMATS) {
             try {
                 return fmt.parse(s, LocalTime::from);
-            }
-            catch (DateTimeParseException e) {
+            } catch (DateTimeParseException e) {
                 // That didn't work.  Go on to the next one.
             }
         }
@@ -145,25 +136,20 @@ public class DateTimeUtils {
      * time.
      *
      * @param s the string to attempt to parse into a temporal value
-     *
      * @return an object holding the temporal value
-     *
      * @throws DateTimeParseException if the string couldn't be parsed into a
-     *         temporal value.
+     *                                temporal value.
      */
     public static Temporal parseTemporal(String s) {
         try {
             return parseDateTime(s);
-        }
-        catch (DateTimeParseException e1) {
+        } catch (DateTimeParseException e1) {
             try {
                 return parseDate(s);
-            }
-            catch (DateTimeParseException e2) {
+            } catch (DateTimeParseException e2) {
                 try {
                     return parseTime(s);
-                }
-                catch (DateTimeParseException e3) {
+                } catch (DateTimeParseException e3) {
                     throw new DateTimeParseException("Could not parse into " +
                         "any kind of Temporal", s, 0);
                 }
@@ -180,11 +166,9 @@ public class DateTimeUtils {
      * both "<tt>YEAR</tt>" and "<tt>YEARS</tt>" is supported.
      *
      * @param s the string to attempt to parse into a temporal amount
-     *
      * @return an object holding the temporal amount
-     *
      * @throws DateTimeParseException if the string couldn't be parsed into a
-     *         temporal amount.
+     *                                temporal amount.
      */
     public static TemporalAmount parseInterval(String s) {
         // Split the string on horizontal whitespace.
@@ -194,7 +178,7 @@ public class DateTimeUtils {
         if (parts.length != 2) {
             throw new DateTimeParseException(
                 "Could not parse into interval:  " +
-                "must contain exactly two parts", s, 0);
+                    "must contain exactly two parts", s, 0);
         }
 
         TemporalAmount result;
@@ -202,8 +186,7 @@ public class DateTimeUtils {
         int amount;
         try {
             amount = Integer.parseInt(parts[0]);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new DateTimeParseException(
                 "Could not parse into interval:  " +
                     "first value must be a nonnegative integer", s, 0);
@@ -213,29 +196,22 @@ public class DateTimeUtils {
 
         if ("year".equals(units) || "years".equals(units)) {
             result = Period.ofYears(amount);
-        }
-        else if ("month".equals(units) || "months".equals(units)) {
+        } else if ("month".equals(units) || "months".equals(units)) {
             result = Period.ofMonths(amount);
-        }
-        else if ("week".equals(units) || "weeks".equals(units)) {
+        } else if ("week".equals(units) || "weeks".equals(units)) {
             result = Period.ofWeeks(amount);
-        }
-        else if ("day".equals(units) || "days".equals(units)) {
+        } else if ("day".equals(units) || "days".equals(units)) {
             result = Period.ofDays(amount);
-        }
-        else if ("hour".equals(units) || "hours".equals(units)) {
+        } else if ("hour".equals(units) || "hours".equals(units)) {
             result = Duration.ofHours(amount);
-        }
-        else if ("minute".equals(units) || "minutes".equals(units)) {
+        } else if ("minute".equals(units) || "minutes".equals(units)) {
             result = Duration.ofMinutes(amount);
-        }
-        else if ("second".equals(units) || "seconds".equals(units)) {
+        } else if ("second".equals(units) || "seconds".equals(units)) {
             result = Duration.ofSeconds(amount);
-        }
-        else {
+        } else {
             throw new DateTimeParseException(
                 "Could not parse into interval:  " +
-                "second value specifies unrecognized units", s, 0);
+                    "second value specifies unrecognized units", s, 0);
         }
 
         return result;

@@ -14,12 +14,14 @@ import java.util.concurrent.TimeUnit;
 import org.testng.Assert;
 
 
-/** Helper operations to implement concurrent test cases. */
+/**
+ * Helper operations to implement concurrent test cases.
+ */
 public class Concurrent {
 
     public static void assertConcurrent(String message,
-            List<? extends Runnable> runnables, int maxTimeoutSeconds)
-            throws InterruptedException {
+                                        List<? extends Runnable> runnables, int maxTimeoutSeconds)
+        throws InterruptedException {
 
         int numThreads = runnables.size();
         Queue<Throwable> exceptions = new ConcurrentLinkedQueue<>();
@@ -29,7 +31,7 @@ public class Concurrent {
             CountDownLatch afterInitBlocker = new CountDownLatch(1);
             CountDownLatch finished = new CountDownLatch(numThreads);
             for (Runnable r : runnables) {
-                threadPool.submit( () -> {
+                threadPool.submit(() -> {
                     // Wait for all threads to be ready to run.
                     allThreadsReady.countDown();
                     try {
@@ -45,10 +47,10 @@ public class Concurrent {
 
             // Wait until all threads are ready to run.
             Assert.assertTrue(allThreadsReady.await(runnables.size() * 10,
-                TimeUnit.MILLISECONDS),
+                    TimeUnit.MILLISECONDS),
                 message + ":  Timeout while initializing threads.  Perform " +
-                "slow initialization before passing Runnables to " +
-                "assertConcurrent()");
+                    "slow initialization before passing Runnables to " +
+                    "assertConcurrent()");
 
             // Start off all the test runners at the same time.
             afterInitBlocker.countDown();
@@ -57,8 +59,7 @@ public class Concurrent {
             // all threads have completed their test.
             Assert.assertTrue(finished.await(maxTimeoutSeconds, TimeUnit.SECONDS),
                 message + ":  Timeout!  More than" + maxTimeoutSeconds + "seconds");
-        }
-        finally {
+        } finally {
             threadPool.shutdownNow();
         }
 

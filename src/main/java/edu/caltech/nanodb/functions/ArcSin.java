@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Computes the arc-sine of a single argument.  Returns <tt>NULL</tt> if
  * argument is <tt>NULL</tt>.
- * 
+ *
  * @author emil
  */
 public class ArcSin extends SimpleFunction {
@@ -29,12 +29,12 @@ public class ArcSin extends SimpleFunction {
     @Override
     public Object evaluate(Environment env, List<Expression> args) {
         if (args.size() != 1) {
-            throw new ExpressionException("Cannot call ASIN on " + args.size() 
-                    + " arguments");
+            throw new ExpressionException("Cannot call ASIN on " + args.size()
+                + " arguments");
         }
 
         Object argVal = args.get(0).evaluate(env);
-        
+
         if (argVal == null)
             return null;
 

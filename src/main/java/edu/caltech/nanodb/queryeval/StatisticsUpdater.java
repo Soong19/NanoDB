@@ -29,7 +29,9 @@ import edu.caltech.nanodb.relations.Schema;
  * </ul>
  */
 public class StatisticsUpdater {
-    /** This class should not be instantiated. */
+    /**
+     * This class should not be instantiated.
+     */
     private StatisticsUpdater() {
         throw new IllegalArgumentException(
             "This class should not be instantiated.");
@@ -54,16 +56,15 @@ public class StatisticsUpdater {
      * input schema, then that part of the predicate will be ignored.
      * </p>
      *
-     * @param expr the selection predicate
-     * @param schema the schema that the selection predicate is evaluated
-     *        against
+     * @param expr       the selection predicate
+     * @param schema     the schema that the selection predicate is evaluated
+     *                   against
      * @param inputStats the column statistics of the input tuple-sequence
-     *        that will be filtered by the selection predicate
-     *
+     *                   that will be filtered by the selection predicate
      * @return estimated column statistics
      */
     public static ArrayList<ColumnStats> updateStats(Expression expr,
-        Schema schema, List<ColumnStats> inputStats) {
+                                                     Schema schema, List<ColumnStats> inputStats) {
         // Make a deep copy of the incoming list so we can mutate it safely.
         ArrayList<ColumnStats> outputStats = new ArrayList<>();
         for (ColumnStats stat : inputStats)
@@ -86,8 +87,7 @@ public class StatisticsUpdater {
                     }
                 }
             }
-        }
-        else if (expr instanceof CompareOperator) {
+        } else if (expr instanceof CompareOperator) {
             // The predicate appears to be a comparison.  Unpack it and try to
             // update the statistics based on the comparison.
             updateCompareStats((CompareOperator) expr, schema, outputStats);
@@ -101,9 +101,9 @@ public class StatisticsUpdater {
      * operation.  Updates will only occur if the comparison is of the form
      * "COLUMN = VALUE".
      *
-     * @param comp The comparison operation to consider
+     * @param comp   The comparison operation to consider
      * @param schema The schema that the operation is evaluated against
-     * @param stats the statistics to update based on the comparison
+     * @param stats  the statistics to update based on the comparison
      */
     private static void updateCompareStats(CompareOperator comp,
                                            Schema schema,

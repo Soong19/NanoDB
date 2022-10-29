@@ -60,7 +60,7 @@ public class ColumnName implements Comparable<ColumnName>, Cloneable {
             ColumnName other = (ColumnName) obj;
 
             return Objects.equals(tableName, other.tableName) &&
-                   Objects.equals(columnName, other.columnName);
+                Objects.equals(columnName, other.columnName);
         }
 
         return false;
@@ -86,8 +86,7 @@ public class ColumnName implements Comparable<ColumnName>, Cloneable {
         if (tableName == null) {
             if (other.tableName != null)
                 return -1;
-        }
-        else { // tableName != null
+        } else { // tableName != null
             if (other.tableName == null)
                 return 1;
 
@@ -99,8 +98,7 @@ public class ColumnName implements Comparable<ColumnName>, Cloneable {
         if (columnName == null) {
             if (other.columnName != null)
                 return -1;
-        }
-        else { // columnName != null
+        } else { // columnName != null
             if (other.columnName == null)
                 return 1;
 

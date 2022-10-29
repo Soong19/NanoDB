@@ -10,6 +10,7 @@ import edu.caltech.nanodb.storage.PageTuple;
 
 
 /**
+ *
  */
 public class HeapFilePageTuple extends PageTuple {
     /**
@@ -24,12 +25,9 @@ public class HeapFilePageTuple extends PageTuple {
      * Construct a new tuple object that is backed by the data in the database
      * page.  This tuple is able to be read from or written to.
      *
-     * @param schema the schema of the tuple file the page is a part of
-     *
-     * @param dbPage the specific database page that holds the tuple
-     *
-     * @param slot the slot number of the tuple
-     *
+     * @param schema     the schema of the tuple file the page is a part of
+     * @param dbPage     the specific database page that holds the tuple
+     * @param slot       the slot number of the tuple
      * @param pageOffset the offset of the tuple's actual data in the page
      */
     public HeapFilePageTuple(Schema schema, DBPage dbPage, int slot,
@@ -59,7 +57,7 @@ public class HeapFilePageTuple extends PageTuple {
      */
     public FilePointer getExternalReference() {
         return new FilePointer(getDBPage().getPageNo(),
-                               DataPage.getSlotOffset(slot));
+            DataPage.getSlotOffset(slot));
     }
 
 

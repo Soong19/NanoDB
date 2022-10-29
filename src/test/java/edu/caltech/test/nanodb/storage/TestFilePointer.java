@@ -9,7 +9,7 @@ import edu.caltech.nanodb.storage.FilePointer;
 /**
  * This class exercises the functionality of the {@link FilePointer} class.
  */
-@Test(groups={"storage", "framework"})
+@Test(groups = {"storage", "framework"})
 public class TestFilePointer {
 
     public void testConstructor() {
@@ -20,18 +20,16 @@ public class TestFilePointer {
         try {
             // Try to construct an invalid FilePointer
             new FilePointer(-6, 523);
-            assert(false);
-        }
-        catch (IllegalArgumentException e) {
+            assert (false);
+        } catch (IllegalArgumentException e) {
             // Success.
         }
 
         try {
             // Try to construct an invalid FilePointer
             new FilePointer(523, -6);
-            assert(false);
-        }
-        catch (IllegalArgumentException e) {
+            assert (false);
+        } catch (IllegalArgumentException e) {
             // Success.
         }
     }
@@ -71,8 +69,7 @@ public class TestFilePointer {
             assert fp1c != fp1;
             assert fp1c.equals(fp1);
             assert fp1.equals(fp1c);
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             assert false;
         }
 
@@ -84,8 +81,7 @@ public class TestFilePointer {
             assert fp2c != fp2;
             assert fp2c.equals(fp2);
             assert fp2.equals(fp2c);
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             assert false;
         }
     }

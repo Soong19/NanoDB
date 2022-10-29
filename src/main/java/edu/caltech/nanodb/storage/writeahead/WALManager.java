@@ -61,15 +61,21 @@ import edu.caltech.nanodb.util.ArrayUtil;
  */
 public class WALManager {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(WALManager.class);
 
 
-    /** Write-ahead log files follow this pattern. */
+    /**
+     * Write-ahead log files follow this pattern.
+     */
     private static final String WAL_FILENAME_PATTERN = "wal-%05d.log";
 
 
-    /** Maximum file number for a write-ahead log file. */
+    /**
+     * Maximum file number for a write-ahead log file.
+     */
     public static final int MAX_WAL_FILE_NUMBER = 65535;
 
 
@@ -102,7 +108,6 @@ public class WALManager {
      * it into a corresponding filename based on that number.
      *
      * @param fileNo the WAL file number to get the filename for
-     *
      * @return the string file-name for the corresponding WAL file
      */
     public static String getWALFileName(int fileNo) {
@@ -149,9 +154,7 @@ public class WALManager {
      * appropriate arguments to the Storage Manager.
      *
      * @param fileNo the number of the WAL file to create
-     *
      * @return a {@link DBFile} for the newly created and opened WAL file
-     *
      * @throws StorageException if the file cannot be created for some reason
      */
     private DBFile createWALFile(int fileNo) {
@@ -169,12 +172,10 @@ public class WALManager {
      * from its cache.
      *
      * @param fileNo the number of the WAL file to open
-     *
      * @return a {@link DBFile} for the opened WAL file
-     *
      * @throws StorageException if the file cannot be opened for some reason,
-     *         such as if the file doesn't exist, or if permissions are
-     *         incorrect
+     *                          such as if the file doesn't exist, or if permissions are
+     *                          incorrect
      */
     private DBFile openWALFile(int fileNo) {
         String filename = getWALFileName(fileNo);
@@ -227,18 +228,15 @@ public class WALManager {
      * </p>
      *
      * @param storedFirstLSN the location of the write-ahead log record where
-     *        recovery should start from
-     *
-     * @param storedNextLSN the location in the write-ahead log that is
-     *        <em>just past</em> the last valid log record in the WAL
-     *
+     *                       recovery should start from
+     * @param storedNextLSN  the location in the write-ahead log that is
+     *                       <em>just past</em> the last valid log record in the WAL
      * @return the new location where recovery should start from the next time
-     *         recovery processing is performed
-     *
+     * recovery processing is performed
      * @throws StorageException if an IO error occurs during recovery processing
      */
     public RecoveryInfo doRecovery(LogSequenceNumber storedFirstLSN,
-        LogSequenceNumber storedNextLSN) {
+                                   LogSequenceNumber storedNextLSN) {
 
         synchronized (guard) {
             firstLSN = storedFirstLSN;
@@ -289,8 +287,8 @@ public class WALManager {
      * </p>
      *
      * @param recoveryInfo the object used to track information about specific
-     *        transactions during recovery processing.  This object will be
-     *        passed to {@link #performUndo}.
+     *                     transactions during recovery processing.  This object will be
+     *                     passed to {@link #performUndo}.
      */
     private void performRedo(RecoveryInfo recoveryInfo) {
         LogSequenceNumber currLSN = recoveryInfo.firstLSN;
@@ -306,7 +304,7 @@ public class WALManager {
             if (type == null) {
                 throw new DataFormatException(String.format(
                     "Encountered unrecognized WAL record-type value %d at " +
-                    "LSN %s during redo processing!", typeID, currLSN));
+                        "LSN %s during redo processing!", typeID, currLSN));
             }
 
             int transactionID = walReader.readInt();
@@ -369,8 +367,8 @@ public class WALManager {
      * </p>
      *
      * @param recoveryInfo the object used to track information about specific
-     *        transactions during recovery processing.  This object is
-     *        populated by a previous call to {@link #performRedo}.
+     *                     transactions during recovery processing.  This object is
+     *                     populated by a previous call to {@link #performRedo}.
      */
     private void performUndo(RecoveryInfo recoveryInfo) {
         LogSequenceNumber currLSN = recoveryInfo.nextLSN;
@@ -405,12 +403,11 @@ public class WALManager {
 
                 currLSN = new LogSequenceNumber(logFileNo, prevFileEndOffset);
                 fileOffset = currLSN.getFileOffset();
-            }
-            else if (fileOffset < OFFSET_FIRST_RECORD) {
+            } else if (fileOffset < OFFSET_FIRST_RECORD) {
                 // This would be highly unusual, but would indicate either a
                 // bug in the undo record-traversal, or a corrupt WAL file.
                 throw new DataFormatException(String.format("Overshot the start " +
-                    "of WAL file %d's records; ended up at file-position %d",
+                        "of WAL file %d's records; ended up at file-position %d",
                     logFileNo, fileOffset));
             }
 
@@ -427,40 +424,40 @@ public class WALManager {
             if (type == null) {
                 throw new DataFormatException(String.format(
                     "Encountered unrecognized WAL record-type value %d at " +
-                    "LSN %s during undo processing!", typeID, currLSN));
+                        "LSN %s during undo processing!", typeID, currLSN));
             }
 
             // Compute the start of the previous record based on its type and
             // other details.
             int startOffset;
             switch (type) {
-            case START_TXN:
-                // Type (1B) + TransactionID (4B) + Type (1B) = 6 bytes
-                startOffset = fileOffset - 6;
-                break;
+                case START_TXN:
+                    // Type (1B) + TransactionID (4B) + Type (1B) = 6 bytes
+                    startOffset = fileOffset - 6;
+                    break;
 
-            case COMMIT_TXN:
-            case ABORT_TXN:
-                // Type (1B) + TransactionID (4B) + PrevLSN (2B+4B) + Type (1B)
-                // = 12 bytes
-                startOffset = fileOffset - 12;
-                break;
+                case COMMIT_TXN:
+                case ABORT_TXN:
+                    // Type (1B) + TransactionID (4B) + PrevLSN (2B+4B) + Type (1B)
+                    // = 12 bytes
+                    startOffset = fileOffset - 12;
+                    break;
 
-            case UPDATE_PAGE:
-            case UPDATE_PAGE_REDO_ONLY:
-                // For these records, the WAL record's start offset is stored
-                // immediately before the last type-byte.  We go back 5 bytes
-                // because reading the type ID moves the position forward by
-                // 1 byte, and then we also have to get to the start of the
-                // 4-byte starting offset.
-                walReader.movePosition(-5);
-                startOffset = walReader.readInt();
-                break;
+                case UPDATE_PAGE:
+                case UPDATE_PAGE_REDO_ONLY:
+                    // For these records, the WAL record's start offset is stored
+                    // immediately before the last type-byte.  We go back 5 bytes
+                    // because reading the type ID moves the position forward by
+                    // 1 byte, and then we also have to get to the start of the
+                    // 4-byte starting offset.
+                    walReader.movePosition(-5);
+                    startOffset = walReader.readInt();
+                    break;
 
-            default:
-                throw new DataFormatException(
-                    "Encountered unrecognized WAL record type " + type +
-                    " at LSN " + currLSN + " during redo processing!");
+                default:
+                    throw new DataFormatException(
+                        "Encountered unrecognized WAL record type " + type +
+                            " at LSN " + currLSN + " during redo processing!");
             }
 
             // Construct a new LSN pointing to the previous record.  If this
@@ -527,17 +524,16 @@ public class WALManager {
      * {@code LogSequenceNumber} object, wrapping to the next file if
      * necessary.
      *
-     * @param fileNo the number of the current WAL file
+     * @param fileNo     the number of the current WAL file
      * @param fileOffset the offset of where the next write-ahead log record
-     *        would go, in the absence of wrapping to the next file
+     *                   would go, in the absence of wrapping to the next file
      * @return a {@code LogSequenceNumber} object that takes wrapping into
-     *         account
-     *
+     * account
      * @design This is a method on {@code WALManager} and not on
-     *         {@code LogSequenceNumber} since the calculation must also
-     *         consider the format of WAL files as well as their size limit.
-     *         The {@LogSequenceNumber} class simply doesn't have that
-     *         information.
+     * {@code LogSequenceNumber} since the calculation must also
+     * consider the format of WAL files as well as their size limit.
+     * The {@LogSequenceNumber} class simply doesn't have that
+     * information.
      */
     public static LogSequenceNumber computeNextLSN(int fileNo, int fileOffset) {
         if (fileOffset >= MAX_WAL_FILE_SIZE) {
@@ -576,12 +572,10 @@ public class WALManager {
      *
      * @param lsn The log sequence number specifying the WAL file and the offset
      *            in the WAL file to go to.
-     *
      * @return the WAL file, with the file position moved to the specified
-     *         offset.
-     *
+     * offset.
      * @throws StorageException if the corresponding WAL file cannot be
-     *         opened, or if some other IO error occurs.
+     *                          opened, or if some other IO error occurs.
      */
     private DBFileWriter getWALFileWriter(LogSequenceNumber lsn) {
         int fileNo = lsn.getLogFileNo();
@@ -622,9 +616,8 @@ public class WALManager {
      *
      * @param lsn The log sequence number specifying the WAL file and the offset
      *            in the WAL file to go to.
-     *
      * @return the WAL file, with the file position moved to the specified
-     *         offset.
+     * offset.
      */
     private DBFileReader getWALFileReader(LogSequenceNumber lsn,
                                           DBFileReader reader) {
@@ -666,24 +659,20 @@ public class WALManager {
      * normal operation.  (This is also why this method is marked
      * {@code private} access.)
      *
-     * @param type The type of the transaction demarcation to write, one of the
-     *        values {@link WALRecordType#START_TXN}, {@link WALRecordType#COMMIT_TXN},
-     *        or {@link WALRecordType#ABORT_TXN}.
-     *
+     * @param type          The type of the transaction demarcation to write, one of the
+     *                      values {@link WALRecordType#START_TXN}, {@link WALRecordType#COMMIT_TXN},
+     *                      or {@link WALRecordType#ABORT_TXN}.
      * @param transactionID the transaction ID that the WAL record is for
-     *
-     * @param prevLSN the log sequence number of the transaction's immediately
-     *        previous WAL record, if the record type is either a commit or
-     *        abort record.
-     *
+     * @param prevLSN       the log sequence number of the transaction's immediately
+     *                      previous WAL record, if the record type is either a commit or
+     *                      abort record.
      * @return the Log Sequence Number of the WAL record that was written
-     *
      * @throws IllegalArgumentException if <tt>type</tt> is <tt>null</tt>, or if
-     *         it isn't one of the values {@link WALRecordType#START_TXN},
-     *         {@link WALRecordType#COMMIT_TXN}, or {@link WALRecordType#ABORT_TXN}.
+     *                                  it isn't one of the values {@link WALRecordType#START_TXN},
+     *                                  {@link WALRecordType#COMMIT_TXN}, or {@link WALRecordType#ABORT_TXN}.
      */
     private LogSequenceNumber writeTxnRecord(WALRecordType type,
-            int transactionID, LogSequenceNumber prevLSN) {
+                                             int transactionID, LogSequenceNumber prevLSN) {
 
         // Argument checking:
 
@@ -695,7 +684,7 @@ public class WALManager {
         }
 
         if ((type == WALRecordType.COMMIT_TXN ||
-             type == WALRecordType.ABORT_TXN) && prevLSN == null) {
+            type == WALRecordType.ABORT_TXN) && prevLSN == null) {
             throw new IllegalArgumentException(
                 "prevLSN must be specified for records of type " + type);
         }
@@ -721,8 +710,7 @@ public class WALManager {
 
                 // TypeID (1B) + TransactionID (4B) + TypeID (1B)
                 lsn = new LogSequenceNumber(lsn, 6);
-            }
-            else {
+            } else {
                 walWriter.writeShort(prevLSN.getLogFileNo());
                 walWriter.writeInt(prevLSN.getFileOffset());
                 walWriter.writeByte(type.getID());
@@ -752,16 +740,14 @@ public class WALManager {
      * doesn't need to be passed.
      *
      * @param type The type of the transaction demarcation to write, one of
-     *        the values {@link WALRecordType#START_TXN},
-     *        {@link WALRecordType#COMMIT_TXN}, or
-     *        {@link WALRecordType#ABORT_TXN}.
-     *
+     *             the values {@link WALRecordType#START_TXN},
+     *             {@link WALRecordType#COMMIT_TXN}, or
+     *             {@link WALRecordType#ABORT_TXN}.
      * @return the Log Sequence Number of the WAL record that was written
-     *
      * @throws IllegalArgumentException if {@code type} is {@code null}, or if
-     *         it isn't one of the values {@link WALRecordType#START_TXN},
-     *         {@link WALRecordType#COMMIT_TXN}, or
-     *         {@link WALRecordType#ABORT_TXN}.
+     *                                  it isn't one of the values {@link WALRecordType#START_TXN},
+     *                                  {@link WALRecordType#COMMIT_TXN}, or
+     *                                  {@link WALRecordType#ABORT_TXN}.
      */
     public LogSequenceNumber writeTxnRecord(WALRecordType type) {
 
@@ -786,9 +772,8 @@ public class WALManager {
      * including both undo and redo details.
      *
      * @param dbPage The data page whose changes are to be recorded in the log.
-     *
      * @throws IllegalArgumentException if <tt>dbPage</tt> is <tt>null</tt>, or
-     *         if it shows no updates.
+     *                                  if it shows no updates.
      */
     public void writeUpdatePageRecord(DBPage dbPage) {
 
@@ -932,16 +917,14 @@ public class WALManager {
      * just the new versions, for redo-only records).  Additionally, the
      * reader position will be advanced by this method.
      *
-     * @param type The record type, either {@link WALRecordType#UPDATE_PAGE}
-     *        or {@link WALRecordType#UPDATE_PAGE_REDO_ONLY}.
-     *
-     * @param walReader A reader positioned at the start of the redo/undo data
-     *        to apply to the data page.  This method will advance the reader's
-     *        position past this redo/undo data.
-     *
-     * @param dbPage the page that the redo should be applied to
+     * @param type        The record type, either {@link WALRecordType#UPDATE_PAGE}
+     *                    or {@link WALRecordType#UPDATE_PAGE_REDO_ONLY}.
+     * @param walReader   A reader positioned at the start of the redo/undo data
+     *                    to apply to the data page.  This method will advance the reader's
+     *                    position past this redo/undo data.
+     * @param dbPage      the page that the redo should be applied to
      * @param numSegments the number of segments containing redo[/undo] data;
-     *        this value is expected to already be unpacked from the log record
+     *                    this value is expected to already be unpacked from the log record
      */
     private void applyRedo(WALRecordType type, DBFileReader walReader,
                            DBPage dbPage, int numSegments) {
@@ -975,20 +958,17 @@ public class WALManager {
      * undo changes to a data page, and at the same time the method generates
      * the data that must go into a corresponding redo-only WAL record.
      *
-     * @param walReader A reader positioned at the start of the redo/undo data
-     *        to apply to the data page.  This method will advance the reader's
-     *        position past this redo/undo data.
-     *
-     * @param dbPage the data page that undo operations should be applied to
-     *
+     * @param walReader   A reader positioned at the start of the redo/undo data
+     *                    to apply to the data page.  This method will advance the reader's
+     *                    position past this redo/undo data.
+     * @param dbPage      the data page that undo operations should be applied to
      * @param numSegments the number of segments in the redo/undo data
-     *
      * @return a byte-array containing the same number of segments as the
-     *         original update record, with only the data necessary for the
-     *         redo-only record.
+     * original update record, with only the data necessary for the
+     * redo-only record.
      */
     private byte[] applyUndoAndGenRedoOnlyData(DBFileReader walReader,
-        DBPage dbPage, int numSegments) {
+                                               DBPage dbPage, int numSegments) {
 
         // Use java.io classes to generate the array of redo-only data we need
         // for this operation.
@@ -1017,8 +997,7 @@ public class WALManager {
             // Return the data that will appear in the redo-only record body.
             dos.flush();
             return redoOnlyBAOS.toByteArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // This should absolutely never happen; we're doing in-memory IO
             // writes!
             throw new StorageException("Couldn't generate redo-only data", e);
@@ -1036,24 +1015,18 @@ public class WALManager {
      * during normal operation.
      *
      * @param transactionID the transaction ID that the WAL record is for.
-     *
-     * @param prevLSN the log sequence number of the transaction's immediately
-     *        previous WAL record.
-     *
-     * @param dbPage The data page whose changes are to be recorded in the log.
-     *
-     * @param numSegments The number of segments in the change-data to record.
-     *
-     * @param changes The actual changes themselves, serialized to a byte array.
-
+     * @param prevLSN       the log sequence number of the transaction's immediately
+     *                      previous WAL record.
+     * @param dbPage        The data page whose changes are to be recorded in the log.
+     * @param numSegments   The number of segments in the change-data to record.
+     * @param changes       The actual changes themselves, serialized to a byte array.
      * @return the Log Sequence Number of the WAL record that was written
-     *
      * @throws IllegalArgumentException if {@code dbPage} is {@code null}, or
-     *         if {@code changes} is {@code null}.
+     *                                  if {@code changes} is {@code null}.
      */
     private LogSequenceNumber writeRedoOnlyUpdatePageRecord(int transactionID,
-        LogSequenceNumber prevLSN, DBPage dbPage, int numSegments,
-        byte[] changes) {
+                                                            LogSequenceNumber prevLSN, DBPage dbPage, int numSegments,
+                                                            byte[] changes) {
 
         // Check arguments
 
@@ -1113,24 +1086,20 @@ public class WALManager {
      * This method writes a redo-only update-page record to the write-ahead log,
      * including only redo details.  The transaction state is taken from
      * thread-local storage; this method should be used during normal operation.
-     *
+     * <p>
      * The alternate method {@link #writeRedoOnlyUpdatePageRecord(int,
      * LogSequenceNumber, DBPage, int, byte[])} should be used during recovery
      * processing when transaction state is specifically known.
      *
-     * @param dbPage The data page whose changes are to be recorded in the log.
-     *
+     * @param dbPage      The data page whose changes are to be recorded in the log.
      * @param numSegments The number of segments in the change-data to record.
-     *
-     * @param changes The actual changes themselves, serialized to a byte array.
-
+     * @param changes     The actual changes themselves, serialized to a byte array.
      * @return the Log Sequence Number of the WAL record that was written
-     *
      * @throws IllegalArgumentException if <tt>dbPage</tt> is <tt>null</tt>, or
-     *         if <tt>changes</tt> is <tt>null</tt>.
+     *                                  if <tt>changes</tt> is <tt>null</tt>.
      */
     private LogSequenceNumber writeRedoOnlyUpdatePageRecord(DBPage dbPage,
-        int numSegments, byte[] changes) {
+                                                            int numSegments, byte[] changes) {
 
         // Retrieve and verify the transaction state.
         TransactionState txnState = SessionState.get().getTransactionState();
@@ -1141,7 +1110,7 @@ public class WALManager {
 
         LogSequenceNumber lsn =
             writeRedoOnlyUpdatePageRecord(txnState.getTransactionID(),
-            txnState.getLastLSN(), dbPage, numSegments, changes);
+                txnState.getLastLSN(), dbPage, numSegments, changes);
 
         txnState.setLastLSN(lsn);
 
@@ -1185,7 +1154,7 @@ public class WALManager {
                 // different transaction than the one we are rolling back.
                 throw new DataFormatException(String.format(
                     "Sent to WAL record for transaction %d at LSN %s, " +
-                    "during rollback of transaction %d.", recordTxnID, lsn,
+                        "during rollback of transaction %d.", recordTxnID, lsn,
                     transactionID));
             }
 

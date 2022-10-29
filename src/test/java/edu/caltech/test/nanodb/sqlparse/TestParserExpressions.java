@@ -15,7 +15,7 @@ import edu.caltech.nanodb.expressions.LiteralValue;
 import edu.caltech.nanodb.sqlparse.ParseUtil;
 
 
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserExpressions {
     /**
      * Exercises the parsing of all kinds of literal values.
@@ -124,24 +124,24 @@ public class TestParserExpressions {
 
     /**
      * Exercises the parsing of functions.
-    public void testParseExprFunctionCall() {
-        FunctionCall e;
+     public void testParseExprFunctionCall() {
+     FunctionCall e;
 
-        e = (FunctionCall) ParseUtil.parseExpression("fn1()");
-        // TODO:  Verify
+     e = (FunctionCall) ParseUtil.parseExpression("fn1()");
+     // TODO:  Verify
 
-        e = (FunctionCall) ParseUtil.parseExpression("fn2(a)");
-        // TODO:  Verify
+     e = (FunctionCall) ParseUtil.parseExpression("fn2(a)");
+     // TODO:  Verify
 
-        e = (FunctionCall) ParseUtil.parseExpression("fn3(distinct b)");
-        // TODO:  Verify
+     e = (FunctionCall) ParseUtil.parseExpression("fn3(distinct b)");
+     // TODO:  Verify
 
-        e = (FunctionCall) ParseUtil.parseExpression("fn4(c, d, e)");
-        // TODO:  Verify
+     e = (FunctionCall) ParseUtil.parseExpression("fn4(c, d, e)");
+     // TODO:  Verify
 
-        e = (FunctionCall) ParseUtil.parseExpression("fn5(distinct f, g, h)");
-        // TODO:  Verify
-    }
+     e = (FunctionCall) ParseUtil.parseExpression("fn5(distinct f, g, h)");
+     // TODO:  Verify
+     }
      */
 
 

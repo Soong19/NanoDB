@@ -13,16 +13,16 @@ import org.testng.annotations.Test;
 import edu.caltech.nanodb.commands.CreateTableCommand;
 
 
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserCreateTable {
 
     /**
      * A helper function to verify the details of a specific column.
      *
-     * @param colInfo The column-info to verify
-     * @param tableName The expected table name
+     * @param colInfo    The column-info to verify
+     * @param tableName  The expected table name
      * @param columnName The expected column name
-     * @param baseType The expected base-type of the column
+     * @param baseType   The expected base-type of the column
      */
     private void checkColumnDecl(ColumnInfo colInfo, String tableName,
                                  String columnName, SQLDataType baseType) {
@@ -42,7 +42,7 @@ public class TestParserCreateTable {
             "n varchar (350), o character VARYING(35), p date, q datetime, " +
             "r time, s timestamp" +
             ");"
-            );
+        );
 
         assert !cmd.isTemporary();
         assert !cmd.getIfNotExists();
@@ -177,7 +177,7 @@ public class TestParserCreateTable {
 
         cmd = (CreateTableCommand) ParseUtil.parseCommand(
             "CREATE TEMPORARY TABLE t1 (a INTEGER, b CHAR(100), c DATE) " +
-            "properties (foo = 'bar');");
+                "properties (foo = 'bar');");
 
         assert cmd.isTemporary();
         assert !cmd.getIfNotExists();
@@ -199,7 +199,7 @@ public class TestParserCreateTable {
 
         cmd = (CreateTableCommand) ParseUtil.parseCommand(
             "CREATE TABLE IF NOT EXISTS t2 (a INTEGER, b CHAR(100), c DATE) " +
-            "properties (FOO = 'Bar', n=500);");
+                "properties (FOO = 'Bar', n=500);");
 
         assert !cmd.isTemporary();
         assert cmd.getIfNotExists();

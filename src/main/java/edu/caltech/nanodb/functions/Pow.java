@@ -16,7 +16,7 @@ import edu.caltech.nanodb.relations.Schema;
 /**
  * Returns the first argument, raised to the second argument power. If any
  * of the arguments is {@code NULL}, returns {@code NULL}.
- * 
+ *
  * @author emil
  */
 public class Pow extends SimpleFunction {
@@ -35,11 +35,11 @@ public class Pow extends SimpleFunction {
 
         Object argVal1 = args.get(0).evaluate(env);
         Object argVal2 = args.get(1).evaluate(env);
-   
+
         if (argVal1 == null || argVal2 == null)
             return null;
 
         return Math.pow(TypeConverter.getDoubleValue(argVal1),
-                        TypeConverter.getDoubleValue(argVal2));
+            TypeConverter.getDoubleValue(argVal2));
     }
 }

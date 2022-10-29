@@ -17,7 +17,9 @@ import edu.caltech.nanodb.relations.Schema;
  * table-statistics to a data file.
  */
 public class StatsWriter {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(StatsWriter.class);
 
 
@@ -58,10 +60,10 @@ public class StatsWriter {
     /**
      * Writes the specified table-statistics to a data file.
      *
-     * @param schema the schema of the table
-     * @param stats the statistics to save for the table
+     * @param schema   the schema of the table
+     * @param stats    the statistics to save for the table
      * @param pgWriter a page-writer specifying where the data should be
-     *        written to
+     *                 written to
      */
     public static void writeTableStats(Schema schema, TableStats stats,
                                        PageWriter pgWriter) {
@@ -83,7 +85,7 @@ public class StatsWriter {
             byte nullMask = 0;
 
             int numUnique = c.getNumUniqueValues();
-            int numNull   = c.getNumNullValues();
+            int numNull = c.getNumNullValues();
             Object minVal = c.getMinValue();
             Object maxVal = c.getMaxValue();
 
@@ -104,7 +106,7 @@ public class StatsWriter {
             // Store the NULL-mask, then store the non-NULL values.
 
             logger.debug(String.format("Writing column-stat data:  " +
-                "nullmask=0x%X, unique=%d, null=%d, min=%s, max=%s",
+                    "nullmask=0x%X, unique=%d, null=%d, min=%s, max=%s",
                 nullMask, numUnique, numNull, minVal, maxVal));
 
             pgWriter.writeByte(nullMask);
@@ -133,9 +135,8 @@ public class StatsWriter {
      * Reads the table-statistics from the specified data file.
      *
      * @param pgReader a page-reader specifying where the data should be
-     *        read from
-     * @param schema the schema of the table
-     *
+     *                 read from
+     * @param schema   the schema of the table
      * @return the table statistics loaded from the file
      */
     public static TableStats readTableStats(PageReader pgReader,
@@ -169,7 +170,7 @@ public class StatsWriter {
                 c.setMaxValue(pgReader.readObject(colInfo.getType()));
 
             logger.debug(String.format("Read column-stat data:  " +
-                "nullmask=0x%X, unique=%d, null=%d, min=%s, max=%s",
+                    "nullmask=0x%X, unique=%d, null=%d, min=%s, max=%s",
                 nullMask, c.getNumUniqueValues(), c.getNumNullValues(),
                 c.getMinValue(), c.getMaxValue()));
 

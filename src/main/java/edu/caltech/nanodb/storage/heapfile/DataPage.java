@@ -16,17 +16,25 @@ import edu.caltech.nanodb.storage.DBPage;
  * data.
  *
  * @design (Donnie) Why is this class a static class, instead of a wrapper class
- *         around the {@link DBPage}?  No particular reason, really.  The class
- *         is used relatively briefly when a table is being accessed, and there
- *         is no real need for it to manage its own object-state, so it was just
- *         as convenient to provide all functionality as static methods.  This
- *         avoids the (small) overhead of instantiating an object as well.  But
- *         really, these are not particularly strong reasons.
+ * around the {@link DBPage}?  No particular reason, really.  The class
+ * is used relatively briefly when a table is being accessed, and there
+ * is no real need for it to manage its own object-state, so it was just
+ * as convenient to provide all functionality as static methods.  This
+ * avoids the (small) overhead of instantiating an object as well.  But
+ * really, these are not particularly strong reasons.
  */
 public class DataPage {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(DataPage.class);
 
+    /**
+     * Mark the page as full, no more free space here.
+     */
+    public static final int INVALID_PGNO = -1;
+
+    public static final int OCCUPY_FREE_NEXT = 4;
 
     /**
      * The offset in the data page where the number of slots in the slot table
@@ -80,7 +88,7 @@ public class DataPage {
      * (which relies on the offset stored in the last slot) will produce wrong
      * results.
      *
-     * @param dbPage the data page to set the number of slots for
+     * @param dbPage   the data page to set the number of slots for
      * @param numSlots the value to store
      */
     public static void setNumSlots(DBPage dbPage, int numSlots) {
@@ -94,7 +102,7 @@ public class DataPage {
      *
      * @param dbPage the data page to examine
      * @return the index in the page data where the slot-table ends.  This also
-     *         happens to be the size of the slot-table in bytes.
+     * happens to be the size of the slot-table in bytes.
      */
     public static int getSlotsEndIndex(DBPage dbPage) {
         // Slots are at indexes [0, numSlots), so just pass the total number of
@@ -109,13 +117,11 @@ public class DataPage {
      * page, or it will be {@link #EMPTY_SLOT} if the slot is empty.
      *
      * @param dbPage the data page to retrieve the slot-value from
-     * @param slot the slot to retrieve the value for; valid values are from 0
-     *        to {@link #getNumSlots} - 1.
-     *
+     * @param slot   the slot to retrieve the value for; valid values are from 0
+     *               to {@link #getNumSlots} - 1.
      * @return the current value stored for the slot in the data page
-     *
      * @throws IllegalArgumentException if the specified slot number is outside
-     *         the range [0, {@link #getNumSlots}).
+     *                                  the range [0, {@link #getNumSlots}).
      */
     public static int getSlotValue(DBPage dbPage, int slot) {
         int numSlots = getNumSlots(dbPage);
@@ -135,12 +141,11 @@ public class DataPage {
      * page, or it should be {@link #EMPTY_SLOT} if the slot is empty.
      *
      * @param dbPage the data page to set the slot-value for
-     * @param slot the slot to set the value of; valid values are from 0 to
-     *        {@link #getNumSlots} - 1.
-     * @param value the value to store for the slot
-     *
+     * @param slot   the slot to set the value of; valid values are from 0 to
+     *               {@link #getNumSlots} - 1.
+     * @param value  the value to store for the slot
      * @throws IllegalArgumentException if the specified slot number is outside
-     *         the range [0, {@link #getNumSlots}).
+     *                                  the range [0, {@link #getNumSlots}).
      */
     public static void setSlotValue(DBPage dbPage, int slot, int value) {
         int numSlots = getNumSlots(dbPage);
@@ -182,11 +187,9 @@ public class DataPage {
      * other words, we add tuple data from the back of the block towards the
      * front.)
      *
-     * @see #setNumSlots
-     *
      * @param dbPage the data page to examine
-     *
      * @return the index where the tuple data starts in this data page
+     * @see #setNumSlots
      */
     public static int getTupleDataStart(DBPage dbPage) {
         int numSlots = getNumSlots(dbPage);
@@ -217,11 +220,10 @@ public class DataPage {
      * page-size.
      *
      * @param dbPage the data page to examine
-     *
      * @return the index where the tuple data ends in this data page
      */
     public static int getTupleDataEnd(DBPage dbPage) {
-        return dbPage.getPageSize();
+        return dbPage.getPageSize() - OCCUPY_FREE_NEXT;
     }
 
 
@@ -230,11 +232,10 @@ public class DataPage {
      * invalid to use this method on an empty slot.
      *
      * @param dbPage the data page being examined
-     * @param slot the slot of the tuple to retrieve the length of
+     * @param slot   the slot of the tuple to retrieve the length of
      * @return the length of the tuple's data stored in this slot
-     *
      * @throws IllegalArgumentException if the specified slot is invalid, or if
-     *         the specified slot has {@link #EMPTY_SLOT} for its value
+     *                                  the specified slot has {@link #EMPTY_SLOT} for its value
      */
     public static int getTupleLength(DBPage dbPage, int slot) {
         int numSlots = getNumSlots(dbPage);
@@ -327,7 +328,7 @@ public class DataPage {
                 if (prevOffset <= offset) {
                     logger.warn(String.format(
                         "Slot %d and %d offsets are not strictly decreasing " +
-                        "(%d should be greater than %d)", prevSlot, iSlot,
+                            "(%d should be greater than %d)", prevSlot, iSlot,
                         prevOffset, offset));
                 }
 
@@ -336,7 +337,6 @@ public class DataPage {
             }
         }
     }
-
 
 
     /**
@@ -349,10 +349,8 @@ public class DataPage {
      * <p>The new space is initialized to all zero values.</p>
      *
      * @param dbPage The table data-page to insert space into.
-     *
-     * @param off The offset in the page where the space will be added.
-     *
-     * @param len The number of bytes to insert.
+     * @param off    The offset in the page where the space will be added.
+     * @param len    The number of bytes to insert.
      */
     public static void insertTupleDataRange(DBPage dbPage, int off, int len) {
 
@@ -410,10 +408,8 @@ public class DataPage {
      * move, some of the slots in the page may also need to be modified.
      *
      * @param dbPage The table data-page to insert space into.
-     *
-     * @param off The offset in the page where the space will be removed.
-     *
-     * @param len The number of bytes to remove.
+     * @param off    The offset in the page where the space will be removed.
+     * @param len    The number of bytes to remove.
      */
     public static void deleteTupleDataRange(DBPage dbPage, int off, int len) {
         int tupDataStart = getTupleDataStart(dbPage);
@@ -470,12 +466,10 @@ public class DataPage {
      * to all zero values.
      *
      * @param dbPage The data page to store the new tuple in.
-     *
-     * @param len The length of the new tuple's data.
-     *
+     * @param len    The length of the new tuple's data.
      * @return The slot-index for the new tuple.  The offset to the start
-     *         of the requested space is available via that slot.  (Use
-     *         {@link #getSlotValue} to retrieve that offset.)
+     * of the requested space is available via that slot.  (Use
+     * {@link #getSlotValue} to retrieve that offset.)
      */
     public static int allocNewTuple(DBPage dbPage, int len) {
 
@@ -530,8 +524,8 @@ public class DataPage {
             // fine for now.
             throw new IllegalArgumentException(
                 "Space needed for new tuple (" + spaceNeeded +
-                " bytes) is larger than the free space in this page (" +
-                getFreeSpaceInPage(dbPage) + " bytes).");
+                    " bytes) is larger than the free space in this page (" +
+                    getFreeSpaceInPage(dbPage) + " bytes).");
         }
 
         // Now we know we have space for the tuple.  Update the slot list,
@@ -582,7 +576,7 @@ public class DataPage {
      * "deleted" are reclaimed.
      *
      * @param dbPage the data page to remove the tuple from
-     * @param slot the slot of the tuple to delete
+     * @param slot   the slot of the tuple to delete
      */
     public static void deleteTuple(DBPage dbPage, int slot) {
 
@@ -598,7 +592,42 @@ public class DataPage {
                 " slots, but slot " + slot + " was requested for deletion.");
         }
 
-        // TODO:  Complete this implementation.
-        throw new UnsupportedOperationException("TODO:  Implement!");
+        var offset = OFFSET_NUM_SLOTS + getSlotValue(dbPage, slot);
+        var length = getTupleLength(dbPage, slot);
+        deleteTupleDataRange(dbPage, offset, length); // move tuples before slot to back
+        setSlotValue(dbPage, slot, EMPTY_SLOT); // mark tuple with slot is deleted
+
+        while (true) {
+            var endSlot = getNumSlots(dbPage);
+            // is already deleted?
+            if (endSlot == 0 || getSlotValue(dbPage, endSlot - 1) != EMPTY_SLOT) {
+                break;
+            }
+            setNumSlots(dbPage, endSlot - 1);
+        }
+    }
+
+    /**
+     * Sets the free page list next page to pageNo
+     *
+     * @param dbPage the data page
+     * @param pageNo the next page id
+     */
+    public static void setFreeNext(DBPage dbPage, int pageNo) {
+        // pageNo=0 means: no more free page in the list
+        if (/* pageNo == 0 is ok*/ pageNo > 65536) {
+            throw new IllegalArgumentException("header page or no more pages" + pageNo);
+        }
+        dbPage.writeInt(dbPage.getPageSize() - OCCUPY_FREE_NEXT, pageNo);
+    }
+
+    /**
+     * Gets the free page list next page
+     *
+     * @param dbPage the data page
+     * @return the next page id
+     */
+    public static int getFreeNext(DBPage dbPage) {
+        return dbPage.readInt(dbPage.getPageSize() - OCCUPY_FREE_NEXT);
     }
 }

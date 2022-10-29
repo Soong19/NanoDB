@@ -17,7 +17,7 @@ import edu.caltech.nanodb.relations.SQLDataType;
 /**
  * This class exercises the type-converter class.
  */
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestTypeConverter {
 
     // === BOOLEAN ===========================================================
@@ -32,7 +32,7 @@ public class TestTypeConverter {
         assert null == TypeConverter.getBooleanValue(null);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetBooleanValueError() {
         TypeConverter.getBooleanValue(new Object());
     }
@@ -49,17 +49,17 @@ public class TestTypeConverter {
         assert Byte.valueOf((byte) 21).equals(TypeConverter.getByteValue(Float.valueOf(21.234f)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetByteFromBooleanError() {
         TypeConverter.getByteValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetByteFromObjectError() {
         TypeConverter.getByteValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetByteFromStringError() {
         TypeConverter.getByteValue("123a");
     }
@@ -76,17 +76,17 @@ public class TestTypeConverter {
         assert Short.valueOf((short) 21).equals(TypeConverter.getShortValue(Float.valueOf(21.234f)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetShortFromBooleanError() {
         TypeConverter.getShortValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetShortFromObjectError() {
         TypeConverter.getShortValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetShortFromStringError() {
         TypeConverter.getShortValue("123a");
     }
@@ -103,17 +103,17 @@ public class TestTypeConverter {
         assert Integer.valueOf(21).equals(TypeConverter.getIntegerValue(Float.valueOf(21.234f)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetIntegerFromBooleanError() {
         TypeConverter.getIntegerValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetIntegerFromObjectError() {
         TypeConverter.getIntegerValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetIntegerFromStringError() {
         TypeConverter.getIntegerValue("123a");
     }
@@ -130,17 +130,17 @@ public class TestTypeConverter {
         assert Long.valueOf(21).equals(TypeConverter.getLongValue(Float.valueOf(21.234f)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetLongFromBooleanError() {
         TypeConverter.getLongValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetLongFromObjectError() {
         TypeConverter.getLongValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetLongFromStringError() {
         TypeConverter.getLongValue("123a");
     }
@@ -157,17 +157,17 @@ public class TestTypeConverter {
         assert Float.valueOf(21.234f).equals(TypeConverter.getFloatValue(Float.valueOf(21.234f)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetFloatFromBooleanError() {
         TypeConverter.getFloatValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetFloatFromObjectError() {
         TypeConverter.getFloatValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetFloatFromStringError() {
         TypeConverter.getFloatValue("123a");
     }
@@ -184,17 +184,17 @@ public class TestTypeConverter {
         assert Double.valueOf(21.5).equals(TypeConverter.getDoubleValue(Float.valueOf(21.5f)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetDoubleFromBooleanError() {
         TypeConverter.getDoubleValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetDoubleFromObjectError() {
         TypeConverter.getDoubleValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetDoubleFromStringError() {
         TypeConverter.getDoubleValue("123a");
     }
@@ -211,17 +211,17 @@ public class TestTypeConverter {
         assert BigInteger.valueOf(45).equals(TypeConverter.getBigIntegerValue(Long.valueOf(45)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetBigIntegerFromBooleanError() {
         TypeConverter.getBigIntegerValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetBigIntegerFromObjectError() {
         TypeConverter.getBigIntegerValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetBigIntegerFromStringError() {
         TypeConverter.getBigIntegerValue("123a");
     }
@@ -240,17 +240,17 @@ public class TestTypeConverter {
         assert new BigDecimal(45).equals(TypeConverter.getBigDecimalValue(Long.valueOf(45)));
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetBigDecimalFromBooleanError() {
         TypeConverter.getBigDecimalValue(Boolean.TRUE);
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetBigDecimalFromObjectError() {
         TypeConverter.getBigDecimalValue(new Object());
     }
 
-    @Test(expectedExceptions={TypeCastException.class})
+    @Test(expectedExceptions = {TypeCastException.class})
     public void testGetBigDecimalFromStringError() {
         TypeConverter.getBigDecimalValue("123a");
     }

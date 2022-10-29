@@ -81,9 +81,9 @@ public class InSubqueryOperator extends SubqueryOperator {
      * expression's result is always <code>FALSE</code>.
      *
      * @design (Donnie) We have to suppress "unchecked operation" warnings on
-     *         this code, since {@link Comparable} is a generic (and thus allows
-     *         us to specify the type of object being compared), but we want to
-     *         use it without specifying any types.
+     * this code, since {@link Comparable} is a generic (and thus allows
+     * us to specify the type of object being compared), but we want to
+     * use it without specifying any types.
      */
     @SuppressWarnings("unchecked")
     public Object evaluate(Environment env) throws ExpressionException {
@@ -139,8 +139,7 @@ public class InSubqueryOperator extends SubqueryOperator {
 
         if (exprList.size() == 1) {
             buf.append(exprList.get(0).toString());
-        }
-        else {
+        } else {
             char ch = '(';
             for (Expression expr : exprList) {
                 buf.append(ch);
@@ -173,7 +172,7 @@ public class InSubqueryOperator extends SubqueryOperator {
         if (obj instanceof InSubqueryOperator) {
             InSubqueryOperator other = (InSubqueryOperator) obj;
             return exprList.equals(other.exprList) &&
-                   subquery.equals(other.subquery);
+                subquery.equals(other.subquery);
         }
 
         return false;

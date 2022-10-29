@@ -14,7 +14,7 @@ public class PropertyReader {
      * Some properties can be a number plus a scale, such as "1024m" or "1G".
      * This helper function pulls the scale indicator off of the end of the
      * string and computes a scale from it.
-     *
+     * <p>
      * Note that this method does not flag invalid scale values!
      *
      * @param str a string that may or may not end with a scale
@@ -42,10 +42,9 @@ public class PropertyReader {
      * Retrieves an integer-valued property, possibly with a scale modifier,
      * from the specified collection of properties.
      *
-     * @param properties the collection of properties to read from
+     * @param properties   the collection of properties to read from
      * @param propertyName the name of the property
      * @param defaultValue the default value for the property, if absent
-     *
      * @return the integer property value, or default if the property is absent
      */
     public static int getIntProperty(Properties properties,
@@ -74,10 +73,9 @@ public class PropertyReader {
      * Retrieves a long-integer-valued property, possibly with a scale
      * modifier, from the specified collection of properties.
      *
-     * @param properties the collection of properties to read from
+     * @param properties   the collection of properties to read from
      * @param propertyName the name of the property
      * @param defaultValue the default value for the property, if absent
-     *
      * @return the long property value, or default if the property is absent
      */
     public static long getLongProperty(Properties properties,
@@ -108,7 +106,6 @@ public class PropertyReader {
      *
      * @param propertyName the name of the property
      * @param defaultValue the default value for the property, if absent
-     *
      * @return the integer property value, or default if the property is absent
      */
     public int getSystemIntProperty(String propertyName, int defaultValue) {
@@ -123,7 +120,6 @@ public class PropertyReader {
      *
      * @param propertyName the name of the property
      * @param defaultValue the default value for the property, if absent
-     *
      * @return the long property value, or default if the property is absent
      */
     public long getSystemLongProperty(String propertyName, long defaultValue) {

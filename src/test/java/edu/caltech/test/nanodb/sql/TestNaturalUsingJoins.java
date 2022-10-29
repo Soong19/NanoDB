@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
  * These tests aren't exhaustive; they serve as a smoke-test to verify the
  * basic behaviors.
  */
-@Test(groups={"sql"})
+@Test(groups = {"sql"})
 public class TestNaturalUsingJoins extends SqlTestCase {
     public TestNaturalUsingJoins() {
         super("setup_testNaturalUsingJoins");
@@ -138,7 +138,7 @@ public class TestNaturalUsingJoins extends SqlTestCase {
         // a column "A" without a table name, joined to the third table.
         result = server.doCommand(
             "SELECT * FROM (test_nuj_t1 t1 NATURAL JOIN test_nuj_t4 t4) " +
-            "NATURAL JOIN (test_nuj_t5 t5 NATURAL JOIN test_nuj_t6 t6)", true);
+                "NATURAL JOIN (test_nuj_t5 t5 NATURAL JOIN test_nuj_t6 t6)", true);
         TupleLiteral[] expected2 = {
             new TupleLiteral(2, 20, 200, 2000, 20000),
             new TupleLiteral(5, 50, 600, 5000, 60000),

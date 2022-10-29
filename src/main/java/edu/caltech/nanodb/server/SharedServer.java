@@ -16,15 +16,21 @@ import org.apache.logging.log4j.LogManager;
  * clients connected at the same time.
  */
 public class SharedServer {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(SharedServer.class);
 
 
-    /** The default server port is 12200, since we use NanoDB in CS122! */
+    /**
+     * The default server port is 12200, since we use NanoDB in CS122!
+     */
     public static final int DEFAULT_SERVER_PORT = 12200;
 
 
-    /** The actual server port being used. */
+    /**
+     * The actual server port being used.
+     */
     private int serverPort = DEFAULT_SERVER_PORT;
 
 
@@ -99,8 +105,7 @@ public class SharedServer {
         SharedServer server = new SharedServer();
         try {
             server.startup();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Couldn't start shared server:  " +
                 e.getMessage());
             e.printStackTrace(System.out);

@@ -12,7 +12,9 @@ import java.util.HashMap;
  * planning.
  */
 public class Definitions {
-    /** A collection of expression aliases. */
+    /**
+     * A collection of expression aliases.
+     */
     private HashMap<String, Expression> expressionAliases;
 
     /**

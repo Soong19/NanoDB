@@ -13,16 +13,18 @@ import edu.caltech.nanodb.expressions.ColumnName;
  * since some constraints can involve multiple columns.
  *
  * @design (donnie) Right now this class is immutable, which I tend to think is
- *         a good idea for schema information.  So far there aren't any classes
- *         that really require the ability to mutate column-info objects,
- *         although the biggest candidates are the
- *         {@link edu.caltech.nanodb.expressions.TupleLiteral} class and the
- *         {@link edu.caltech.nanodb.plannodes.ProjectNode} class, which sometimes
- *         need to generate names for their results.
+ * a good idea for schema information.  So far there aren't any classes
+ * that really require the ability to mutate column-info objects,
+ * although the biggest candidates are the
+ * {@link edu.caltech.nanodb.expressions.TupleLiteral} class and the
+ * {@link edu.caltech.nanodb.plannodes.ProjectNode} class, which sometimes
+ * need to generate names for their results.
  */
 public class ColumnInfo implements Serializable {
 
-    /** The name of the attribute. */
+    /**
+     * The name of the attribute.
+     */
     private String name;
 
 
@@ -34,7 +36,9 @@ public class ColumnInfo implements Serializable {
     private String tableName;
 
 
-    /** The type information for the column. */
+    /**
+     * The type information for the column.
+     */
     private ColumnType type;
 
 
@@ -42,9 +46,9 @@ public class ColumnInfo implements Serializable {
      * Construct a new column-info object for a column, specifying the attribute
      * name, table name, and type of the column.
      *
-     * @param name the attribute name, or {@code null} if unspecified
+     * @param name      the attribute name, or {@code null} if unspecified
      * @param tableName the table name, or {@code null} if unspecified
-     * @param type the type of the column
+     * @param type      the type of the column
      */
     public ColumnInfo(String name, String tableName, ColumnType type) {
         if (type == null)
@@ -125,8 +129,8 @@ public class ColumnInfo implements Serializable {
             ColumnInfo other = (ColumnInfo) obj;
 
             return Objects.equals(name, other.name) &&
-                   Objects.equals(tableName, other.tableName) &&
-                   type == other.type;
+                Objects.equals(tableName, other.tableName) &&
+                type == other.type;
         }
         return false;
     }
@@ -142,7 +146,9 @@ public class ColumnInfo implements Serializable {
     }
 
 
-    /** Returns a string representation of the column-info. */
+    /**
+     * Returns a string representation of the column-info.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

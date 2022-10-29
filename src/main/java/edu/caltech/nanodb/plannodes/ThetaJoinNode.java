@@ -25,7 +25,9 @@ public abstract class ThetaJoinNode extends PlanNode {
     public JoinType joinType;
 
 
-    /** Join condition. */
+    /**
+     * Join condition.
+     */
     public Expression predicate;
 
 
@@ -36,7 +38,9 @@ public abstract class ThetaJoinNode extends PlanNode {
     protected Schema leftSchema;
 
 
-    /** The cached statistics of the left subplan, used for cost estimation. */
+    /**
+     * The cached statistics of the left subplan, used for cost estimation.
+     */
     protected ArrayList<ColumnStats> leftStats;
 
 
@@ -47,7 +51,9 @@ public abstract class ThetaJoinNode extends PlanNode {
     protected Schema rightSchema;
 
 
-    /** The cached statistics of the right subplan, used for cost estimation. */
+    /**
+     * The cached statistics of the right subplan, used for cost estimation.
+     */
     protected ArrayList<ColumnStats> rightStats;
 
 
@@ -66,16 +72,13 @@ public abstract class ThetaJoinNode extends PlanNode {
      * Constructs a ThetaJoinNode that joins the tuples from the left and right
      * subplans, using the specified join type and join predicate.
      *
-     * @param leftChild the left relation
-     *
+     * @param leftChild  the left relation
      * @param rightChild the right relation
-     *
-     * @param joinType the type of join operation to perform
-     *
-     * @param predicate the join condition
+     * @param joinType   the type of join operation to perform
+     * @param predicate  the join condition
      */
     public ThetaJoinNode(PlanNode leftChild, PlanNode rightChild,
-        JoinType joinType, Expression predicate) {
+                         JoinType joinType, Expression predicate) {
 
         super(leftChild, rightChild);
 
@@ -93,7 +96,7 @@ public abstract class ThetaJoinNode extends PlanNode {
      * swap() was called an odd number of times, switching the left and right
      * subtrees.
      *
-     * @param left the left tuple
+     * @param left  the left tuple
      * @param right the right tuple
      * @return the combined tuple
      */
@@ -105,8 +108,7 @@ public abstract class ThetaJoinNode extends PlanNode {
         if (!schemaSwapped) {
             joinedTuple.appendTuple(left);
             joinedTuple.appendTuple(right);
-        }
-        else {
+        } else {
             joinedTuple.appendTuple(right);
             joinedTuple.appendTuple(left);
         }
@@ -148,8 +150,7 @@ public abstract class ThetaJoinNode extends PlanNode {
             schema = new Schema(leftSchema, rightSchema);
             stats.addAll(leftStats);
             stats.addAll(rightStats);
-        }
-        else {
+        } else {
             schema = new Schema(rightSchema, leftSchema);
             stats.addAll(rightStats);
             stats.addAll(leftStats);
@@ -176,7 +177,7 @@ public abstract class ThetaJoinNode extends PlanNode {
      * otherwise.
      *
      * @return true if the schema is swapped in this theta join node, false
-     *         otherwise.
+     * otherwise.
      */
     public boolean isSwapped() {
         return schemaSwapped;

@@ -26,18 +26,26 @@ public abstract class Command {
      * Language (DML), or utility commands.
      */
     public enum Type {
-        /** A Data Definition Language (DDL) command. */
+        /**
+         * A Data Definition Language (DDL) command.
+         */
         DDL,
 
-        /** A Data Manipulation Language (DML) command. */
+        /**
+         * A Data Manipulation Language (DML) command.
+         */
         DML,
 
-        /** A utility command. */
+        /**
+         * A utility command.
+         */
         UTILITY
     }
 
 
-    /** The type of this command. */
+    /**
+     * The type of this command.
+     */
     private Type cmdType;
 
 
@@ -62,7 +70,9 @@ public abstract class Command {
     }
 
 
-    /** Returns the general type or category of this command. */
+    /**
+     * Returns the general type or category of this command.
+     */
     public Type getCommandType() {
         return cmdType;
     }

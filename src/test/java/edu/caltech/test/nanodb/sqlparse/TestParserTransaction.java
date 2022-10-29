@@ -12,7 +12,7 @@ import edu.caltech.nanodb.sqlparse.ParseUtil;
 /**
  * Exercise the parser's support of the transaction-demarcation commands.
  */
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserTransaction {
 
     /**

@@ -7,10 +7,14 @@ package edu.caltech.nanodb.util;
  * must coerce them into being the same types.
  */
 public class Pair {
-    /** The first value of the pair. */
+    /**
+     * The first value of the pair.
+     */
     public final Object value1;
 
-    /** The second value of the pair. */
+    /**
+     * The second value of the pair.
+     */
     public final Object value2;
 
 

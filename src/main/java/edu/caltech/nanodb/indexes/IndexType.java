@@ -7,9 +7,13 @@ package edu.caltech.nanodb.indexes;
  * lookups with different performance characteristics.
  */
 public enum IndexType {
-    /** Represents indexes that order values to determine a tuple's location. */
+    /**
+     * Represents indexes that order values to determine a tuple's location.
+     */
     ORDERED_INDEX,
 
-    /** Represents indexes that hash values to determine a tuple's location. */
+    /**
+     * Represents indexes that hash values to determine a tuple's location.
+     */
     HASHED_INDEX
 }

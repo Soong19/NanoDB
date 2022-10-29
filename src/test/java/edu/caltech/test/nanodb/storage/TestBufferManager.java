@@ -21,8 +21,10 @@ import edu.caltech.nanodb.storage.FileManager;
 import edu.caltech.nanodb.storage.FileManagerImpl;
 
 
-/** Tests to exercise the buffer manager implementation. */
-@Test(groups={"storage", "framework"})
+/**
+ * Tests to exercise the buffer manager implementation.
+ */
+@Test(groups = {"storage", "framework"})
 public class TestBufferManager extends StorageTestCase {
 
     /**
@@ -71,7 +73,7 @@ public class TestBufferManager extends StorageTestCase {
      * the test results.
      *
      * @throws Exception if an IO error occurs, or if the concurrent execution
-     *         code receives an Interrupted Exception.
+     *                   code receives an Interrupted Exception.
      */
     public void testConcurrentSeparateFiles() throws Exception {
         FileUtils.cleanDirectory(testBaseDir);
@@ -106,8 +108,8 @@ public class TestBufferManager extends StorageTestCase {
      * the start of the file until the end of the file, to verify the contents
      * of those pages.
      *
-     * @param fileMgr the file manager to use
-     * @param bufMgr the buffer manager to use
+     * @param fileMgr  the file manager to use
+     * @param bufMgr   the buffer manager to use
      * @param filename the name of the file to create for the test
      * @param pageSize the size of the pages in the test file
      * @param numPages the number of pages to create in the file

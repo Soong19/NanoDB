@@ -20,19 +20,20 @@ import edu.caltech.nanodb.server.performance.PerformanceCounters;
  * requirement of {@link #openDBFile}.)
  *
  * @design Although it might make more sense to put per-file operations like
- *         "load page" and "store page" on the {@link DBFile} class, we
- *         provide higher-level operations on the Storage Manager so that we
- *         can provide global buffering capabilities in one place.
- *
+ * "load page" and "store page" on the {@link DBFile} class, we
+ * provide higher-level operations on the Storage Manager so that we
+ * can provide global buffering capabilities in one place.
  * @design This class only requires minimal synchronization for thread-safety.
- *         The only internal state maintained by the class is the performance
- *         information, so the {@link #updateFileIOPerfStats} method includes
- *         a synchronized block, but everything else is unprotected because
- *         the OS filesystem will be thread-safe.
+ * The only internal state maintained by the class is the performance
+ * information, so the {@link #updateFileIOPerfStats} method includes
+ * a synchronized block, but everything else is unprotected because
+ * the OS filesystem will be thread-safe.
  */
 public class FileManagerImpl implements FileManager {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(FileManagerImpl.class);
 
 
@@ -68,7 +69,7 @@ public class FileManagerImpl implements FileManager {
 
         if (!baseDir.isDirectory()) {
             throw new IllegalArgumentException("baseDir value " + baseDir +
-               " is not a directory");
+                " is not a directory");
         }
 
         this.baseDir = baseDir;
@@ -86,8 +87,7 @@ public class FileManagerImpl implements FileManager {
             if (lastFileAccessed == null || !dbFile.equals(lastFileAccessed)) {
                 PerformanceCounters.inc(PerformanceCounters.STORAGE_FILE_CHANGES);
                 lastPageNoAccessed = 0;
-            }
-            else {
+            } else {
                 // Compute the "number of sectors difference" between the last
                 // page we accessed and the current page we are accessing.  This
                 // is obviously a guess, since we don't know the physical file
@@ -120,10 +120,8 @@ public class FileManagerImpl implements FileManager {
      *
      * @param dbFile the database file to compute the page-start for
      * @param pageNo the page number to access
-     *
      * @return the offset of the specified page from the start of the database
-     *         file
-     *
+     * file
      * @throws IllegalArgumentException if the page number is negative
      */
     private long getPageStart(DBFile dbFile, int pageNo) {
@@ -152,16 +150,14 @@ public class FileManagerImpl implements FileManager {
         try {
             if (!f.createNewFile())
                 throw new FileSystemException("File " + f + " already exists!");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException("Unexpected IO error while creating file", e);
         }
 
         DBFile dbFile;
         try {
             dbFile = new DBFile(f, type, pageSize);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException("Couldn't create DB file " + f, e);
         }
 
@@ -209,8 +205,7 @@ public class FileManagerImpl implements FileManager {
             DBFile dbFile;
             try {
                 dbFile = new DBFile(f, type, pageSize, fileContents);
-            }
-            catch (IllegalArgumentException iae) {
+            } catch (IllegalArgumentException iae) {
                 // This would be highly unlikely to occur, given that we store
                 // the page-size P encoded as 2^p, and we load it above.
                 throw new DataFormatException("Invalid page size " + pageSize +
@@ -221,8 +216,7 @@ public class FileManagerImpl implements FileManager {
                 "type is %s, page size is %d.", f, type, pageSize));
 
             return dbFile;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException("Unexpected IO error while " +
                 "opening DB file " + filename, e);
         }
@@ -231,7 +225,7 @@ public class FileManagerImpl implements FileManager {
 
     @Override
     public boolean loadPage(DBFile dbFile, int pageNo, byte[] buffer,
-                         boolean create) {
+                            boolean create) {
         if (pageNo < 0) {
             throw new IllegalArgumentException("pageNo must be >= 0, got " +
                 pageNo);
@@ -251,8 +245,7 @@ public class FileManagerImpl implements FileManager {
         try {
             fileContents.seek(pageStart);
             fileContents.readFully(buffer);
-        }
-        catch (EOFException e) {
+        } catch (EOFException e) {
             // The read went past the end of this file.  How does the caller
             // want us to handle this situation?
             if (create) {
@@ -276,8 +269,7 @@ public class FileManagerImpl implements FileManager {
                         fileContents.setLength(newLength);
                         logger.debug(String.format("Set file %s length to %d",
                             dbFile, newLength));
-                    }
-                    else {
+                    } else {
                         String msg = "Expected DB file to be less than " +
                             newLength + " bytes long, but it's " + oldLength +
                             " bytes long!";
@@ -285,19 +277,16 @@ public class FileManagerImpl implements FileManager {
                         logger.error(msg);
                         throw new DataFormatException(msg);
                     }
-                }
-                catch (IOException e2) {
+                } catch (IOException e2) {
                     throw new FileSystemException("Unexpected IO error " +
                         "while reading/updating file " + dbFile + " length", e2);
                 }
-            }
-            else {
+            } else {
                 // No page to load, and the caller didn't request file
                 // extension.  Indicate failure by returning false.
                 return false;
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException(String.format(
                 "Unexpected IO error while loading page %d from file %s",
                 pageNo, dbFile));
@@ -336,8 +325,7 @@ public class FileManagerImpl implements FileManager {
             RandomAccessFile fileContents = dbFile.getFileContents();
             fileContents.seek(pageStart);
             fileContents.write(buffer);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException("Unexpected IO error while saving page", e);
         }
     }
@@ -348,8 +336,7 @@ public class FileManagerImpl implements FileManager {
         logger.info("Synchronizing database file to disk:  " + dbFile);
         try {
             dbFile.getFileContents().getFD().sync();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException(
                 "Unexpected IO error while synchronizing file " + dbFile, e);
         }
@@ -365,8 +352,7 @@ public class FileManagerImpl implements FileManager {
         logger.info("Closing database file:  " + dbFile);
         try {
             dbFile.getFileContents().close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileSystemException(
                 "Unexpected IO error while closing file " + dbFile, e);
         }

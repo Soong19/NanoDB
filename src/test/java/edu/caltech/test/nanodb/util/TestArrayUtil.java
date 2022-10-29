@@ -11,17 +11,17 @@ import edu.caltech.nanodb.util.ArrayUtil;
  * the write-ahead logging implementation to find what portions of data pages
  * have changed.
  */
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestArrayUtil {
-    private static byte[] DATA_A = { 1, 2, 3 };
-    private static byte[] DATA_B = { 1, 3, 4 };
-    private static byte[] DATA_C = { 1, 2, 4 };
-    private static byte[] DATA_D = { 1, 2, 3 };
-    private static byte[] DATA_E = { 0, 1, 3 };
-    private static byte[] DATA_F = { 0, 2, 3 };
-    private static byte[] DATA_G = { 0, 1, 2 };
+    private static byte[] DATA_A = {1, 2, 3};
+    private static byte[] DATA_B = {1, 3, 4};
+    private static byte[] DATA_C = {1, 2, 4};
+    private static byte[] DATA_D = {1, 2, 3};
+    private static byte[] DATA_E = {0, 1, 3};
+    private static byte[] DATA_F = {0, 2, 3};
+    private static byte[] DATA_G = {0, 1, 2};
 
-    private static byte[] DATA_H = { 1, 2, 3, 4 };
+    private static byte[] DATA_H = {1, 2, 3, 4};
 
     public void testSizeOfIdenticalRange() {
         assert ArrayUtil.sizeOfIdenticalRange(DATA_A, DATA_B, 0) == 1;
@@ -54,32 +54,28 @@ public class TestArrayUtil {
         try {
             ArrayUtil.sizeOfIdenticalRange(DATA_A, null, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
 
         try {
             ArrayUtil.sizeOfIdenticalRange(null, DATA_A, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
 
         try {
             ArrayUtil.sizeOfIdenticalRange(DATA_A, DATA_H, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
 
         try {
             ArrayUtil.sizeOfIdenticalRange(DATA_H, DATA_A, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
     }
@@ -116,32 +112,28 @@ public class TestArrayUtil {
         try {
             ArrayUtil.sizeOfDifferentRange(DATA_A, null, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
 
         try {
             ArrayUtil.sizeOfDifferentRange(null, DATA_A, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
 
         try {
             ArrayUtil.sizeOfDifferentRange(DATA_A, DATA_H, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
 
         try {
             ArrayUtil.sizeOfDifferentRange(DATA_H, DATA_A, 0);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // success
         }
     }

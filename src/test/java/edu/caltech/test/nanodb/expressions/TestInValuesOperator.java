@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 /**
  * Exercise the "<tt>IN (val1, val2, ...)</tt>" operator for correctness.
  */
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestInValuesOperator {
 
     /**
@@ -58,7 +58,6 @@ public class TestInValuesOperator {
      *
      * @param lhs the value on the left of the IN operator
      * @param rhs the collection of values on the right of the IN operator
-     *
      * @return the operator to evaluate the expression
      */
     private InValuesOperator makeOperator(Object lhs, Object[] rhs) {

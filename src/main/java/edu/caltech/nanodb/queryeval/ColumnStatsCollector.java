@@ -18,13 +18,15 @@ import java.util.HashSet;
  * from the result of the analysis.
  *
  * @design (Donnie) This class is limited in its ability to efficiently compute
- *         the number of unique values for very large tables.  An
- *         external-memory approach would have to be used to support extremely
- *         large tables.
+ * the number of unique values for very large tables.  An
+ * external-memory approach would have to be used to support extremely
+ * large tables.
  */
 public class ColumnStatsCollector {
 
-    /** The SQL data-type for the column that stats are being collected for. */
+    /**
+     * The SQL data-type for the column that stats are being collected for.
+     */
     private SQLDataType sqlType;
 
 
@@ -74,18 +76,16 @@ public class ColumnStatsCollector {
      * statistics for the column.
      *
      * @param value the value from the column being analyzed.
-     *
      * @design (Donnie) We have to suppress "unchecked operation" warnings on
-     *         this code, since {@link Comparable} is a generic (and thus allows
-     *         us to specify the type of object being compared), but we want to
-     *         use it without specifying any types.
+     * this code, since {@link Comparable} is a generic (and thus allows
+     * us to specify the type of object being compared), but we want to
+     * use it without specifying any types.
      */
     @SuppressWarnings("unchecked")
     public void addValue(Object value) {
         if (value == null) {
             numNullValues++;
-        }
-        else {
+        } else {
             // If the value implements the Comparable interface, use it to
             // update the minimum and maximum values.
             if (SelectivityEstimator.typeSupportsCompareEstimates(sqlType) &&
@@ -121,7 +121,7 @@ public class ColumnStatsCollector {
      * column.
      *
      * @return the number of unique (and non-<tt>NULL</tt>) values seen for the
-     *         column
+     * column
      */
     public int getNumUniqueValues() {
         return uniqueValues.size();
@@ -157,7 +157,7 @@ public class ColumnStatsCollector {
      * containing the stats collected by this object.
      *
      * @return a new column-stats object containing the stats that have been
-     *         collected by this object
+     * collected by this object
      */
     public ColumnStats getColumnStats() {
         return new ColumnStats(getNumUniqueValues(), numNullValues,

@@ -22,7 +22,7 @@ public class TestInPredicates extends SqlTestCase {
      *
      * @throws Exception if any query parsing or execution issues occur.
      */
-    @Test(groups={"sql", "hw2"})
+    @Test(groups = {"sql", "hw2"})
     public void testInPredicatesTablesNotEmpty() throws Throwable {
         testTableNotEmpty("test_exists_1");
         testTableNotEmpty("test_exists_2");
@@ -34,7 +34,7 @@ public class TestInPredicates extends SqlTestCase {
      *
      * @throws Exception if any query parsing or execution issues occur.
      */
-    @Test(groups={"sql", "hw2"})
+    @Test(groups = {"sql", "hw2"})
     public void testInValues() throws Throwable {
         CommandResult result;
         TupleLiteral[] expected1 = {
@@ -67,7 +67,7 @@ public class TestInPredicates extends SqlTestCase {
      *
      * @throws Exception if any query parsing or execution issues occur.
      */
-    @Test(groups={"sql", "hw5"})
+    @Test(groups = {"sql", "hw5"})
     public void testInSubquery() throws Throwable {
         CommandResult result;
         TupleLiteral[] expected1 = {

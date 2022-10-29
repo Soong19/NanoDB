@@ -13,7 +13,7 @@ import edu.caltech.nanodb.server.CommandResult;
  * This class exercises the database with some simple scalar subqueries, to
  * verify that the most basic functionality works.
  **/
-@Test(groups={"sql", "hw5"})
+@Test(groups = {"sql", "hw5"})
 public class TestScalarSubquery extends SqlTestCase {
     public TestScalarSubquery() {
         super("setup_testExists");
@@ -43,7 +43,7 @@ public class TestScalarSubquery extends SqlTestCase {
             createTupleFromNum(3),
             createTupleFromNum(4)
         };
-        TupleLiteral[] expected2 = { };
+        TupleLiteral[] expected2 = {};
 
         result = server.doCommand(
             "SELECT a FROM test_exists_1 WHERE " +
@@ -66,11 +66,11 @@ public class TestScalarSubquery extends SqlTestCase {
      */
     public void testScalarSubquerySelectClause() throws Throwable {
         CommandResult result;
-        TupleLiteral[] expected = { new TupleLiteral( 4, 30 ) };
+        TupleLiteral[] expected = {new TupleLiteral(4, 30)};
 
         result = server.doCommand(
             "SELECT (SELECT MAX(a) FROM test_exists_1) AS a, " +
-            "       (SELECT MIN(b) FROM test_exists_2) AS b", true);
+                "       (SELECT MIN(b) FROM test_exists_2) AS b", true);
 
         printTuples(result);
 
@@ -89,7 +89,7 @@ public class TestScalarSubquery extends SqlTestCase {
 
         result = server.doCommand(
             "SELECT * FROM test_exists_1 " +
-            "WHERE (SELECT b, b + 5 AS c FROM test_exists_2 WHERE b = 50)", true);
+                "WHERE (SELECT b, b + 5 AS c FROM test_exists_2 WHERE b = 50)", true);
 
         assert result.failed();
 
@@ -109,7 +109,7 @@ public class TestScalarSubquery extends SqlTestCase {
 
         result = server.doCommand(
             "SELECT * FROM test_exists_1 " +
-            "WHERE (SELECT b FROM test_exists_2 WHERE b > 100)", true);
+                "WHERE (SELECT b FROM test_exists_2 WHERE b > 100)", true);
 
         assert result.failed();
 
@@ -129,7 +129,7 @@ public class TestScalarSubquery extends SqlTestCase {
 
         result = server.doCommand(
             "SELECT * FROM test_exists_1 " +
-            "WHERE (SELECT b FROM test_exists_2)", true);
+                "WHERE (SELECT b FROM test_exists_2)", true);
 
         assert result.failed();
 

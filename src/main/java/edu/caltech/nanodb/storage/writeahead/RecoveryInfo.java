@@ -10,7 +10,9 @@ import java.util.HashMap;
  * the set of incomplete transactions.
  */
 public class RecoveryInfo {
-    /** This is the log sequence number to start recovery processing from. */
+    /**
+     * This is the log sequence number to start recovery processing from.
+     */
     public LogSequenceNumber firstLSN;
 
 
@@ -55,10 +57,9 @@ public class RecoveryInfo {
      * log sequence numbers are monotonically increasing.
      *
      * @param transactionID the ID of the transaction that appears in the
-     *        current write-ahead log record
-     *
-     * @param lsn the log sequence number of the current write-ahead log
-     *        record
+     *                      current write-ahead log record
+     * @param lsn           the log sequence number of the current write-ahead log
+     *                      record
      */
     public void updateInfo(int transactionID, LogSequenceNumber lsn) {
         incompleteTxns.put(transactionID, lsn);
@@ -75,10 +76,9 @@ public class RecoveryInfo {
      * that appear for the transaction.
      *
      * @param transactionID the ID of the transaction to get the most
-     *        recent LSN for
-     *
+     *                      recent LSN for
      * @return the last log sequence number seen for the specified
-     *         transaction
+     * transaction
      */
     public LogSequenceNumber getLastLSN(int transactionID) {
         return incompleteTxns.get(transactionID);
@@ -102,7 +102,7 @@ public class RecoveryInfo {
      * all transactions are completed.
      *
      * @return true if there are any incomplete transactions, or false if
-     *         all transactions are completed.
+     * all transactions are completed.
      */
     public boolean hasIncompleteTxns() {
         return !incompleteTxns.isEmpty();
@@ -114,7 +114,6 @@ public class RecoveryInfo {
      * it appears in the set of incomplete transactions.
      *
      * @param transactionID the transaction to check for completion status
-     *
      * @return true if the transaction is complete, or false otherwise
      */
     public boolean isTxnComplete(int transactionID) {

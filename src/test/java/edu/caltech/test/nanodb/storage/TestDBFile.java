@@ -14,7 +14,7 @@ import edu.caltech.nanodb.storage.DBFileType;
  * This class exercises some of the core utility methods of the {@link DBFile}
  * class.
  */
-@Test(groups={"storage", "framework"})
+@Test(groups = {"storage", "framework"})
 public class TestDBFile {
 
     public void testIsValidPageSize() {
@@ -55,16 +55,14 @@ public class TestDBFile {
         try {
             DBFile.checkValidPageSize(8000);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Success!
         }
 
         try {
             DBFile.checkValidPageSize(10000);
             assert false;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Success!
         }
     }
@@ -75,16 +73,16 @@ public class TestDBFile {
 
         assert actual == expected :
             "Error encoding " + value + " - expected " + expected + "; got " +
-            actual;
+                actual;
     }
 
 
     public void testEncodePageSize() {
-        tryEncoding(  512,  9);
-        tryEncoding( 1024, 10);
-        tryEncoding( 2048, 11);
-        tryEncoding( 4096, 12);
-        tryEncoding( 8192, 13);
+        tryEncoding(512, 9);
+        tryEncoding(1024, 10);
+        tryEncoding(2048, 11);
+        tryEncoding(4096, 12);
+        tryEncoding(8192, 13);
         tryEncoding(16384, 14);
         tryEncoding(32768, 15);
         tryEncoding(65536, 16);
@@ -92,11 +90,11 @@ public class TestDBFile {
 
 
     public void testDecodePageSize() {
-        assert DBFile.decodePageSize( 9) ==   512;
-        assert DBFile.decodePageSize(10) ==  1024;
-        assert DBFile.decodePageSize(11) ==  2048;
-        assert DBFile.decodePageSize(12) ==  4096;
-        assert DBFile.decodePageSize(13) ==  8192;
+        assert DBFile.decodePageSize(9) == 512;
+        assert DBFile.decodePageSize(10) == 1024;
+        assert DBFile.decodePageSize(11) == 2048;
+        assert DBFile.decodePageSize(12) == 4096;
+        assert DBFile.decodePageSize(13) == 8192;
         assert DBFile.decodePageSize(14) == 16384;
         assert DBFile.decodePageSize(15) == 32768;
         assert DBFile.decodePageSize(16) == 65536;

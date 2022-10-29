@@ -131,8 +131,7 @@ public class BTreeFilePageTuple extends PageTuple {
 
         if (deleted) {
             buf.append("deleted");
-        }
-        else {
+        } else {
             boolean first = true;
             for (int i = 0; i < getColumnCount(); i++) {
                 if (first)

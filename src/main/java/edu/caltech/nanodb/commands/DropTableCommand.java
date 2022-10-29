@@ -9,14 +9,20 @@ import edu.caltech.nanodb.storage.TableManager;
 import edu.caltech.nanodb.storage.StorageManager;
 
 
-/** This Command class represents the <tt>DROP TABLE</tt> SQL command. */
+/**
+ * This Command class represents the <tt>DROP TABLE</tt> SQL command.
+ */
 public class DropTableCommand extends Command {
 
-    /** A logging object for reporting anything interesting that happens. **/
+    /**
+     * A logging object for reporting anything interesting that happens.
+     **/
     private static Logger logger = LogManager.getLogger(DropTableCommand.class);
 
 
-    /** The name of the table to drop from the database. */
+    /**
+     * The name of the table to drop from the database.
+     */
     private String tableName;
 
 
@@ -31,8 +37,8 @@ public class DropTableCommand extends Command {
      * Construct a drop-table command for the named table.
      *
      * @param tableName the name of the table to drop.
-     * @param ifExists a flag controlling whether the command should complain if
-     *        the table already doesn't exist when the removal is attempted.
+     * @param ifExists  a flag controlling whether the command should complain if
+     *                  the table already doesn't exist when the removal is attempted.
      */
     public DropTableCommand(String tableName, boolean ifExists) {
         super(Command.Type.DDL);
@@ -67,7 +73,7 @@ public class DropTableCommand extends Command {
      * {@link TableManager#dropTable} method with the specified table name.
      *
      * @throws ExecutionException if the table doesn't actually exist, or if
-     *         the table cannot be deleted for some reason.
+     *                            the table cannot be deleted for some reason.
      */
     @Override
     public void execute(NanoDBServer server) throws ExecutionException {

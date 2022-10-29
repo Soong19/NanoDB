@@ -18,7 +18,9 @@ import edu.caltech.nanodb.storage.TupleFile;
  */
 public class IndexInfo {
 
-    /** The details of the table that the index is built against. */
+    /**
+     * The details of the table that the index is built against.
+     */
     private TableInfo tableInfo;
 
 
@@ -29,7 +31,9 @@ public class IndexInfo {
     private IndexColumnRefs indexColRefs;
 
 
-    /** The tuple file that stores the index's data. */
+    /**
+     * The tuple file that stores the index's data.
+     */
     private TupleFile tupleFile;
 
 
@@ -64,10 +68,8 @@ public class IndexInfo {
 
 
     /**
-     *
-     * @param schema the table-schema object for the table that the index is
-     *        defined on.
-     *
+     * @param schema    the table-schema object for the table that the index is
+     *                  defined on.
      * @param indexName the unique name of the index.
      */
     private void initIndexDetails(Schema schema, String indexName) {

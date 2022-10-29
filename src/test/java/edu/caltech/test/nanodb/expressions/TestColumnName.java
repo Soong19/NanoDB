@@ -10,7 +10,7 @@ import edu.caltech.nanodb.expressions.ColumnName;
  * This test class exercises the functionality of the
  * {@link edu.caltech.nanodb.expressions.ColumnName} class.
  */
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestColumnName {
 
     /**
@@ -50,7 +50,9 @@ public class TestColumnName {
     }
 
 
-    /** This test exercises the {@link java.lang.Comparable#compareTo} method. */
+    /**
+     * This test exercises the {@link java.lang.Comparable#compareTo} method.
+     */
     public void testCompareOrder() {
         ColumnName cn1 = new ColumnName();            // Wildcard:  *
         ColumnName cn2 = new ColumnName("col1");      // Column "col1" (no table)
@@ -131,10 +133,10 @@ public class TestColumnName {
         ColumnName cn6 = new ColumnName("tbl1", "col2");  // tbl1.col2
         ColumnName cn7 = new ColumnName("tbl2", "col1");  // tbl2.col1
 
-        assert         "*".equals(cn1.toString());
-        assert      "col1".equals(cn2.toString());
-        assert      "col2".equals(cn3.toString());
-        assert    "tbl1.*".equals(cn4.toString());
+        assert "*".equals(cn1.toString());
+        assert "col1".equals(cn2.toString());
+        assert "col2".equals(cn3.toString());
+        assert "tbl1.*".equals(cn4.toString());
         assert "tbl1.col1".equals(cn5.toString());
         assert "tbl1.col2".equals(cn6.toString());
         assert "tbl2.col1".equals(cn7.toString());

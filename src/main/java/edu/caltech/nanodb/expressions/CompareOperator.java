@@ -33,7 +33,9 @@ public class CompareOperator extends Expression {
         LESS_OR_EQUAL("<="),
         GREATER_OR_EQUAL(">=");
 
-        /** The string representation for each operator.  Used for printing. */
+        /**
+         * The string representation for each operator.  Used for printing.
+         */
         private final String stringRep;
 
         /**
@@ -61,10 +63,9 @@ public class CompareOperator extends Expression {
          * operators are also recognized.
          *
          * @param stringRep the string representation of the comparison
-         *        operator
-         *
+         *                  operator
          * @return the operator's corresponding type, or {@code null} if the
-         *         type cannot be found
+         * type cannot be found
          */
         public static Type find(String stringRep) {
             if ("=".equals(stringRep))
@@ -82,13 +83,19 @@ public class CompareOperator extends Expression {
         }
     }
 
-    /** The kind of comparison, such as "equals" or "less than." */
+    /**
+     * The kind of comparison, such as "equals" or "less than."
+     */
     private Type type;
 
-    /** The left expression in the comparison. */
+    /**
+     * The left expression in the comparison.
+     */
     private Expression leftExpr;
 
-    /** The right expression in the comparison. */
+    /**
+     * The right expression in the comparison.
+     */
     private Expression rightExpr;
 
 
@@ -120,9 +127,9 @@ public class CompareOperator extends Expression {
      * expression's result is always <code>FALSE</code>.
      *
      * @design (Donnie) We have to suppress "unchecked operation" warnings on
-     *         this code, since {@link Comparable} is a generic (and thus allows
-     *         us to specify the type of object being compared), but we want to
-     *         use it without specifying any types.
+     * this code, since {@link Comparable} is a generic (and thus allows
+     * us to specify the type of object being compared), but we want to
+     * use it without specifying any types.
      */
     @SuppressWarnings("unchecked")
     public Object evaluate(Environment env) throws ExpressionException {
@@ -148,32 +155,32 @@ public class CompareOperator extends Expression {
         boolean result;
 
         switch (type) {
-        case EQUALS:
-            result = (compResult == 0);
-            break;
+            case EQUALS:
+                result = (compResult == 0);
+                break;
 
-        case NOT_EQUALS:
-            result = (compResult != 0);
-            break;
+            case NOT_EQUALS:
+                result = (compResult != 0);
+                break;
 
-        case LESS_THAN:
-            result = (compResult < 0);
-            break;
+            case LESS_THAN:
+                result = (compResult < 0);
+                break;
 
-        case GREATER_THAN:
-            result = (compResult > 0);
-            break;
+            case GREATER_THAN:
+                result = (compResult > 0);
+                break;
 
-        case LESS_OR_EQUAL:
-            result = (compResult <= 0);
-            break;
+            case LESS_OR_EQUAL:
+                result = (compResult <= 0);
+                break;
 
-        case GREATER_OR_EQUAL:
-            result = (compResult >= 0);
-            break;
+            case GREATER_OR_EQUAL:
+                result = (compResult >= 0);
+                break;
 
-        default:
-            throw new ExpressionException("Unrecognized comparison type " + type);
+            default:
+                throw new ExpressionException("Unrecognized comparison type " + type);
         }
 
         return result;
@@ -251,8 +258,7 @@ public class CompareOperator extends Expression {
         // Figure out if we want to swap the sides of the comparison.
         if (leftExpr instanceof LiteralValue && rightExpr instanceof ColumnValue) {
             swap = true;
-        }
-        else if (leftExpr instanceof ColumnValue && rightExpr instanceof ColumnValue) {
+        } else if (leftExpr instanceof ColumnValue && rightExpr instanceof ColumnValue) {
             ColumnName left = ((ColumnValue) leftExpr).getColumnName();
             ColumnName right = ((ColumnValue) rightExpr).getColumnName();
             if (left.compareTo(right) > 0)
@@ -268,24 +274,24 @@ public class CompareOperator extends Expression {
 
             // Adjust the operator to properly reflect the reordering.
             switch (type) {
-            case GREATER_THAN:
-                type = CompareOperator.Type.LESS_THAN;
-                break;
+                case GREATER_THAN:
+                    type = CompareOperator.Type.LESS_THAN;
+                    break;
 
-            case LESS_THAN:
-                type = CompareOperator.Type.GREATER_THAN;
-                break;
+                case LESS_THAN:
+                    type = CompareOperator.Type.GREATER_THAN;
+                    break;
 
-            case GREATER_OR_EQUAL:
-                type = CompareOperator.Type.LESS_OR_EQUAL;
-                break;
+                case GREATER_OR_EQUAL:
+                    type = CompareOperator.Type.LESS_OR_EQUAL;
+                    break;
 
-            case LESS_OR_EQUAL:
-                type = CompareOperator.Type.GREATER_OR_EQUAL;
-                break;
+                case LESS_OR_EQUAL:
+                    type = CompareOperator.Type.GREATER_OR_EQUAL;
+                    break;
 
-            default:
-                // No changes needed.
+                default:
+                    // No changes needed.
             }
         }
     }
@@ -304,8 +310,8 @@ public class CompareOperator extends Expression {
             CompareOperator other = (CompareOperator) obj;
 
             return (type == other.type &&
-                    leftExpr.equals(other.leftExpr) &&
-                    rightExpr.equals(other.rightExpr));
+                leftExpr.equals(other.leftExpr) &&
+                rightExpr.equals(other.rightExpr));
         }
 
         return false;

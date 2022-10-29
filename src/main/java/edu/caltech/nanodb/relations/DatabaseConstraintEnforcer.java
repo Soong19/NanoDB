@@ -54,7 +54,9 @@ import edu.caltech.nanodb.storage.StorageManager;
  * </p>
  */
 public class DatabaseConstraintEnforcer implements RowEventListener {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(DatabaseConstraintEnforcer.class);
 
 
@@ -91,7 +93,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * Perform processing before a row is inserted into a table.
      *
      * @param tableInfo the table that the tuple will be inserted into.
-     * @param newTuple the new tuple that will be inserted into the table.
+     * @param newTuple  the new tuple that will be inserted into the table.
      */
     @Override
     public void beforeRowInserted(TableInfo tableInfo, Tuple newTuple) {
@@ -113,7 +115,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
         for (KeyColumnRefs candKey : candKeyList) {
             if (hasCandidateKeyValue(tableInfo, candKey, newTuple)) {
                 String msg = makeErrorMessage("Cannot insert tuple " +
-                    newTuple + " due to unique constraint",
+                        newTuple + " due to unique constraint",
                     candKey.getConstraintName());
 
                 throw new ConstraintViolationException(msg);
@@ -126,7 +128,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
         for (ForeignKeyColumnRefs foreignKey : foreignKeys) {
             if (!referencedTableHasValue(foreignKey, newTuple)) {
                 String msg = makeErrorMessage("Cannot insert tuple " +
-                    newTuple + " due to foreign key constraint",
+                        newTuple + " due to foreign key constraint",
                     foreignKey.getConstraintName());
 
                 throw new ConstraintViolationException(msg);
@@ -145,7 +147,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      */
     @Override
     public void afterRowInserted(TableInfo tblFileInfo, Tuple newTuple)
-            throws EventDispatchException {
+        throws EventDispatchException {
         // Do nothing!
     }
 
@@ -153,8 +155,8 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * Perform processing before a row is updated in a table.
      *
      * @param tableInfo the table that the tuple will be updated in.
-     * @param oldTuple the old tuple in the table that is about to be updated.
-     * @param newTuple the new version of the tuple.
+     * @param oldTuple  the old tuple in the table that is about to be updated.
+     * @param newTuple  the new version of the tuple.
      */
     @Override
     public void beforeRowUpdated(TableInfo tableInfo, Tuple oldTuple,
@@ -205,8 +207,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
                 applyOnUpdateEffects(tableInfo, referencingTableName,
                     oldTuple, newTuple);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ConstraintViolationException("Error during constraint enforcement", e);
         }
     }
@@ -216,8 +217,8 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * Perform processing after a row is updated in a table.
      *
      * @param tableInfo the table that the tuple was updated in.
-     * @param oldTuple the old version of the tuple before it was updated.
-     * @param newTuple    the new tuple in the table that was updated.
+     * @param oldTuple  the old version of the tuple before it was updated.
+     * @param newTuple  the new tuple in the table that was updated.
      */
     @Override
     public void afterRowUpdated(TableInfo tableInfo,
@@ -229,7 +230,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * Perform processing after a row has been deleted from a table.
      *
      * @param tableInfo the table that the tuple will be deleted from.
-     * @param oldTuple the old tuple in the table that is about to be deleted.
+     * @param oldTuple  the old tuple in the table that is about to be deleted.
      */
     @Override
     public void beforeRowDeleted(TableInfo tableInfo, Tuple oldTuple) {
@@ -247,8 +248,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
             // propagate changes from this table to the referencing tables.
             for (String referencingTableName : schema.getReferencingTables())
                 applyOnDeleteEffects(tableInfo, referencingTableName, oldTuple);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ConstraintViolationException("Error during constraint enforcement", e);
         }
     }
@@ -257,8 +257,8 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * Perform processing after a row has been deleted from a table.
      *
      * @param tableInfo the table that the tuple was deleted from.
-     * @param oldTuple the old values that were in the tuple before it was
-     *                    deleted.
+     * @param oldTuple  the old values that were in the tuple before it was
+     *                  deleted.
      */
     @Override
     public void afterRowDeleted(TableInfo tableInfo, Tuple oldTuple) {
@@ -271,9 +271,9 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * satisfies all the NOT NULL constraints on the table.
      *
      * @param tableInfo the table that the tuple is being added to
-     * @param tuple the tuple being added to the table
+     * @param tuple     the tuple being added to the table
      * @throws ConstraintViolationException if the tuple has a NULL value for
-     *         any not-null columns
+     *                                      any not-null columns
      */
     private void checkNotNullConstraints(TableInfo tableInfo, Tuple tuple) {
         Schema schema = tableInfo.getSchema();
@@ -284,7 +284,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
             if (tuple.isNullValue(notNullCol)) {
                 throw new ConstraintViolationException(String.format(
                     "Cannot insert tuple %s into table %s; NOT NULL " +
-                    "constraint on column %s would be violated", tuple,
+                        "constraint on column %s would be violated", tuple,
                     tableInfo.getTableName(),
                     schema.getColumnInfo(notNullCol).toString()));
             }
@@ -299,15 +299,14 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * row.  If no index exists, the method scans through the table looking
      * for the specified row.
      *
-     * @param tableInfo the table to check for the candidate-key value
+     * @param tableInfo    the table to check for the candidate-key value
      * @param candidateKey a description of the candidate key to examine
-     * @param tuple the tuple containing the candidate-key values
-     *
+     * @param tuple        the tuple containing the candidate-key values
      * @return {@code true} if the candidate-key value appears in the table,
-     *         {@code false} otherwise.
+     * {@code false} otherwise.
      */
     private boolean hasCandidateKeyValue(TableInfo tableInfo,
-        KeyColumnRefs candidateKey, Tuple tuple) {
+                                         KeyColumnRefs candidateKey, Tuple tuple) {
 
         // Build a subquery expression to evaluate against this tuple,
         // to see if the table has the specified key-value.
@@ -326,9 +325,8 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * there is no index to perform the check.
      *
      * @param foreignKey the foreign key constraint, which specifies both the
-     *        referencing table's columns and the referenced table's columns
-     *
-     * @param tuple the tuple being added to the referencing table
+     *                   referencing table's columns and the referenced table's columns
+     * @param tuple      the tuple being added to the referencing table
      */
     private boolean referencedTableHasValue(ForeignKeyColumnRefs foreignKey,
                                             Tuple tuple) {
@@ -359,7 +357,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * referenced table.
      */
     private void applyOnUpdateEffects(TableInfo tableInfo,
-        String referencingTableName, Tuple oldTuple, Tuple newTuple)
+                                      String referencingTableName, Tuple oldTuple, Tuple newTuple)
         throws IOException {
 
         String tableName = tableInfo.getTableName();
@@ -389,8 +387,8 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
                     if (existsOp.evaluatePredicate(null)) {
                         throw new ConstraintViolationException(String.format(
                             "Cannot update tuple %s on table %s due to " +
-                            "ON UPDATE RESTRICT constraint %s from " +
-                            "referencing table %s", oldTuple, tableName,
+                                "ON UPDATE RESTRICT constraint %s from " +
+                                "referencing table %s", oldTuple, tableName,
                             fk.getConstraintName(), referencingTableName));
                     }
                 }
@@ -433,7 +431,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
      * executes that option.
      */
     private void applyOnDeleteEffects(TableInfo tableInfo,
-        String referencingTableName, Tuple oldTuple) throws IOException {
+                                      String referencingTableName, Tuple oldTuple) throws IOException {
 
         String tableName = tableInfo.getTableName();
         TableInfo referencingTableInfo =
@@ -462,8 +460,8 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
                     if (existsOp.evaluatePredicate(null)) {
                         throw new ConstraintViolationException(String.format(
                             "Cannot delete tuple %s on table %s due to " +
-                            "ON DELETE RESTRICT constraint %s from " +
-                            "referencing table %s", oldTuple, tableName,
+                                "ON DELETE RESTRICT constraint %s from " +
+                                "referencing table %s", oldTuple, tableName,
                             fk.getConstraintName(), referencingTableName));
                     }
                 }
@@ -502,15 +500,14 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
 
 
     private Expression makeEqualityPredicate(Schema schema,
-        int[] schemaIndexes, Tuple tuple, int[] tupleIndexes) {
+                                             int[] schemaIndexes, Tuple tuple, int[] tupleIndexes) {
 
         assert (schemaIndexes.length == tupleIndexes.length);
 
         if (schemaIndexes.length == 1) {
             return makeEqualityComparison(schema, schemaIndexes[0],
                 tuple, tupleIndexes[0]);
-        }
-        else {
+        } else {
             BooleanOperator andOp = new BooleanOperator(BooleanOperator.Type.AND_EXPR);
             for (int i = 0; i < schemaIndexes.length; i++) {
                 andOp.addTerm(makeEqualityComparison(schema, schemaIndexes[i],
@@ -534,7 +531,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
 
 
     private Expression makeExistsPredicate(TableInfo tableInfo,
-        int[] schemaIndexes, Tuple tuple, int[] tupleIndexes) {
+                                           int[] schemaIndexes, Tuple tuple, int[] tupleIndexes) {
 
         assert (schemaIndexes.length == tupleIndexes.length);
 
@@ -555,7 +552,7 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
 
 
     private UpdateCommand makeUpdateCommand(TableInfo tableInfo,
-        int[] schemaIndexes, Tuple oldTuple, Tuple newTuple, int[] tupleIndexes) {
+                                            int[] schemaIndexes, Tuple oldTuple, Tuple newTuple, int[] tupleIndexes) {
 
         assert (schemaIndexes.length == tupleIndexes.length);
 
@@ -578,9 +575,8 @@ public class DatabaseConstraintEnforcer implements RowEventListener {
     }
 
 
-
     private DeleteCommand makeDeleteCommand(TableInfo tableInfo,
-        int[] schemaIndexes, Tuple oldTuple, int[] tupleIndexes) {
+                                            int[] schemaIndexes, Tuple oldTuple, int[] tupleIndexes) {
 
         assert (schemaIndexes.length == tupleIndexes.length);
 

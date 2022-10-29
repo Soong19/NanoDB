@@ -26,7 +26,7 @@ public interface TupleFileManager {
      * format in data files.
      *
      * @return the {@code DBFileType} value used to indicate this storage
-     *         format in data files.
+     * format in data files.
      */
     DBFileType getDBFileType();
 
@@ -38,7 +38,7 @@ public interface TupleFileManager {
      * @param dbFile the file to use for the new tuple-file
      * @param schema the schema of the table data to store in the file
      * @return a {@code TupleFile} object that allows tuple operations to be
-     *         performed against the {@link DBFile}.
+     * performed against the {@link DBFile}.
      */
     TupleFile createTupleFile(DBFile dbFile, Schema schema);
 
@@ -49,7 +49,7 @@ public interface TupleFileManager {
      *
      * @param dbFile the tuple-file to open
      * @return a {@code TupleFile} object that allows tuple operations to be
-     *         performed against the {@link DBFile}.
+     * performed against the {@link DBFile}.
      */
     TupleFile openTupleFile(DBFile dbFile);
 

@@ -40,12 +40,10 @@ public class PlanUtils {
      * new {@link SimpleFilterNode} is added above the current plan node, with
      * the specified predicate.
      *
-     * @param plan the plan to add the selection predicate to
-     *
+     * @param plan      the plan to add the selection predicate to
      * @param predicate the selection predicate to add to the plan
-     *
      * @return the (possibly new) top plan-node for the plan with the selection
-     *         predicate applied
+     * predicate applied
      */
     public static PlanNode addPredicateToPlan(PlanNode plan,
                                               Expression predicate) {
@@ -77,13 +75,11 @@ public class PlanUtils {
                     bool.addTerm(predicate);
                     selectNode.predicate = bool;
                 }
-            }
-            else {
+            } else {
                 // Simple - just add where-expression onto the file-scan.
                 selectNode.predicate = predicate;
             }
-        }
-        else {
+        } else {
             // The subplan is more complex, so put a filter node above it.
             plan = new SimpleFilterNode(plan, predicate);
         }

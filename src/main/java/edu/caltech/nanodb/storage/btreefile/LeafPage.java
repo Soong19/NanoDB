@@ -32,7 +32,9 @@ import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.*;
  * </p>
  */
 public class LeafPage implements DataPage {
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(LeafPage.class);
 
 
@@ -50,23 +52,33 @@ public class LeafPage implements DataPage {
     public static final int OFFSET_NUM_TUPLES = 3;
 
 
-    /** The offset of the first tuple in the leaf page. */
+    /**
+     * The offset of the first tuple in the leaf page.
+     */
     public static final int OFFSET_FIRST_TUPLE = 5;
 
 
-    /** The actual data page that holds the B<sup>+</sup> tree leaf node. */
+    /**
+     * The actual data page that holds the B<sup>+</sup> tree leaf node.
+     */
     private DBPage dbPage;
 
 
-    /** The schema of the tuples in the leaf page. */
+    /**
+     * The schema of the tuples in the leaf page.
+     */
     private Schema schema;
 
 
-    /** The number of tuples stored within this leaf page. */
+    /**
+     * The number of tuples stored within this leaf page.
+     */
     private int numTuples;
 
 
-    /** A list of the tuples stored in this leaf page. */
+    /**
+     * A list of the tuples stored in this leaf page.
+     */
     private ArrayList<BTreeFilePageTuple> tuples;
 
 
@@ -106,9 +118,7 @@ public class LeafPage implements DataPage {
      * returns a wrapper object for the page.
      *
      * @param dbPage the page to initialize as a leaf page.
-     *
      * @param schema the schema of the tuples in the leaf page
-     *
      * @return a newly initialized {@code LeafPage} object wrapping the page
      */
     public static LeafPage init(DBPage dbPage, Schema schema) {
@@ -145,8 +155,7 @@ public class LeafPage implements DataPage {
             }
 
             endOffset = tuple.getEndOffset();
-        }
-        else {
+        } else {
             // There are no tuples in the leaf page.
             endOffset = OFFSET_FIRST_TUPLE;
         }
@@ -189,8 +198,8 @@ public class LeafPage implements DataPage {
      * file.
      *
      * @return the page-number of the next leaf page in the sequence of leaf
-     *         pages, or 0 if this is the last leaf-page in the B<sup>+</sup>
-     *         tree file.
+     * pages, or 0 if this is the last leaf-page in the B<sup>+</sup>
+     * tree file.
      */
     public int getNextPageNo() {
         return dbPage.readUnsignedShort(OFFSET_NEXT_PAGE_NO);
@@ -201,7 +210,7 @@ public class LeafPage implements DataPage {
      * Sets the page-number of the next leaf page in the sequence of leaf pages.
      *
      * @param pageNo the page-number of the next leaf-page in the index, or 0
-     *        if this is the last leaf-page in the B<sup>+</sup> tree file.
+     *               if this is the last leaf-page in the B<sup>+</sup> tree file.
      */
     public void setNextPageNo(int pageNo) {
         if (pageNo < 0) {
@@ -268,7 +277,6 @@ public class LeafPage implements DataPage {
      * Returns the tuple at the specified index.
      *
      * @param index the index of the tuple to retrieve
-     *
      * @return the tuple at that index
      */
     public BTreeFilePageTuple getTuple(int index) {
@@ -280,7 +288,6 @@ public class LeafPage implements DataPage {
      * Returns the size of the tuple at the specified index, in bytes.
      *
      * @param index the index of the tuple to get the size of
-     *
      * @return the size of the specified tuple, in bytes
      */
     public int getTupleSize(int index) {
@@ -296,17 +303,15 @@ public class LeafPage implements DataPage {
      *
      * @param pagePath the page path from root to this leaf page
      * @param innerOps the inner page ops that allows this method to
-     *        load inner pages and navigate the tree
-     *
+     *                 load inner pages and navigate the tree
      * @return the page number of the left sibling leaf-node, or -1 if there
-     *         is no left sibling
-     *
+     * is no left sibling
      * @review (Donnie) There is a lot of implementation-overlap between this
-     *         function and the {@link InnerPage#getLeftSibling}.  Maybe find
-     *         a way to combine the implementations.
+     * function and the {@link InnerPage#getLeftSibling}.  Maybe find
+     * a way to combine the implementations.
      */
     public int getLeftSibling(List<Integer> pagePath,
-        InnerPageOperations innerOps) {
+                              InnerPageOperations innerOps) {
 
         // Verify that the last node in the page path is in fact this page.
         if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
@@ -327,8 +332,8 @@ public class LeafPage implements DataPage {
         int pageIndex = inner.getIndexOfPointer(getPageNo());
         if (pageIndex == -1) {
             throw new IllegalStateException(String.format(
-                    "Leaf node %d doesn't appear in parent inner node %d!",
-                    getPageNo(), parentPageNo));
+                "Leaf node %d doesn't appear in parent inner node %d!",
+                getPageNo(), parentPageNo));
         }
 
         int leftSiblingIndex = pageIndex - 1;
@@ -347,9 +352,8 @@ public class LeafPage implements DataPage {
      * this node.
      *
      * @param pagePath the page path from root to this leaf page
-     *
      * @return the page number of the right sibling leaf-node, or -1 if there
-     *         is no right sibling
+     * is no right sibling
      */
     public int getRightSibling(List<Integer> pagePath) {
 
@@ -371,9 +375,8 @@ public class LeafPage implements DataPage {
      * Returns the index of the specified tuple.
      *
      * @param tuple the tuple to retrieve the index for
-     *
      * @return the integer index of the specified tuple, -1 if the tuple
-     *         isn't in the page.
+     * isn't in the page.
      */
     public int getTupleIndex(Tuple tuple) {
         int i;
@@ -386,7 +389,7 @@ public class LeafPage implements DataPage {
             // Is this the key we're looking for?
             if (TupleComparator.comparePartialTuples(tuple, pageTuple) == 0) {
                 logger.debug(String.format("Found tuple:  %s  is equal to " +
-                    "%s at index %d (size = %d bytes)", tuple, pageTuple, i,
+                        "%s at index %d (size = %d bytes)", tuple, pageTuple, i,
                     pageTuple.getSize()));
 
                 return i;
@@ -403,7 +406,6 @@ public class LeafPage implements DataPage {
      * the leaf page.
      *
      * @param tuple the tuple to delete from the leaf page
-     *
      * @throws IllegalStateException if the specified tuple doesn't exist
      */
     public void deleteTuple(Tuple tuple) {
@@ -419,10 +421,10 @@ public class LeafPage implements DataPage {
         int tupleOffset = getTuple(index).getOffset();
         int len = getTupleSize(index);
 
-        logger.debug("Moving leaf-page data in range [" + (tupleOffset+len) +
-             ", " + endOffset + ") over by " + len + " bytes");
+        logger.debug("Moving leaf-page data in range [" + (tupleOffset + len) +
+            ", " + endOffset + ") over by " + len + " bytes");
         dbPage.moveDataRange(tupleOffset + len, tupleOffset,
-                             endOffset - tupleOffset - len);
+            endOffset - tupleOffset - len);
 
         // Decrement the total number of entries.
         dbPage.writeShort(OFFSET_NUM_TUPLES, numTuples - 1);
@@ -452,9 +454,8 @@ public class LeafPage implements DataPage {
      * exception if the leaf page already contains the specified tuple.
      *
      * @param newTuple the new tuple to add to the leaf page
-     *
      * @throws IllegalStateException if the specified tuple already appears in
-     *         the leaf page.
+     *                               the leaf page.
      */
     public BTreeFilePageTuple addTuple(TupleLiteral newTuple) {
         if (newTuple.getStorageSize() == -1) {
@@ -465,7 +466,7 @@ public class LeafPage implements DataPage {
         if (getFreeSpace() < newTuple.getStorageSize()) {
             throw new IllegalArgumentException(String.format(
                 "Not enough space in this node to store the new tuple " +
-                "(%d bytes free; %d bytes required)", getFreeSpace(),
+                    "(%d bytes free; %d bytes required)", getFreeSpace(),
                 newTuple.getStorageSize()));
         }
 
@@ -474,8 +475,7 @@ public class LeafPage implements DataPage {
         if (numTuples == 0) {
             logger.debug("Leaf page is empty; storing new tuple at start.");
             result = addTupleAtIndex(newTuple, 0);
-        }
-        else {
+        } else {
             int i;
             for (i = 0; i < numTuples; i++) {
                 BTreeFilePageTuple tuple = tuples.get(i);
@@ -491,8 +491,7 @@ public class LeafPage implements DataPage {
                         " in the leaf page.");
                     result = addTupleAtIndex(newTuple, i);
                     break;
-                }
-                else if (cmp == 0) {
+                } else if (cmp == 0) {
                     // TODO:  Currently we require all tuples to be unique,
                     //        but this isn't a realistic long-term constraint.
                     throw new IllegalStateException("Tuple " + newTuple +
@@ -521,9 +520,9 @@ public class LeafPage implements DataPage {
      * ensure that tuples always remain in monotonically increasing order.
      *
      * @param newTuple the new tuple to insert into the leaf page
-     * @param index the index to insert the tuple at.  Any existing tuples at
-     *        or after this index will be shifted over to make room for the
-     *        new tuple.
+     * @param index    the index to insert the tuple at.  Any existing tuples at
+     *                 or after this index will be shifted over to make room for the
+     *                 new tuple.
      */
     private BTreeFilePageTuple addTupleAtIndex(TupleLiteral newTuple,
                                                int index) {
@@ -555,14 +554,13 @@ public class LeafPage implements DataPage {
                 ", " + endOffset + ") over by " + len + " bytes");
 
             dbPage.moveDataRange(tupleOffset, tupleOffset + len,
-                                 endOffset - tupleOffset);
-        }
-        else {
+                endOffset - tupleOffset);
+        } else {
             // The new tuple falls at the end of the data in the leaf index
             // page.
             tupleOffset = endOffset;
             logger.debug("New tuple is at end of leaf-page data; not " +
-                         "moving anything.");
+                "moving anything.");
         }
 
         // Write the tuple value into the page.
@@ -577,7 +575,7 @@ public class LeafPage implements DataPage {
         loadPageContents();
 
         logger.debug("Wrote new tuple to leaf-page at offset " + tupleOffset +
-                     ".");
+            ".");
         logger.debug("Leaf-page is ending with data ending at index " +
             endOffset + ", and has " + numTuples + " tuples.");
 
@@ -593,9 +591,8 @@ public class LeafPage implements DataPage {
      * both leaves are updated.
      *
      * @param leftSibling the left sibling of this leaf-node in the
-     *        B<sup>+</sup> tree file
-     *
-     * @param count the number of tuples to move to the left sibling
+     *                    B<sup>+</sup> tree file
+     * @param count       the number of tuples to move to the left sibling
      */
     public void moveTuplesLeft(LeafPage leftSibling, int count) {
         if (leftSibling == null)
@@ -603,9 +600,9 @@ public class LeafPage implements DataPage {
 
         if (leftSibling.getNextPageNo() != getPageNo()) {
             logger.error(String.format("Left sibling leaf %d says that " +
-                "page %d is its right sibling, not this page %d",
+                    "page %d is its right sibling, not this page %d",
                 leftSibling.getPageNo(), leftSibling.getNextPageNo(),
-                 getPageNo()));
+                getPageNo()));
 
             throw new IllegalArgumentException("leftSibling " +
                 leftSibling.getPageNo() + " isn't actually the left " +
@@ -651,9 +648,8 @@ public class LeafPage implements DataPage {
      * both leaves are updated.
      *
      * @param rightSibling the right sibling of this leaf-node in the index
-     *        file
-     *
-     * @param count the number of tuples to move to the right sibling
+     *                     file
+     * @param count        the number of tuples to move to the right sibling
      */
     public void moveTuplesRight(LeafPage rightSibling, int count) {
         if (rightSibling == null)

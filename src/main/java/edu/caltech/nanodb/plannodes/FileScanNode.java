@@ -33,7 +33,9 @@ import edu.caltech.nanodb.storage.TupleFile;
  */
 public class FileScanNode extends SelectNode {
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(FileScanNode.class);
 
 
@@ -51,7 +53,9 @@ public class FileScanNode extends SelectNode {
     private IndexInfo indexInfo;
 
 
-    /** The table to select from if this node is a leaf. */
+    /**
+     * The table to select from if this node is a leaf.
+     */
     private TupleFile tupleFile;
 
 
@@ -70,7 +74,7 @@ public class FileScanNode extends SelectNode {
      *
      * @param tableInfo the information about the table being scanned
      * @param predicate an optional predicate for selection, or {@code null}
-     *        if all rows in the table should be included in the output
+     *                  if all rows in the table should be included in the output
      */
     public FileScanNode(TableInfo tableInfo, Expression predicate) {
         super(predicate);
@@ -88,7 +92,7 @@ public class FileScanNode extends SelectNode {
      *
      * @param indexInfo the information about the index being scanned
      * @param predicate an optional predicate for selection, or {@code null}
-     *        if all rows in the index should be included in the output
+     *                  if all rows in the index should be included in the output
      */
     public FileScanNode(IndexInfo indexInfo, Expression predicate) {
         super(predicate);
@@ -106,9 +110,8 @@ public class FileScanNode extends SelectNode {
      * the same predicate and table.
      *
      * @param obj the object to check for equality
-     *
      * @return true if the passed-in object is equal to this object; false
-     *         otherwise
+     * otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -117,7 +120,7 @@ public class FileScanNode extends SelectNode {
             // We don't include the table-info or the index-info since each
             // table or index is in its own tuple file.
             return tupleFile.equals(other.tupleFile) &&
-                   predicate.equals(other.predicate);
+                predicate.equals(other.predicate);
         }
 
         return false;
@@ -164,12 +167,10 @@ public class FileScanNode extends SelectNode {
         buf.append("FileScan[");
         if (tableInfo != null) {
             buf.append("table:  ").append(tableInfo.getTableName());
-        }
-        else if (indexInfo != null) {
+        } else if (indexInfo != null) {
             buf.append("index:  ").append(indexInfo.getTableName());
             buf.append('.').append(indexInfo.getIndexName());
-        }
-        else {
+        } else {
             throw new IllegalStateException("Both tableInfo and indexInfo " +
                 "are null!");
         }
@@ -194,19 +195,25 @@ public class FileScanNode extends SelectNode {
     }
 
 
-    /** This node supports marking. */
+    /**
+     * This node supports marking.
+     */
     public boolean supportsMarking() {
         return true;
     }
 
 
-    /** This node has no children so of course it doesn't require marking. */
+    /**
+     * This node has no children so of course it doesn't require marking.
+     */
     public boolean requiresLeftMarking() {
         return false;
     }
 
 
-    /** This node has no children so of course it doesn't require marking. */
+    /**
+     * This node has no children so of course it doesn't require marking.
+     */
     public boolean requiresRightMarking() {
         return false;
     }

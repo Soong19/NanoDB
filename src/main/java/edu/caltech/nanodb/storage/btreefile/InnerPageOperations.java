@@ -42,7 +42,9 @@ public class InnerPageOperations {
     public static final int REMOVE_KEY_TO_RIGHT = 1;
 
 
-    /** A logging object for reporting anything interesting that happens. */
+    /**
+     * A logging object for reporting anything interesting that happens.
+     */
     private static Logger logger = LogManager.getLogger(InnerPageOperations.class);
 
 
@@ -76,22 +78,21 @@ public class InnerPageOperations {
      * pointers in an inner B<sup>+</sup> tree node.  It is an error if the
      * specified pair of pointers cannot be found in the node.
      *
-     * @param page the inner page to update the key in
+     * @param page     the inner page to update the key in
      * @param pagePath the path to the page, from the root node
      * @param pagePtr1 the pointer P<sub>i</sub> before the key to update
-     * @param key1 the new value of the key K<sub>i</sub> to store
+     * @param key1     the new value of the key K<sub>i</sub> to store
      * @param pagePtr2 the pointer P<sub>i+1</sub> after the key to update
-     *
      * @todo (Donnie) This implementation has a major failing that will occur
-     *       infrequently - if the inner page doesn't have room for the new key
-     *       (e.g. if the page was already almost full, and then the new key is
-     *       larger than the old key) then the inner page needs to be split,
-     *       per usual.  Right now it will just throw an exception in this case.
-     *       This is why the {@code pagePath} argument is provided, so that when
-     *       this bug is fixed, the page-path will be available.
+     * infrequently - if the inner page doesn't have room for the new key
+     * (e.g. if the page was already almost full, and then the new key is
+     * larger than the old key) then the inner page needs to be split,
+     * per usual.  Right now it will just throw an exception in this case.
+     * This is why the {@code pagePath} argument is provided, so that when
+     * this bug is fixed, the page-path will be available.
      */
     public void replaceTuple(InnerPage page, List<Integer> pagePath,
-        int pagePtr1, Tuple key1, int pagePtr2) {
+                             int pagePtr1, Tuple key1, int pagePtr2) {
 
         for (int i = 0; i < page.getNumPointers() - 1; i++) {
             if (page.getPointer(i) == pagePtr1 &&
@@ -107,8 +108,8 @@ public class InnerPageOperations {
 
                 if (logger.isDebugEnabled()) {
                     logger.debug(String.format("Inner page %d:  replacing " +
-                        "old key of %d bytes (between pointers %d and %d) " +
-                        "with new key of %d bytes", page.getPageNo(),
+                            "old key of %d bytes (between pointers %d and %d) " +
+                            "with new key of %d bytes", page.getPageNo(),
                         oldKeySize, pagePtr1, pagePtr2, newKeySize));
                 }
 
@@ -124,8 +125,7 @@ public class InnerPageOperations {
                     // Make sure we didn't cause any brain damage...
                     assert page.getPointer(i) == pagePtr1;
                     assert page.getPointer(i + 1) == pagePtr2;
-                }
-                else {
+                } else {
                     // We need to make more room in this inner page, either by
                     // relocating records or by splitting this page.  We will
                     // do this by deleting the old entry, and then adding the
@@ -133,7 +133,7 @@ public class InnerPageOperations {
                     // for splitting/relocating/etc.
 
                     logger.info(String.format("Not enough space in page %d;" +
-                        " trying to relocate entries / split page.",
+                            " trying to relocate entries / split page.",
                         page.getPageNo()));
 
                     // Delete pagePtr2, and the key to the LEFT of it.
@@ -174,37 +174,32 @@ public class InnerPageOperations {
      * bytes.  If it is possible, the number of pointers that must be relocated
      * is returned.  If it is not possible, the method returns 0.
      *
-     * @param page the inner page to relocate entries from
-     *
-     * @param adjPage the adjacent page (predecessor or successor) to relocate
-     *        entries to
-     *
-     * @param movingRight pass {@code true} if the sibling is to the right of
-     *        {@code page} (and therefore we are moving entries right), or
-     *        {@code false} if the sibling is to the left of {@code page} (and
-     *        therefore we are moving entries left).
-     *
+     * @param page          the inner page to relocate entries from
+     * @param adjPage       the adjacent page (predecessor or successor) to relocate
+     *                      entries to
+     * @param movingRight   pass {@code true} if the sibling is to the right of
+     *                      {@code page} (and therefore we are moving entries right), or
+     *                      {@code false} if the sibling is to the left of {@code page} (and
+     *                      therefore we are moving entries left).
      * @param bytesRequired the number of bytes that must be freed up in
-     *        {@code page} by the operation
-     *
+     *                      {@code page} by the operation
      * @param parentKeySize the size of the parent key that must also be
-     *        relocated into the adjacent page, and therefore affects how many
-     *        pointers can be transferred
-     *
+     *                      relocated into the adjacent page, and therefore affects how many
+     *                      pointers can be transferred
      * @return the number of pointers that must be relocated to free up the
-     *         required space, or 0 if it is not possible.
+     * required space, or 0 if it is not possible.
      */
     private int tryNonLeafRelocateForSpace(InnerPage page, InnerPage adjPage,
-        boolean movingRight, int bytesRequired, int parentKeySize) {
+                                           boolean movingRight, int bytesRequired, int parentKeySize) {
 
         int numKeys = page.getNumKeys();
         int pageBytesFree = page.getFreeSpace();
         int adjBytesFree = adjPage.getFreeSpace();
 
         logger.debug(String.format("Trying to relocate records from inner-" +
-            "page %d (%d bytes free) to adjacent inner-page %d (%d bytes " +
-            "free), moving %s, to free up %d bytes.  Parent key size is %d " +
-            "bytes.", page.getPageNo(), pageBytesFree, adjPage.getPageNo(),
+                "page %d (%d bytes free) to adjacent inner-page %d (%d bytes " +
+                "free), moving %s, to free up %d bytes.  Parent key size is %d " +
+                "bytes.", page.getPageNo(), pageBytesFree, adjPage.getPageNo(),
             adjBytesFree, (movingRight ? "right" : "left"), bytesRequired,
             parentKeySize));
 
@@ -268,20 +263,16 @@ public class InnerPageOperations {
      * This helper function adds an entry (a key and associated pointer) to
      * this inner page, after the page-pointer {@code pagePtr1}.
      *
-     * @param page the inner page to add the entry to
-     *
+     * @param page     the inner page to add the entry to
      * @param pagePath the path of page-numbers to this inner page
-     *
      * @param pagePtr1 the <u>existing</u> page that the new key and next-page
-     *        number will be inserted after
-     *
-     * @param key1 the new key-value to insert after the {@code pagePtr1} value
-     *
+     *                 number will be inserted after
+     * @param key1     the new key-value to insert after the {@code pagePtr1} value
      * @param pagePtr2 the new page-pointer value to follow the {@code key1}
-     *        value
+     *                 value
      */
     public void addTuple(InnerPage page, List<Integer> pagePath,
-        int pagePtr1, Tuple key1, int pagePtr2) {
+                         int pagePtr1, Tuple key1, int pagePtr2) {
 
         // The new entry will be the key, plus 2 bytes for the page-pointer.
         int newEntrySize =
@@ -302,8 +293,7 @@ public class InnerPageOperations {
                     " splitting page " + page.getPageNo() + " instead");
                 splitAndAddKey(page, pagePath, pagePtr1, key1, pagePtr2);
             }
-        }
-        else {
+        } else {
             // There is room in the leaf for the new key.  Add it there.
             page.addEntry(pagePtr1, key1, pagePtr2);
         }
@@ -315,17 +305,14 @@ public class InnerPageOperations {
      * This function will delete the specified Key/Pointer pair from the
      * passed-in inner page.
      *
-     * @param page the inner page to delete the key/pointer from
-     *
-     * @param pagePath the page path to the passed page
-     *
-     * @param pagePtr the page-pointer value to identify and remove
-     *
+     * @param page           the inner page to delete the key/pointer from
+     * @param pagePath       the page path to the passed page
+     * @param pagePtr        the page-pointer value to identify and remove
      * @param removeRightKey a flag specifying whether the key to the right
-     *        ({@code true}) or to the left ({@code false}) should be removed
+     *                       ({@code true}) or to the left ({@code false}) should be removed
      */
     public void deletePointer(InnerPage page, List<Integer> pagePath,
-        int pagePtr, boolean removeRightKey) {
+                              int pagePtr, boolean removeRightKey) {
 
         page.deletePointer(pagePtr, removeRightKey);
 
@@ -333,8 +320,7 @@ public class InnerPageOperations {
             // The page is at least half-full.  Don't need to redistribute or
             // coalesce.
             return;
-        }
-        else if (pagePath.size() == 1) {
+        } else if (pagePath.size() == 1) {
             // The page is the root.  Don't need to redistribute or coalesce,
             // but if the root is now empty, need to shorten the tree depth.
 
@@ -402,14 +388,14 @@ public class InnerPageOperations {
         // TODO:  SEE IF WE CAN SIMPLIFY THIS AT ALL...
         if (leftSibling != null &&
             leftSibling.getUsedSpace() + page.getSpaceUsedByEntries() <
-            leftSibling.getTotalSpace()) {
+                leftSibling.getTotalSpace()) {
 
             // Coalesce the current node into the left sibling.
             logger.debug("Delete from inner page " + pageNo +
                 ":  coalescing with left sibling page.");
 
             logger.debug(String.format("Before coalesce-left, page has %d " +
-                "pointers and left sibling has %d pointers.",
+                    "pointers and left sibling has %d pointers.",
                 page.getNumPointers(), leftSibling.getNumPointers()));
 
             // The affected key in the parent page is to the left of this
@@ -422,7 +408,7 @@ public class InnerPageOperations {
             page.movePointersLeft(leftSibling, page.getNumPointers(), parentKey);
 
             logger.debug(String.format("After coalesce-left, page has %d " +
-                "pointers and left sibling has %d pointers.",
+                    "pointers and left sibling has %d pointers.",
                 page.getNumPointers(), leftSibling.getNumPointers()));
 
             // Free up the page since it's empty now
@@ -432,18 +418,17 @@ public class InnerPageOperations {
             List<Integer> parentPagePath = pagePath.subList(0, pagePath.size() - 1);
             deletePointer(parentPage, parentPagePath, pageNo,
                 /* delete right key */ false);
-        }
-        else if (rightSibling != null &&
-                rightSibling.getUsedSpace() + page.getSpaceUsedByEntries() <
-                        rightSibling.getTotalSpace()) {
+        } else if (rightSibling != null &&
+            rightSibling.getUsedSpace() + page.getSpaceUsedByEntries() <
+                rightSibling.getTotalSpace()) {
 
             // Coalesce the current node into the right sibling.
             logger.debug("Delete from leaf " + pageNo +
-                    ":  coalescing with right sibling leaf.");
+                ":  coalescing with right sibling leaf.");
 
             logger.debug(String.format("Before coalesce-right, page has %d " +
                     "keys and right sibling has %d pointers.",
-                    page.getNumPointers(), rightSibling.getNumPointers()));
+                page.getNumPointers(), rightSibling.getNumPointers()));
 
             // The affected key in the parent page is to the right of this
             // page's index in the parent page, since we are moving entries
@@ -456,7 +441,7 @@ public class InnerPageOperations {
 
             logger.debug(String.format("After coalesce-right, page has %d " +
                     "entries and right sibling has %d pointers.",
-                    page.getNumPointers(), rightSibling.getNumPointers()));
+                page.getNumPointers(), rightSibling.getNumPointers()));
 
             // Free up the right page since it's empty now
             fileOps.releaseDataPage(page.getDBPage());
@@ -465,8 +450,7 @@ public class InnerPageOperations {
             List<Integer> parentPagePath = pagePath.subList(0, pagePath.size() - 1);
             deletePointer(parentPage, parentPagePath, pageNo,
                 /* delete right key */ true);
-        }
-        else {
+        } else {
             // Can't coalesce the leaf node into either sibling.  Redistribute
             // entries from left or right sibling into the leaf.  The strategy
             // is as follows:
@@ -483,12 +467,10 @@ public class InnerPageOperations {
                     adjPage = leftSibling;
                 else
                     adjPage = rightSibling;
-            }
-            else if (leftSibling != null) {
+            } else if (leftSibling != null) {
                 // There is no right sibling.  Use the left sibling.
                 adjPage = leftSibling;
-            }
-            else {
+            } else {
                 // There is no left sibling.  Use the right sibling.
                 adjPage = rightSibling;
             }
@@ -515,19 +497,17 @@ public class InnerPageOperations {
 
                 if (leftSibling != null) {
                     buf.append(String.format("\t- Left sibling page %d has " +
-                        "%d pointers\n", leftSibling.getPageNo(),
+                            "%d pointers\n", leftSibling.getPageNo(),
                         leftSibling.getNumPointers()));
-                }
-                else {
+                } else {
                     buf.append("\t- No left sibling\n");
                 }
 
                 if (rightSibling != null) {
                     buf.append(String.format("\t- Right sibling page %d has " +
-                        "%d pointers", rightSibling.getPageNo(),
+                            "%d pointers", rightSibling.getPageNo(),
                         rightSibling.getNumPointers()));
-                }
-                else {
+                } else {
                     buf.append("\t- No right sibling");
                 }
 
@@ -538,13 +518,12 @@ public class InnerPageOperations {
 
             logger.debug(String.format("Relocating %d pointers into page " +
                     "%d from %s sibling page %d", entriesToMove, pageNo,
-                    (adjPage == leftSibling ? "left" : "right"), adjPage.getPageNo()));
+                (adjPage == leftSibling ? "left" : "right"), adjPage.getPageNo()));
 
             if (adjPage == leftSibling) {
                 adjPage.movePointersRight(page, entriesToMove, parentKey);
                 parentPage.replaceTuple(indexInParentPage - 1, page.getKey(0));
-            }
-            else { // adjPage == right sibling
+            } else { // adjPage == right sibling
                 adjPage.movePointersLeft(page, entriesToMove, parentKey);
                 parentPage.replaceTuple(indexInParentPage, adjPage.getKey(0));
             }
@@ -553,8 +532,8 @@ public class InnerPageOperations {
 
 
     private boolean relocatePointersAndAddKey(InnerPage page,
-        List<Integer> pagePath, int pagePtr1, Tuple key1, int pagePtr2,
-        int newEntrySize) {
+                                              List<Integer> pagePath, int pagePtr1, Tuple key1, int pagePtr2,
+                                              int newEntrySize) {
 
         int pathSize = pagePath.size();
         if (pagePath.get(pathSize - 1) != page.getPageNo()) {
@@ -605,7 +584,7 @@ public class InnerPageOperations {
                     // Yes, we can do it!
 
                     logger.debug(String.format("Relocating %d entries from " +
-                        "inner-page %d to left-sibling inner-page %d", count,
+                            "inner-page %d to left-sibling inner-page %d", count,
                         page.getPageNo(), prevPage.getPageNo()));
 
                     logger.debug("Space before relocation:  Inner = " +
@@ -623,7 +602,7 @@ public class InnerPageOperations {
 
                     pagePath.remove(pathSize - 1);
                     replaceTuple(parentPage, pagePath, prevPage.getPageNo(),
-                                    newParentKey, page.getPageNo());
+                        newParentKey, page.getPageNo());
 
                     logger.debug("Space after relocation:  Inner = " +
                         page.getFreeSpace() + " bytes\t\tSibling = " +
@@ -653,7 +632,7 @@ public class InnerPageOperations {
                     // Yes, we can do it!
 
                     logger.debug(String.format("Relocating %d entries from " +
-                        "inner-page %d to right-sibling inner-page %d", count,
+                            "inner-page %d to right-sibling inner-page %d", count,
                         page.getPageNo(), nextPage.getPageNo()));
 
                     logger.debug("Space before relocation:  Inner = " +
@@ -671,7 +650,7 @@ public class InnerPageOperations {
 
                     pagePath.remove(pathSize - 1);
                     replaceTuple(parentPage, pagePath, page.getPageNo(),
-                                    newParentKey, nextPage.getPageNo());
+                        newParentKey, nextPage.getPageNo());
 
                     logger.debug("Space after relocation:  Inner = " +
                         page.getFreeSpace() + " bytes\t\tSibling = " +
@@ -703,22 +682,18 @@ public class InnerPageOperations {
      * this method doesn't try to keep the pages half-full based on bytes used.
      * </p>
      *
-     * @param page the inner node to split and then add the key/pointer to
-     *
+     * @param page     the inner node to split and then add the key/pointer to
      * @param pagePath the sequence of page-numbers traversed to reach this
-     *        inner node.
-     *
+     *                 inner node.
      * @param pagePtr1 the existing page-pointer after which the new key and
-     *        pointer should be inserted
-     *
-     * @param key1 the new key to insert into the inner page, immediately after
-     *        the page-pointer value {@code pagePtr1}.
-     *
+     *                 pointer should be inserted
+     * @param key1     the new key to insert into the inner page, immediately after
+     *                 the page-pointer value {@code pagePtr1}.
      * @param pagePtr2 the new page-pointer value to insert after the new key
-     *        value
+     *                 value
      */
     private void splitAndAddKey(InnerPage page, List<Integer> pagePath,
-        int pagePtr1, Tuple key1, int pagePtr2) {
+                                int pagePtr1, Tuple key1, int pagePtr2) {
 
         int pathSize = pagePath.size();
         if (pagePath.get(pathSize - 1) != page.getPageNo()) {
@@ -805,8 +780,7 @@ public class InnerPageOperations {
             HeaderPage.setRootPageNo(dbpHeader, parentPageNo);
 
             logger.debug("Set index root-page to inner-page " + parentPageNo);
-        }
-        else {
+        } else {
             // Add the new page into the parent non-leaf node.  (This may cause
             // the parent node's contents to be moved or split, if the parent
             // is full.)
@@ -815,7 +789,7 @@ public class InnerPageOperations {
 
             pagePath.remove(pathSize - 1);
             addTuple(parentPage, pagePath, page.getPageNo(), newParentKey,
-                        newPage.getPageNo());
+                newPage.getPageNo());
 
             logger.debug("Parent page " + parentPageNo + " now has " +
                 parentPage.getNumPointers() + " page-pointers.");
@@ -834,22 +808,17 @@ public class InnerPageOperations {
      * into.
      *
      * @param prevPage the first page in the pair, left sibling of
-     *        {@code nextPage}
-     *
+     *                 {@code nextPage}
      * @param nextPage the second page in the pair, right sibling of
-     *        {@code prevPage}
-     *
-     * @param pageNo1 the pointer to the left of the new key/pointer values that
-     *        will be added to one of the pages
-     *
-     * @param key1 the new key-value to insert immediately after the existing
-     *        {@code pageNo1} value
-     *
-     * @param pageNo2 the new pointer-value to insert immediately after the new
-     *        {@code key1} value
-     *
+     *                 {@code prevPage}
+     * @param pageNo1  the pointer to the left of the new key/pointer values that
+     *                 will be added to one of the pages
+     * @param key1     the new key-value to insert immediately after the existing
+     *                 {@code pageNo1} value
+     * @param pageNo2  the new pointer-value to insert immediately after the new
+     *                 {@code key1} value
      * @return true if the entry was able to be added to one of the pages, or
-     *         false if the entry couldn't be added.
+     * false if the entry couldn't be added.
      */
     private boolean addEntryToInnerPair(InnerPage prevPage, InnerPage nextPage,
                                         int pageNo1, Tuple key1, int pageNo2) {
@@ -859,8 +828,7 @@ public class InnerPageOperations {
         int ptrIndex1 = prevPage.getIndexOfPointer(pageNo1);
         if (ptrIndex1 != -1) {
             page = prevPage;
-        }
-        else {
+        } else {
             // The pointer *should be* in the next page.  Verify this...
             page = nextPage;
 
@@ -877,8 +845,7 @@ public class InnerPageOperations {
         if (page.getFreeSpace() >= entrySize) {
             page.addEntry(pageNo1, key1, pageNo2);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -891,18 +858,15 @@ public class InnerPageOperations {
      * bytes.  If it is possible, the number of entries that must be relocated
      * is returned.  If it is not possible, the method returns 0.
      *
-     * @param page the inner node to relocate entries from
-     *
-     * @param adjPage the adjacent inner page (predecessor or successor) to
-     *        relocate entries to
-     *
+     * @param page        the inner node to relocate entries from
+     * @param adjPage     the adjacent inner page (predecessor or successor) to
+     *                    relocate entries to
      * @param movingRight pass {@code true} if the sibling is to the left of
-     *        {@code page} (and therefore we are moving entries right), or
-     *        {@code false} if the sibling is to the right of {@code page}
-     *        (and therefore we are moving entries left).
-     *
+     *                    {@code page} (and therefore we are moving entries right), or
+     *                    {@code false} if the sibling is to the right of {@code page}
+     *                    (and therefore we are moving entries left).
      * @return the number of entries that must be relocated to fill the node
-     *         to a minimal level, or 0 if not possible.
+     * to a minimal level, or 0 if not possible.
      */
     private int tryNonLeafRelocateToFill(InnerPage page, InnerPage adjPage,
                                          boolean movingRight, int parentKeySize) {
@@ -960,7 +924,7 @@ public class InnerPageOperations {
         }
 
         logger.debug("Can relocate " + numRelocated +
-                " keys to satisfy minimum space requirements.");
+            " keys to satisfy minimum space requirements.");
 
         assert numRelocated >= 0;
         return numRelocated;

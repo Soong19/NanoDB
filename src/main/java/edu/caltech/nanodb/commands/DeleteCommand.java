@@ -40,12 +40,16 @@ public class DeleteCommand extends QueryCommand {
      * {@link DeleteCommand} to delete each tuple.
      */
     private static class TupleRemover implements TupleProcessor {
-        /** The table whose tuples will be deleted. */
+        /**
+         * The table whose tuples will be deleted.
+         */
         private TableInfo tableInfo;
 
         private TupleFile tupleFile;
 
-        /** The event dispatcher for firing row-delete events. */
+        /**
+         * The event dispatcher for firing row-delete events.
+         */
         private EventDispatcher eventDispatcher;
 
 
@@ -61,12 +65,16 @@ public class DeleteCommand extends QueryCommand {
             this.eventDispatcher = eventDispatcher;
         }
 
-        /** This tuple-processor implementation doesn't care about the schema. */
+        /**
+         * This tuple-processor implementation doesn't care about the schema.
+         */
         public void setSchema(Schema schema) {
             // Ignore.
         }
 
-        /** This implementation simply deletes each tuple it is handed. */
+        /**
+         * This implementation simply deletes each tuple it is handed.
+         */
         public void process(Tuple tuple) {
 
             // Make a copy of this, because once we delete the tuple, we can't
@@ -84,7 +92,9 @@ public class DeleteCommand extends QueryCommand {
     }
 
 
-    /** The name of the table that the data will be deleted from. */
+    /**
+     * The name of the table that the data will be deleted from.
+     */
     private String tableName;
 
 
@@ -102,8 +112,7 @@ public class DeleteCommand extends QueryCommand {
      * Constructs a new delete command.
      *
      * @param tableName the name of the table from which we will be deleting
-     *        tuples
-     *
+     *                  tuples
      * @param whereExpr the predicate governing which rows will be deleted
      */
     public DeleteCommand(String tableName, Expression whereExpr) {
@@ -133,8 +142,8 @@ public class DeleteCommand extends QueryCommand {
      * specified, or {@code null} if there is no <tt>WHERE</tt> predicate.
      *
      * @return the <tt>WHERE</tt> predicate for this delete command, if
-     *         specified, or {@code null} if there is no <tt>WHERE</tt>
-     *         predicate.
+     * specified, or {@code null} if there is no <tt>WHERE</tt>
+     * predicate.
      */
     public Expression getWhereExpr() {
         return whereExpr;

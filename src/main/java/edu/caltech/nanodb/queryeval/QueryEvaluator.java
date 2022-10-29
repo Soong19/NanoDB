@@ -13,10 +13,8 @@ public class QueryEvaluator {
      * Executes the specified query plan, and feeds the results to the specified
      * tuple processor.
      *
-     * @param plan the query plan to execute
-     *
+     * @param plan      the query plan to execute
      * @param processor the tuple-processor to receive the results
-     *
      * @return An object containing statistics about the plan evaluation.
      */
     public static EvalStats executePlan(PlanNode plan, TupleProcessor processor) {
@@ -43,9 +41,10 @@ public class QueryEvaluator {
 
                 // Do whatever we're supposed to do with the tuple
                 processor.process(tuple);
+
+                tuple.unpin();
             }
-        }
-        finally {
+        } finally {
             plan.cleanUp();
         }
 
@@ -57,4 +56,3 @@ public class QueryEvaluator {
         return new EvalStats(rowsProduced, elapsedTimeNanos);
     }
 }
-

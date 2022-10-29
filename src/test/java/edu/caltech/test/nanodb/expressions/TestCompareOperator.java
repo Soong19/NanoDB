@@ -4,7 +4,7 @@ package edu.caltech.test.nanodb.expressions;
 import org.testng.annotations.Test;
 
 
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestCompareOperator {
 
 

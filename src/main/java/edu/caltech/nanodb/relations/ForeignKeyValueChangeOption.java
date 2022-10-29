@@ -1,13 +1,15 @@
 package edu.caltech.nanodb.relations;
 
 
-/** 
+/**
  * An enumeration specifying the options allowed for <tt>ON DELETE</tt> and
  * <tt>ON UPDATE</tt> actions for foreign keys.
  */
 public enum ForeignKeyValueChangeOption {
 
-    /** Rejects the delete or update command on the parent table */
+    /**
+     * Rejects the delete or update command on the parent table
+     */
     RESTRICT(0),
 
     /**
@@ -23,7 +25,9 @@ public enum ForeignKeyValueChangeOption {
     SET_NULL(2);
 
 
-    /** The ID of the option type. */
+    /**
+     * The ID of the option type.
+     */
     private final byte typeID;
 
 
@@ -38,7 +42,9 @@ public enum ForeignKeyValueChangeOption {
     }
 
 
-    /** Returns the option's unique ID. */
+    /**
+     * Returns the option's unique ID.
+     */
     public byte getTypeID() {
         return typeID;
     }

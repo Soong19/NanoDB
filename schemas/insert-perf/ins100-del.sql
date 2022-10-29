@@ -104,5 +104,6 @@ INSERT INTO insert_perf VALUES (98, 'autosite tarantaraing fydorova hypothetist 
 INSERT INTO insert_perf VALUES (99, 'bronchiostenosis nsap yunca superchemical impedible phyllodoce auster lexological', 44.3017);
 INSERT INTO insert_perf VALUES (100, 'stylommatophorous circumvest ileitis protomagnesium', 82.1297);
 
-EXIT;
+SHOW 'STORAGE' STATS;
 
+EXIT;

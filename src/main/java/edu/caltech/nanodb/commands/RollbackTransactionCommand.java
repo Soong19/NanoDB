@@ -22,8 +22,7 @@ public class RollbackTransactionCommand extends Command {
         try {
             StorageManager storageManager = server.getStorageManager();
             storageManager.getTransactionManager().rollbackTransaction();
-        }
-        catch (TransactionException e) {
+        } catch (TransactionException e) {
             throw new ExecutionException(e);
         }
     }

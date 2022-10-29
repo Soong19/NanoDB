@@ -13,16 +13,16 @@ import edu.caltech.nanodb.server.CommandResult;
  * on a table with NOT NULL constraints, to see if the NOT NULL constraint
  * works propertly.
  */
-@Test(groups={"constraints"}, dependsOnGroups={"framework"})
+@Test(groups = {"constraints"}, dependsOnGroups = {"framework"})
 public class TestNotNullOps extends SqlTestCase {
 
     @BeforeClass
     public void setup() throws Exception {
         tryDoCommand(
             "CREATE TABLE test_not_null_ops (" +
-            "a INTEGER NOT NULL, " +
-            "b VARCHAR(20) PRIMARY KEY, " +
-            "c INTEGER );"
+                "a INTEGER NOT NULL, " +
+                "b VARCHAR(20) PRIMARY KEY, " +
+                "c INTEGER );"
         );
 
         // Some initial values, to exercise the primary key column.
@@ -31,7 +31,7 @@ public class TestNotNullOps extends SqlTestCase {
     }
 
 
-   	/**
+    /**
      * This test checks that the not null constraint added to column a
      * and column b is enforced. It does this by trying to insert a
      * variety of tuples with null values in either column a or

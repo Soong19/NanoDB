@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
  * Verifies that parsing of the <tt>DELETE FROM t WHERE ...</tt> command
  * works as expected.
  */
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserDelete {
 
     /**

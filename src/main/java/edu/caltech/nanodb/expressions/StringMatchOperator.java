@@ -29,7 +29,9 @@ import edu.caltech.nanodb.relations.SchemaNameException;
  */
 public class StringMatchOperator extends Expression {
 
-    /** A logging object for reporting anything interesting that happens. **/
+    /**
+     * A logging object for reporting anything interesting that happens.
+     **/
     private static Logger logger = LogManager.getLogger(StringMatchOperator.class);
 
 
@@ -40,7 +42,9 @@ public class StringMatchOperator extends Expression {
         LIKE("LIKE"),
         REGEX("SIMILAR TO");
 
-        /** The string representation for each operator.  Used for printing. */
+        /**
+         * The string representation for each operator.  Used for printing.
+         */
         private final String stringRep;
 
         /**
@@ -63,14 +67,20 @@ public class StringMatchOperator extends Expression {
     }
 
 
-    /** The kind of comparison, such as "LIKE" or "SIMILAR TO." */
+    /**
+     * The kind of comparison, such as "LIKE" or "SIMILAR TO."
+     */
     Type type;
 
 
-    /** The left expression in the comparison. */
+    /**
+     * The left expression in the comparison.
+     */
     Expression leftExpr;
 
-    /** The right expression in the comparison. */
+    /**
+     * The right expression in the comparison.
+     */
     Expression rightExpr;
 
 
@@ -112,7 +122,6 @@ public class StringMatchOperator extends Expression {
      * other than "%" and "_" must be quoted so they don't cause any effects.
      *
      * @param sqlLike the SQL <tt>LIKE</tt> match-expression
-     *
      * @return a regular expression corresponding to the match-expression
      */
     private String sqlLikeToRegex(String sqlLike) {
@@ -127,15 +136,13 @@ public class StringMatchOperator extends Expression {
 
                 buf.append(".*");
                 inText = false;
-            }
-            else if (ch == '_') {
+            } else if (ch == '_') {
                 if (inText)
                     buf.append("\\E");
 
                 buf.append(".");
                 inText = false;
-            }
-            else {
+            } else {
                 if (!inText)
                     buf.append("\\Q");
 
@@ -189,8 +196,7 @@ public class StringMatchOperator extends Expression {
             case REGEX:
                 try {
                     result = Pattern.matches(rhsValue, lhsValue);
-                }
-                catch (PatternSyntaxException e) {
+                } catch (PatternSyntaxException e) {
                     throw new ExpressionException("Regex pattern \"" +
                         rhsValue + "\" is invalid!", e);
                 }

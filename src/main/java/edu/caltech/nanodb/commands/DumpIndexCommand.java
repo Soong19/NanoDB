@@ -19,11 +19,15 @@ import edu.caltech.nanodb.storage.TableManager;
  */
 public class DumpIndexCommand extends DumpCommand {
 
-    /** The name of the index to dump. */
+    /**
+     * The name of the index to dump.
+     */
     private String indexName;
 
 
-    /** The name of the table containing the index to dump. */
+    /**
+     * The name of the table containing the index to dump.
+     */
     private String tableName;
 
 

@@ -13,7 +13,9 @@ public class ShowSystemStatsCommand extends Command {
     public static final String STORAGE_SYSTEM = "storage";
 
 
-    /** The subsystem that we are displaying statistics for. */
+    /**
+     * The subsystem that we are displaying statistics for.
+     */
     private String systemName;
 
 
@@ -21,10 +23,10 @@ public class ShowSystemStatsCommand extends Command {
      * These are the performance counters corresponding to various subsystems.
      */
     private static final String[][] PERF_COUNTERS = {
-        { STORAGE_SYSTEM, PerformanceCounters.STORAGE_PAGES_READ },
-        { STORAGE_SYSTEM, PerformanceCounters.STORAGE_PAGES_WRITTEN },
-        { STORAGE_SYSTEM, PerformanceCounters.STORAGE_FILE_CHANGES },
-        { STORAGE_SYSTEM, PerformanceCounters.STORAGE_FILE_DISTANCE_TRAVELED }
+        {STORAGE_SYSTEM, PerformanceCounters.STORAGE_PAGES_READ},
+        {STORAGE_SYSTEM, PerformanceCounters.STORAGE_PAGES_WRITTEN},
+        {STORAGE_SYSTEM, PerformanceCounters.STORAGE_FILE_CHANGES},
+        {STORAGE_SYSTEM, PerformanceCounters.STORAGE_FILE_DISTANCE_TRAVELED}
     };
 
 
@@ -55,4 +57,3 @@ public class ShowSystemStatsCommand extends Command {
         }
     }
 }
-

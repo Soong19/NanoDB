@@ -9,7 +9,9 @@ package edu.caltech.nanodb.expressions;
  */
 public class OrderByExpression {
 
-    /** The expression that the results should be ordered by. */
+    /**
+     * The expression that the results should be ordered by.
+     */
     private Expression expression;
 
     /**
@@ -34,10 +36,9 @@ public class OrderByExpression {
      * Initialize a new order-by object with the specified expression and order.
      *
      * @param expression The expression to order results by.
-     *
-     * @param ascending a value of <tt>true</tt> will cause the results to be
-     *        in ascending order; a value of <tt>false</tt> will cause them to
-     *        be in descending order
+     * @param ascending  a value of <tt>true</tt> will cause the results to be
+     *                   in ascending order; a value of <tt>false</tt> will cause them to
+     *                   be in descending order
      */
     public OrderByExpression(Expression expression, boolean ascending) {
         this.expression = expression;
@@ -60,7 +61,7 @@ public class OrderByExpression {
      * descending order.
      *
      * @return <tt>true</tt> if the results should be in ascending order,
-     *         <tt>false</tt> otherwise.
+     * <tt>false</tt> otherwise.
      */
     public boolean isAscending() {
         return ascending;

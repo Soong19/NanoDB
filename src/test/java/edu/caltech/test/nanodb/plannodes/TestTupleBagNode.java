@@ -10,21 +10,23 @@ import edu.caltech.nanodb.relations.ColumnType;
 import edu.caltech.nanodb.relations.Schema;
 
 
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestTupleBagNode extends PlanNodeTestCase {
 
     /**
      * Ensure that the TupleBagNode constructor throws an exception if the
      * schema argument is unspecified.
      */
-    @Test(expectedExceptions={IllegalArgumentException.class})
+    @Test(expectedExceptions = {IllegalArgumentException.class})
     public void testTupleBagNoSchemaError() {
         // Should throw an IllegalArgumentException.
         TupleBagNode n = new TupleBagNode(null);
     }
 
 
-    /** Exercises basic behavior of an empty Tuple Bag plan node. */
+    /**
+     * Exercises basic behavior of an empty Tuple Bag plan node.
+     */
     public void testTupleBagEmpty() {
         Schema s = new Schema(
             new ColumnInfo("A", ColumnType.INTEGER),
@@ -42,7 +44,7 @@ public class TestTupleBagNode extends PlanNodeTestCase {
 
         // Verify that the reported tuples are correct.
 
-        TupleLiteral[] expected = { };
+        TupleLiteral[] expected = {};
 
         checkOrderedResults(expected, node);
 
@@ -52,7 +54,9 @@ public class TestTupleBagNode extends PlanNodeTestCase {
     }
 
 
-    /** Exercises basic behavior of a non-empty Tuple Bag plan node. */
+    /**
+     * Exercises basic behavior of a non-empty Tuple Bag plan node.
+     */
     public void testTupleBag() {
         Schema s = new Schema(
             new ColumnInfo("A", ColumnType.INTEGER),

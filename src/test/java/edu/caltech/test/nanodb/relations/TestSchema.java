@@ -9,8 +9,7 @@ import edu.caltech.nanodb.relations.Schema;
 import org.testng.annotations.Test;
 
 
-
-@Test(groups={"framework"})
+@Test(groups = {"framework"})
 public class TestSchema {
     public void testEmptySchema() {
         Schema s = new Schema();

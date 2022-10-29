@@ -19,7 +19,9 @@ import edu.caltech.nanodb.relations.SQLDataType;
  */
 public class CountAggregate extends AggregateFunction {
 
-    /** Contains the current number of items */
+    /**
+     * Contains the current number of items
+     */
     private int count;
 
 
@@ -30,11 +32,15 @@ public class CountAggregate extends AggregateFunction {
     private HashSet<Object> valuesSeen = new HashSet<>();
 
 
-    /** Stores the most recently seen object */
+    /**
+     * Stores the most recently seen object
+     */
     private Object lastValueSeen;
 
 
-    /** Boolean that is true if we are counting distinct values */
+    /**
+     * Boolean that is true if we are counting distinct values
+     */
     private boolean distinct;
 
 
@@ -85,15 +91,13 @@ public class CountAggregate extends AggregateFunction {
                     lastValueSeen = value;
                     count++;
                 }
-            }
-            else {
+            } else {
                 // If the inputs are hashed then we increment the count every
                 // time the value isn't already in the hash-set.
                 if (valuesSeen.add(value))
                     count++;
             }
-        }
-        else {
+        } else {
             // Non-distinct count.  Just increment on any non-null value.
             count++;
         }
@@ -111,8 +115,8 @@ public class CountAggregate extends AggregateFunction {
     public ColumnType getReturnType(List<Expression> args, Schema schema) {
         if (args.size() != 1) {
             throw new IllegalArgumentException(
-                    "Count aggregate function takes 1 argument; got " +
-                            args.size());
+                "Count aggregate function takes 1 argument; got " +
+                    args.size());
         }
 
         // When counting, the resulting aggregate column is always an integer

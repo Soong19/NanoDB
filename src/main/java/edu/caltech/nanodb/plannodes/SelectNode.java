@@ -12,15 +12,21 @@ import edu.caltech.nanodb.expressions.Expression;
  */
 public abstract class SelectNode extends PlanNode {
 
-    /** Predicate used for selection. */
+    /**
+     * Predicate used for selection.
+     */
     public Expression predicate;
 
 
-    /** The current tuple that the node is selecting. */
+    /**
+     * The current tuple that the node is selecting.
+     */
     protected Tuple currentTuple;
 
 
-    /** True if we have finished scanning or pulling tuples from children. */
+    /**
+     * True if we have finished scanning or pulling tuples from children.
+     */
     private boolean done;
 
 
@@ -59,7 +65,9 @@ public abstract class SelectNode extends PlanNode {
     }
 
 
-    /** Do initialization for the select operation. Resets state variables. */
+    /**
+     * Do initialization for the select operation. Resets state variables.
+     */
     @Override
     public void initialize() {
         super.initialize();
@@ -73,10 +81,9 @@ public abstract class SelectNode extends PlanNode {
      * Gets the next tuple selected by the predicate.
      *
      * @return the tuple to be passed up to the next node.
-     *
      * @throws java.lang.IllegalStateException if this is a scanning node
-     *         with no algorithm or a filtering node with no child, or if
-     *         the leftChild threw an IllegalStateException.
+     *                                         with no algorithm or a filtering node with no child, or if
+     *                                         the leftChild threw an IllegalStateException.
      */
     public Tuple getNextTuple() {
 
@@ -85,9 +92,15 @@ public abstract class SelectNode extends PlanNode {
         if (done)
             return null;
 
+        if (currentTuple != null)
+            currentTuple.pin();
+
         // Continue to advance the current tuple until it is selected by the
         // predicate.
         while (true) {
+            if (currentTuple != null)
+                currentTuple.unpin();
+
             advanceCurrentTuple();
 
             // If the last tuple in the file (or chain of nodes) did not

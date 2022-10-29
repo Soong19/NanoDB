@@ -15,7 +15,7 @@ import edu.caltech.nanodb.commands.InsertCommand;
 /**
  * Verifies that parsing of the <tt>INSERT</tt> command works as expected.
  */
-@Test(groups={"parser"})
+@Test(groups = {"parser"})
 public class TestParserInsert {
     /**
      * Verifies the <tt>INSERT INTO t VALUES ...</tt> statement, and the

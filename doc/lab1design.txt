@@ -9,20 +9,35 @@ A:  Deleting and Updating Tuples
 A1.  Briefly describe (1-3 sentences) how you reclaim slot entries in the
      slotted page.  Which slot entries are you able to reclaim?  Which
      entries are unable to be reclaimed?
+LH:  (1) Mark the slot to invalid
+     (2) Delete the data via deleteTupleDataRange
+     (3) Check whether we can reclaim the space in the slot list.
+         A slot entry is able to be reclaimed if there is no more valid entry
+         behind it.  In implementation, just use while to check the last slot.
 
 A2.  Briefly outline the steps of what your setNullColumnValue() function
      does.  You don't have to go into much detail; we can look at your
      code for the details.  Just describe the basic things the function
      must do to set a column-value to NULL.
+LH:  (1) Clear null-bitmap[iCol]
+     (2) Allocate data space when oldSize < newSize or it used to be NULL;
+         Deallocate data space when oldSize > newSize.
+     (3) Fill up the manipulated space
+     PS. Allocate:   move data before the column to lower address, away from end
+         Deallocate: move data before the column to higher address, close to end
 
 A3.  Similarly, briefly outline the steps of what your
      setNonNullColumnValue() function does.
+LH:  (1) Check and set null-bitmap[iCol], if it is already a NULL value
+     (2) Deallocate data space of the value
+
 
 B:  Unpinning Tuples and Pages
 ------------------------------
 
 B1.  Briefly describe your strategy for determining when tuples need to be
      unpinned.  Make sure to comment on both plan-nodes and commands.
+LH:  Unpin tuple when it is not needed.
 
 B2.  In general, you only need to worry about unpinning tuples because the
      backing page will also be unpinned.  However, there are some situations
@@ -30,6 +45,9 @@ B2.  In general, you only need to worry about unpinning tuples because the
      situations where you unpin pages directly in your implementation, and
      why you do so.  (Make sure to answer this question in the context of
      your insert-optimization changes, not the initial state of the code.)
+LH:  Only describe scheme in addTuple:
+     Implicitly pin header page when loading, unpin in the end of the function.
+     Implicitly pin data page when loading, unpin when it is no longer need.
 
 C:  NanoDB Storage Performance
 ------------------------------
@@ -37,26 +55,46 @@ C:  NanoDB Storage Performance
 C1.  In 3-6 sentences, describe your general approach for improving the
      performance of inserts, including what general file-level structuring
      you use of blocks.
+LH:  Implement a free page (not guarantee enough) list to find linearly.
+     Add extra integer to both header page and data page. Header page stores the
+     first free page id, data page stores the next free page id if it has.
+     For each modification, update the metadata of related pages:
+     When inserting tuple, find the free page or create free page; remove
+     non-free page from free list, add new page to free list.
+     When deleting tuple, add the page back to free list if necessary.
 
 C2.  Does your file-level organization have the potential to increase the
      number of large disk seeks when performing inserts?  What steps do
      you take, if any, to reduce the number of disk seeks?
+LH:  Yes, pages in free list are randomly arranged. Random I/O is expensive.
+     I do not take any step to avoid this, it can be arranged orderly.
 
 C3.  The storage layer records a number of statistics, e.g. pagesRead,
      pagesWritten, fileChanges, and fileDistanceTraveled.  What changes in
      these statistics did your team observe after changing the heap-file
      implementation?  Explain why you believe these to be improvements.
+LH:  (1) Less pagesRead: when search for free space, no need to search from
+         start to the end because of free list
+     (2) Slightly more fileDistanceTraveled: less pagesRead, more random I/O
 
 C4.  Describe your criteria for when a page is considered to be "full."
+LH:  When any tuple to be inserted is not suitable in the page.
 
 C5.  What steps must be taken during a tuple-delete operation to update
      your file-level structures?  How many pages must be written to?
+LH:  Add the page back to free list if it is not in.
+     2: 1 for header page, 1 for the data page. (Insert in the head)
 
 C6.  What steps must be taken after a tuple-insert operation that fills
      the data page?
+LH:  Remove it from the free list in next insertion.
 
 C7.  An update operation has the potential to grow or shrink a page.  How
      does your code ensure that updates are handled properly?
+LH:  No, it is guaranteed by the skeleton code.  In my implementation, I just
+     add an integer in the end of the page.  If the newSize is too large for the
+     page to carry, just throw an exception, which means I cannot allocate a new
+     page to carry it.
 
 E:  Feedback [OPTIONAL]
 -----------------------

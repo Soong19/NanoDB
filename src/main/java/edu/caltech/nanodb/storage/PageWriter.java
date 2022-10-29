@@ -14,8 +14,7 @@ import edu.caltech.nanodb.relations.ColumnType;
  * as well as read operations.  Using any of the write operations will
  * automatically set the page's dirty-flag to <tt>true</tt>.
  */
-public class PageWriter extends PageReader
-{
+public class PageWriter extends PageReader {
     public PageWriter(DBPage dbPage) {
         super(dbPage);
     }

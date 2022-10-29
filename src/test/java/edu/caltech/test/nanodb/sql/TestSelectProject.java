@@ -13,7 +13,7 @@ import edu.caltech.nanodb.server.NanoDBServer;
  * statements against a single table, to see if simple selects and
  * predicates work properly.
  */
-@Test(groups={"sql", "hw2"})
+@Test(groups = {"sql", "hw2"})
 public class TestSelectProject extends SqlTestCase {
 
     public TestSelectProject() {
@@ -30,22 +30,22 @@ public class TestSelectProject extends SqlTestCase {
     public void testProjectReorderCols() throws Throwable {
         // Columns c, a
         TupleLiteral[] expected1 = {
-            new TupleLiteral(  10, 1),
-            new TupleLiteral(  20, 2),
-            new TupleLiteral(  30, 3),
+            new TupleLiteral(10, 1),
+            new TupleLiteral(20, 2),
+            new TupleLiteral(30, 3),
             new TupleLiteral(null, 4),
-            new TupleLiteral(  40, 5),
-            new TupleLiteral(  50, 6)
+            new TupleLiteral(40, 5),
+            new TupleLiteral(50, 6)
         };
 
         // Columns c, b
         TupleLiteral[] expected2 = {
-            new TupleLiteral(  10,    "red"),
-            new TupleLiteral(  20, "orange"),
-            new TupleLiteral(  30,     null),
-            new TupleLiteral(null,  "green"),
-            new TupleLiteral(  40, "yellow"),
-            new TupleLiteral(  50,   "blue")
+            new TupleLiteral(10, "red"),
+            new TupleLiteral(20, "orange"),
+            new TupleLiteral(30, null),
+            new TupleLiteral(null, "green"),
+            new TupleLiteral(40, "yellow"),
+            new TupleLiteral(50, "blue")
         };
 
         CommandResult result;
@@ -69,12 +69,12 @@ public class TestSelectProject extends SqlTestCase {
     public void testProjectMath() throws Throwable {
         // Columns a - 10 as am, c * 3 as cm
         TupleLiteral[] expected = {
-            new TupleLiteral(-9,   30),
-            new TupleLiteral(-8,   60),
-            new TupleLiteral(-7,   90),
+            new TupleLiteral(-9, 30),
+            new TupleLiteral(-8, 60),
+            new TupleLiteral(-7, 90),
             new TupleLiteral(-6, null),
-            new TupleLiteral(-5,  120),
-            new TupleLiteral(-4,  150)
+            new TupleLiteral(-5, 120),
+            new TupleLiteral(-4, 150)
         };
 
         CommandResult result;
@@ -95,15 +95,15 @@ public class TestSelectProject extends SqlTestCase {
     public void testSelectProjectMath() throws Throwable {
         // Columns b, a - 10 as am, c * 3 as cm
         TupleLiteral[] expected = {
-            new TupleLiteral(    null, -7,   90),
-            new TupleLiteral("yellow", -5,  120)
+            new TupleLiteral(null, -7, 90),
+            new TupleLiteral("yellow", -5, 120)
         };
 
         CommandResult result;
 
         result = server.doCommand(
             "SELECT b, a - 10 AS am, c * 3 AS cm FROM test_select_project " +
-            "WHERE a > 2 AND c < 45", true);
+                "WHERE a > 2 AND c < 45", true);
         assert checkUnorderedResults(expected, result);
     }
 }

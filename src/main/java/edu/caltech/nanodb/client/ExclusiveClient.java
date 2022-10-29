@@ -32,7 +32,9 @@ public class ExclusiveClient extends InteractiveClient {
     private static Logger logger = LogManager.getLogger(ExclusiveClient.class);
 
 
-    /** The server that this exclusive client is using. */
+    /**
+     * The server that this exclusive client is using.
+     */
     private NanoDBServer server;
 
 
@@ -42,8 +44,7 @@ public class ExclusiveClient extends InteractiveClient {
         server = new NanoDBServer();
         try {
             server.startup();
-        }
-        catch (NanoDBException e) {
+        } catch (NanoDBException e) {
             System.out.println("DATABASE STARTUP FAILED:");
             e.printStackTrace(System.out);
             System.exit(1);
@@ -73,4 +74,3 @@ public class ExclusiveClient extends InteractiveClient {
         client.shutdown();
     }
 }
-
