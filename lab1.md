@@ -99,3 +99,40 @@ The pin scheme we need to implement is very trivial:
 
 To test buffer pool manager, add execute "set property 'nanodb.pagecache.size' =
 65536;" before a query involving a lot of tuples.
+
+### Task #3: NanoDB Storage Performance
+
+> Improve the insert performance of the NanoDB heap file implementation,
+> without substantially increasing the overall file size
+
+Header page in NanoDB is responsible for few things, it only stores schema and
+table stats of the table file. For simplicity, I choose to not use the header
+page as the directory page to track available space. (There is no way to know
+how big the table stats is, so it is hard to use directory page scheme
+properly.)
+
+---
+
+Prototype design:
+Maintain a **bitmap** that records which pages have available space:<br/>
+Allocate a bitmap (4 bytes for maximum page sizes 65536) at the start of the
+header page. Each tuple page with `page_id` is marked whether free or not by the
+specific bit in `bitmap[page_id]`. Because header page is somewhat always
+buffered in Mem, it is fast to check out whether a page has <s>enough</s> free
+space.
+
+```
+# HeaderPage layout (in byte)
+-------------------------------------------------------------------------------------
+| file type & page size | schema SIZE | stats SIZE | BITMAP | SCHEMA | STATS | FREE |
+-------------------------------------------------------------------------------------
+0                       2             4            6        14       ...    ...
+```
+
+Something goes wrong: the maximum number of pages a tuple file is 65536, which
+acquires 8192 bytes for single bitmap. It is so huge an overhead that we cannot
+carry on.
+
+---
+
+Re-design:
