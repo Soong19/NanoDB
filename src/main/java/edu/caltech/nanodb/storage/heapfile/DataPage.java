@@ -223,7 +223,7 @@ public class DataPage {
      * @return the index where the tuple data ends in this data page
      */
     public static int getTupleDataEnd(DBPage dbPage) {
-        return dbPage.getPageSize() - 4;
+        return dbPage.getPageSize() - OCCUPY_FREE_NEXT;
     }
 
 

@@ -331,7 +331,7 @@ public class HeapTupleFile implements TupleFile {
         DBPage headerPage = storageManager.loadDBPage(dbFile, 0);
 
         int pageNo = HeaderPage.getFreeHead(headerPage);
-        // pageNo=0  => No free head
+        // pageNo=0  => No free page
         while (pageNo != 0) {
             // Try to load the page without creating a new one.
             // implicitly: dbPage.pin()
