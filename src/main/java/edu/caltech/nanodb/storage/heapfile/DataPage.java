@@ -29,6 +29,7 @@ public class DataPage {
      */
     private static Logger logger = LogManager.getLogger(DataPage.class);
 
+    public static int OCCUPY_FREE_NEXT = 4;
 
     /**
      * The offset in the data page where the number of slots in the slot table
@@ -217,7 +218,7 @@ public class DataPage {
      * @return the index where the tuple data ends in this data page
      */
     public static int getTupleDataEnd(DBPage dbPage) {
-        return dbPage.getPageSize();
+        return dbPage.getPageSize() - 4;
     }
 
 
@@ -599,5 +600,28 @@ public class DataPage {
             }
             setNumSlots(dbPage, endSlot - 1);
         }
+    }
+
+    /**
+     * Sets the free page list next page to pageNo
+     *
+     * @param dbPage the data page
+     * @param pageNo the next page id
+     */
+    public static void setFreeNext(DBPage dbPage, int pageNo) {
+        if (/* pageNo == 0 is ok*/ pageNo > 65536) {
+            throw new IllegalArgumentException("header page or no more pages" + pageNo);
+        }
+        dbPage.writeInt(dbPage.getPageSize() - OCCUPY_FREE_NEXT, pageNo);
+    }
+
+    /**
+     * Gets the free page list next page
+     *
+     * @param dbPage the data page
+     * @return the next page id
+     */
+    public static int getFreeNext(DBPage dbPage) {
+        return dbPage.readInt(dbPage.getPageSize() - OCCUPY_FREE_NEXT);
     }
 }
