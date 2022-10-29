@@ -156,3 +156,30 @@ Prototype Re-design: Use a free page list to track which pages have free space
 * `addTuple`: Use the free page list to find free page or create a free page
 * `deleteTuple`: When deleting a tuple from a non-free page, add the page to
   free page list
+
+---
+
+After optimization, measure the performance:
+
+```diff
+# 1. ins20k.sql
+- storage.pagesRead = 3,306,267
++ storage.pagesRead =    40,331
+- storage.fileDistanceTraveled = 105,144,752
++ storage.fileDistanceTraveled = 108,444,448
+- storage.occupied = 2.7 MB
++ storage.occupied = 2.6 MB
+
+# 2. ins50k.sql
+- storage.pagesRead = 20,645,580
++ storage.pagesRead =    100,831
+- storage.fileDistanceTraveled = 659,042,640
++ storage.fileDistanceTraveled = 677,734,592
+- storage.occupied = 6.7 MB
++ storage.occupied = 6.5 MB
+
+# 3. ins50k-del.sql
+- storage.occupied = 5.0 MB
+- storage.occupied = 6.3 MB   # before recyle delete-tuple page
++ storage.occupied = 4.8 MB   # after optimization on deleteTuple
+```
