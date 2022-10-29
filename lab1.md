@@ -122,7 +122,7 @@ buffered in Mem, it is fast to check out whether a page has <s>enough</s> free
 space.
 
 ```
-# HeaderPage layout (in byte)
+# [WRONG] HeaderPage layout (in byte)
 -------------------------------------------------------------------------------------
 | file type & page size | schema SIZE | stats SIZE | BITMAP | SCHEMA | STATS | FREE |
 -------------------------------------------------------------------------------------
@@ -135,4 +135,20 @@ carry on.
 
 ---
 
-Re-design:
+Prototype Re-design: Use a free page list to track which pages have free space
+* Header Page: Maintain head of the free list, default value is 0
+* Tuple Page: Maintain next pointer to the next free page
+
+```
+# HeaderPage layout (in byte)
+----------------------------------------------------------------------------------------
+| file type & page size | schema SIZE | stats SIZE | list HEAD | SCHEMA | STATS | FREE |
+----------------------------------------------------------------------------------------
+0                       2             4            6           10       ...    ...
+
+# TuplePag layout (in byte)
+------------------------------------------------------------------
+| Header | ... FREE SPACE ... | ... Data Range ... | Next PageNo |
+------------------------------------------------------------------
+0                                             PageSize - 4      PageSize
+```
