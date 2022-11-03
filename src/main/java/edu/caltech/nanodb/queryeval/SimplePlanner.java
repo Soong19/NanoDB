@@ -2,9 +2,7 @@ package edu.caltech.nanodb.queryeval;
 
 
 import edu.caltech.nanodb.expressions.Expression;
-import edu.caltech.nanodb.plannodes.FileScanNode;
-import edu.caltech.nanodb.plannodes.PlanNode;
-import edu.caltech.nanodb.plannodes.SelectNode;
+import edu.caltech.nanodb.plannodes.*;
 import edu.caltech.nanodb.queryast.FromClause;
 import edu.caltech.nanodb.queryast.SelectClause;
 import edu.caltech.nanodb.relations.TableInfo;
@@ -57,35 +55,59 @@ public class SimplePlanner implements Planner {
     @Override
     public PlanNode makePlan(SelectClause selClause,
                              List<SelectClause> enclosingSelects) {
-
-        // For HW1, we have a very simple implementation that defers to
-        // makeSimpleSelect() to handle simple SELECT queries with one table,
-        // and an optional WHERE clause.
-
         if (enclosingSelects != null && !enclosingSelects.isEmpty()) {
             throw new UnsupportedOperationException(
                 "Not implemented:  enclosing queries");
         }
 
+        PlanNode plan; // root node
+
+        var fromClause = selClause.getFromClause();
+        var whereClause = selClause.getWhereExpr();
+
+        // 1. FromClause: generate plan node
+        if (fromClause == null) {
+            logger.debug("From: 0 table");
+            // example: SELECT 2 + 3 AS five;
+            plan = new ProjectNode(selClause.getSelectValues());
+        } else if (fromClause.isBaseTable()) {
+            logger.debug("From: single table");
+            // no where because handle after
+            plan = makeSimpleSelect(fromClause.getTableName(), null, null);
+        } else {
+            throw new UnsupportedOperationException("Not implemented:  join or subquery");
+        }
+
+        // 2. WhereClause: add where clause
+        if (whereClause != null) {
+            logger.debug("Where: " + whereClause);
+            plan = PlanUtils.addPredicateToPlan(plan, whereClause);
+        }
+
+        // 3. Grouping & Aggregation: TODO
+        if (!selClause.getGroupByExprs().isEmpty()) {
+            throw new UnsupportedOperationException("Not implemented:  Grouping or Aggregation");
+        }
+
+        // 4. Order By: add order-by clause
+        if (!selClause.getOrderByExprs().isEmpty()) {
+            logger.debug("Order By: " + selClause.getOrderByExprs());
+            plan = new SortNode(plan, selClause.getOrderByExprs());
+        }
+
+        // 5. Project: add a filter for columns
         if (!selClause.isTrivialProject()) {
-            throw new UnsupportedOperationException(
-                "Not implemented:  project");
+            plan = new ProjectNode(plan, selClause.getSelectValues());
         }
 
-        FromClause fromClause = selClause.getFromClause();
-        if (!fromClause.isBaseTable()) {
-            throw new UnsupportedOperationException(
-                "Not implemented:  joins or subqueries in FROM clause");
-        }
-
-        return makeSimpleSelect(fromClause.getTableName(),
-            selClause.getWhereExpr(), null);
+        plan.prepare();
+        return plan;
     }
 
 
     /**
-     * Constructs a simple select plan that reads directly from a table, with
-     * an optional predicate for selecting rows.
+     * Construct a simple select node, which just read from a table with an
+     * optional predicate.
      * <p>
      * While this method can be used for building up larger <tt>SELECT</tt>
      * queries, the returned plan is also suitable for use in <tt>UPDATE</tt>
@@ -120,7 +142,6 @@ public class SimplePlanner implements Planner {
         // Make a SelectNode to read rows from the table, with the specified
         // predicate.
         SelectNode selectNode = new FileScanNode(tableInfo, predicate);
-        selectNode.prepare();
         return selectNode;
     }
 }
