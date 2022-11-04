@@ -29,6 +29,67 @@ setup_testSelectProject = \
     INSERT INTO test_select_project VALUES ( 6,   'blue',   50 );
 
 #============================================================================
+# INNER AND OUTER JOIN
+#
+
+# This setup SQL is used for the join test case
+setup_testJoin = \
+    CREATE TABLE test_join_left ( \
+        a INTEGER, \
+        b INTEGER \
+    ); \
+    INSERT INTO test_join_left VALUES ( 0, NULL ); \
+    INSERT INTO test_join_left VALUES ( 1, 10 ); \
+    INSERT INTO test_join_left VALUES ( 1, 20 ); \
+    INSERT INTO test_join_left VALUES ( 2, 30 ); \
+    INSERT INTO test_join_left VALUES ( 3, NULL ); \
+    INSERT INTO test_join_left VALUES ( 5, 40 ); \
+    INSERT INTO test_join_left VALUES ( 8, 50 ); \
+    INSERT INTO test_join_left VALUES ( 13, 60 ); \
+    CREATE TABLE test_join_mid ( \
+        e INTEGER, \
+        f INTEGER \
+    ); \
+    INSERT INTO test_join_mid VALUES ( 1, 100 ); \
+    INSERT INTO test_join_mid VALUES ( 4, NULL ); \
+    INSERT INTO test_join_mid VALUES ( 5, 200 ); \
+    INSERT INTO test_join_mid VALUES ( 6, 300 ); \
+    INSERT INTO test_join_mid VALUES ( 7, 400 ); \
+    CREATE TABLE test_join_right ( \
+        c INTEGER, \
+        d VARCHAR (10) \
+    ); \
+    INSERT INTO test_join_right VALUES ( 1, 'a' ); \
+    INSERT INTO test_join_right VALUES ( 3, 'b' ); \
+    INSERT INTO test_join_right VALUES ( 5, 'c' ); \
+    INSERT INTO test_join_right VALUES ( 7, NULL ); \
+    INSERT INTO test_join_right VALUES ( 9, 'e' ); \
+    CREATE TABLE test_join_empty_left ( \
+        e INTEGER, \
+        f VARCHAR(20) \
+    ); \
+    CREATE TABLE test_join_empty_right ( \
+        p BIGINT, \
+        q INTEGER \
+    ); \
+    CREATE TABLE test_join_one_row ( \
+        a INTEGER, \
+        b VARCHAR(20) \
+    ); \
+    INSERT INTO test_join_one_row VALUES ( 1, 'a' ); \
+    CREATE TABLE test_join_multiple_row ( \
+        c BIGINT, \
+        d INTEGER, \
+        e INTEGER \
+    ); \
+    INSERT INTO test_join_multiple_row VALUES ( 1, 1, 2 ); \
+    INSERT INTO test_join_multiple_row VALUES ( 3, 1, 4 ); \
+    INSERT INTO test_join_multiple_row VALUES ( 5, 4, 6 ); \
+    INSERT INTO test_join_multiple_row VALUES ( 7, 5, 8 ); \
+    INSERT INTO test_join_multiple_row VALUES ( 9, 1, 10 ); \
+    INSERT INTO test_join_multiple_row VALUES ( 11, 4, 12 );
+
+#============================================================================
 # INDEXES
 #
 

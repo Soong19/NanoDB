@@ -41,11 +41,15 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
 
     /**
      * For outer join, if two tuples do not match, return the corresponding
-     * tuple with nullTuple. i.e., left-outer join does not match, return
-     * JoinTuple(leftTuple, nullTuple).
-     * nullTuple varies by schemas.
+     * tuple with nullTuple. For LEFT OUTER, FULL OUTER, CROSS.
      */
-    private Tuple nullTuple;
+    private Tuple leftNullTuple;
+
+    /**
+     * For outer join, if two tuples do not match, return the corresponding
+     * tuple with nullTuple. For RIGHT OUTER, FULL OUTER, CROSS.
+     */
+    private Tuple rightNullTuple;
 
 
     public NestedLoopJoinNode(PlanNode leftChild, PlanNode rightChild,
@@ -178,15 +182,12 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
 
         // TODO:  to be implemented
         cost = null;
-        stats = null;
 
-        if (!(joinType == JoinType.LEFT_OUTER || joinType == JoinType.RIGHT_OUTER || joinType == JoinType.INNER))
+        if (joinType == JoinType.SEMIJOIN || joinType == JoinType.ANTIJOIN)
             throw new UnsupportedOperationException("Unimplemented:  join type" + joinType);
 
-        if (joinType == JoinType.LEFT_OUTER)
-            nullTuple = TupleLiteral.ofSize(leftSchema.numColumns());
-        else if (joinType == JoinType.RIGHT_OUTER)
-            nullTuple = TupleLiteral.ofSize(rightSchema.numColumns());
+        leftNullTuple = TupleLiteral.ofSize(leftSchema.numColumns());
+        rightNullTuple = TupleLiteral.ofSize(rightSchema.numColumns());
     }
 
 
@@ -211,10 +212,14 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         while (getTuplesToJoin()) {
             if (canJoinTuples())
                 return joinTuples(leftTuple, rightTuple);
-            else if (joinType == JoinType.LEFT_OUTER)
-                return joinTuples(leftTuple, nullTuple);
-            else if (joinType == JoinType.RIGHT_OUTER)
-                return joinTuples(nullTuple, rightTuple);
+
+            else if (joinType == JoinType.LEFT_OUTER ||
+                (joinType == JoinType.FULL_OUTER && leftTuple == null))
+                return joinTuples(leftTuple, rightNullTuple);
+
+            else if (joinType == JoinType.RIGHT_OUTER ||
+                (joinType == JoinType.FULL_OUTER && rightTuple == null))
+                return joinTuples(leftNullTuple, rightTuple);
         }
 
         return null;
@@ -231,11 +236,11 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
      */
     private boolean getTuplesToJoin() {
         if (leftTuple != null) {
-            if ((rightTuple = rightChild.getNextTuple()) == null) {
+            while ((rightTuple = rightChild.getNextTuple()) == null && leftTuple != null) {
                 leftTuple = leftChild.getNextTuple();
                 rightChild.initialize();
             }
-            return leftTuple == null;
+            return leftTuple != null;
         }
         done = true;
         return false;

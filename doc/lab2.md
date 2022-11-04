@@ -94,12 +94,39 @@ In practice, we need to deal with different types of join in `getTuplesToJoin`:
 * *right-outer join*: Includes non-matching rows from the right table
 
 ```java
-while (getTuplesToJoin()) {
-    if (canJoinTuples())
-        return joinTuples(leftTuple, rightTuple);
-    else if (joinType == JoinType.LEFT_OUTER)
-        return joinTuples(leftTuple, nullTuple);
-    else if (joinType == JoinType.RIGHT_OUTER)
-        return joinTuples(nullTuple, rightTuple);
-}
+while(getTuplesToJoin()){
+    if(canJoinTuples())
+    return joinTuples(leftTuple,rightTuple);
+
+    else if(joinType==JoinType.LEFT_OUTER||
+    (joinType==JoinType.FULL_OUTER&&leftTuple==null))
+    return joinTuples(leftTuple,rightNullTuple);
+
+    else if(joinType==JoinType.RIGHT_OUTER||
+    (joinType==JoinType.FULL_OUTER&&rightTuple==null))
+    return joinTuples(leftNullTuple,rightTuple);
+    }
 ```
+
+## Task #3: Automated Testing
+
+> Create some automated tests to ensure that your inner- and outer-join support
+> works correctly
+
+My simple test cases:
+* testNormalInnerJoin: Inner Join on 2 normal tables
+* testNormalLeftOuterJoin: Left Outer Join on 2 normal tables
+* testNormalRightOuterJoin: Right Outer Join on 2 normal tables
+* testEmptyLeftOuterJoin: Left Outer Join on empty table (left) and normal
+  table (right)
+* testEmptyRightOuterJoin: Right Outer Join on empty table (right) and normal
+  table (left)
+* testOneRowLeft: Inner Join on table with one row (left) and table with
+  multiple rows (right)
+* testOneRowRight: Inner Join on table with one row (right) and table with
+  multiple rows (left)
+* testInnerJoinWhere: Cross Join with WHERE
+* testThreeInnerJoin: Inner Join on 3 tables
+
+NanoDB supports: INNER JOIN, FULL OUTER JOIN, LEFT OUTER JOIN, RIGHT OUTER JOIN,
+CROSS JOIN. The SQL statements supports most of SQL queries without GROUP BY.
