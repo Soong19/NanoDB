@@ -10,7 +10,10 @@ import edu.caltech.nanodb.storage.StorageManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 
 /**
@@ -70,12 +73,10 @@ public class SimplePlanner implements Planner {
             logger.debug("From: 0 table");
             // example: SELECT 2 + 3 AS five;
             plan = new ProjectNode(selClause.getSelectValues());
-        } else if (fromClause.isBaseTable()) {
-            logger.debug("From: single table");
-            // no where because handle after
-            plan = makeSimpleSelect(fromClause.getTableName(), null, null);
         } else {
-            throw new UnsupportedOperationException("Not implemented:  join or subquery");
+            // non-Join: no predicate
+            // Join: ON or USING is defined in fromClause
+            plan = makeSelect(fromClause);
         }
 
         // 2. WhereClause: add where clause
@@ -102,6 +103,44 @@ public class SimplePlanner implements Planner {
 
         plan.prepare();
         return plan;
+    }
+
+    /**
+     * Construct a select node, which involve 1 or more tables.
+     * Support base-table, join, subquery.
+     *
+     * @param fromClause The from-clause contains 0 or 1 or more tables.
+     * @return A new plan-node for evaluating the select operation.
+     */
+    private PlanNode makeSelect(FromClause fromClause) {
+        PlanNode node = null;
+        logger.debug("From: " + fromClause);
+        switch (fromClause.getClauseType()) {
+            case BASE_TABLE:
+                node = makeSimpleSelect(fromClause.getTableName(), null, null);
+                break;
+            case JOIN_EXPR:
+                node = computeJoin(fromClause);
+                break;
+            case SELECT_SUBQUERY:
+            case TABLE_FUNCTION:
+                throw new UnsupportedOperationException("Not implemented:  Subquery or Table Function");
+            default:
+                assert false;
+        }
+        return node;
+    }
+
+    private PlanNode computeJoin(FromClause clause) {
+        if (clause.isBaseTable()) {
+            return makeSimpleSelect(clause.getTableName(), null, null);
+        }
+        assert clause.isJoinExpr();
+
+        // recursive process: compute left & right, then combine them together
+        var l_node = computeJoin(clause.getLeftChild());
+        var r_node = computeJoin(clause.getRightChild());
+        return new NestedLoopJoinNode(l_node, r_node, clause.getJoinType(), clause.getComputedJoinExpr());
     }
 
 
@@ -141,7 +180,6 @@ public class SimplePlanner implements Planner {
 
         // Make a SelectNode to read rows from the table, with the specified
         // predicate.
-        SelectNode selectNode = new FileScanNode(tableInfo, predicate);
-        return selectNode;
+        return new FileScanNode(tableInfo, predicate);
     }
 }

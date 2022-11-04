@@ -3,6 +3,7 @@ package edu.caltech.nanodb.plannodes;
 
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
+import edu.caltech.nanodb.expressions.TupleLiteral;
 import edu.caltech.nanodb.relations.JoinType;
 import edu.caltech.nanodb.relations.Tuple;
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +38,14 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
      * Set to true when we have exhausted all tuples from our subplans.
      */
     private boolean done;
+
+    /**
+     * For outer join, if two tuples do not match, return the corresponding
+     * tuple with nullTuple. i.e., left-outer join does not match, return
+     * JoinTuple(leftTuple, nullTuple).
+     * nullTuple varies by schemas.
+     */
+    private Tuple nullTuple;
 
 
     public NestedLoopJoinNode(PlanNode leftChild, PlanNode rightChild,
@@ -170,6 +179,14 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         // TODO:  to be implemented
         cost = null;
         stats = null;
+
+        if (!(joinType == JoinType.LEFT_OUTER || joinType == JoinType.RIGHT_OUTER || joinType == JoinType.INNER))
+            throw new UnsupportedOperationException("Unimplemented:  join type" + joinType);
+
+        if (joinType == JoinType.LEFT_OUTER)
+            nullTuple = TupleLiteral.ofSize(leftSchema.numColumns());
+        else if (joinType == JoinType.RIGHT_OUTER)
+            nullTuple = TupleLiteral.ofSize(rightSchema.numColumns());
     }
 
 
@@ -177,7 +194,7 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         super.initialize();
 
         done = false;
-        leftTuple = null;
+        leftTuple = leftChild.getNextTuple();
         rightTuple = null;
     }
 
@@ -194,6 +211,10 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         while (getTuplesToJoin()) {
             if (canJoinTuples())
                 return joinTuples(leftTuple, rightTuple);
+            else if (joinType == JoinType.LEFT_OUTER)
+                return joinTuples(leftTuple, nullTuple);
+            else if (joinType == JoinType.RIGHT_OUTER)
+                return joinTuples(nullTuple, rightTuple);
         }
 
         return null;
@@ -202,24 +223,20 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
 
     /**
      * This helper function implements the logic that sets {@link #leftTuple}
-     * and {@link #rightTuple} based on the nested-loops logic.
+     * and {@link #rightTuple} based on the nested-loops logic, return every
+     * <b>possible</b> pair.
      *
      * @return {@code true} if another pair of tuples was found to join, or
      * {@code false} if no more pairs of tuples are available to join.
      */
     private boolean getTuplesToJoin() {
-        while (leftTuple != null) {
-            if (rightTuple == null) {
-                // finish a cycle, start another
-                rightChild.initialize();
+        if (leftTuple != null) {
+            if ((rightTuple = rightChild.getNextTuple()) == null) {
                 leftTuple = leftChild.getNextTuple();
+                rightChild.initialize();
             }
-            rightTuple = rightChild.getNextTuple();
-            if (leftTuple != null && rightTuple != null) {
-                return true;
-            }
+            return leftTuple == null;
         }
-        // no more pairs, have walked through every pair
         done = true;
         return false;
     }

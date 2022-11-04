@@ -69,8 +69,7 @@ if (ORDER-BY-clause is present)
 plan = add_SELECT_clause_to(plan);
 ```
 
-The implementation is very straightforward: behave differently among every
-clause.
+The implementation is very straightforward: behave varies by clause.
 
 ## Task #2: Nested-Loop Join
 
@@ -87,4 +86,20 @@ for tr in r:
     for ts in s:
         if pred(tr, ts):
             add join(tr, ts) to result
+```
+
+In practice, we need to deal with different types of join in `getTuplesToJoin`:
+* *inner join*: Basic join return all matching tuples
+* *left-outer join*: Includes non-matching rows from the left table
+* *right-outer join*: Includes non-matching rows from the right table
+
+```java
+while (getTuplesToJoin()) {
+    if (canJoinTuples())
+        return joinTuples(leftTuple, rightTuple);
+    else if (joinType == JoinType.LEFT_OUTER)
+        return joinTuples(leftTuple, nullTuple);
+    else if (joinType == JoinType.RIGHT_OUTER)
+        return joinTuples(nullTuple, rightTuple);
+}
 ```
