@@ -12,8 +12,7 @@
   works correctly
 
 Before starting the assignment,
-read [数据库内核杂谈](https://www.infoq.cn/theme/46)
-first.
+read [数据库内核杂谈](https://www.infoq.cn/theme/46) first.
 
 ## Task #1: NanoDB Query Planner
 
@@ -72,3 +71,20 @@ plan = add_SELECT_clause_to(plan);
 
 The implementation is very straightforward: behave differently among every
 clause.
+
+## Task #2: Nested-Loop Join
+
+> Complete the implementation of a nested-loop join plan-node that supports
+> inner and left-outer joins
+
+*Nested-Loop Join* is a naive (stupid) way to implement Join, but it is so easy
+that it has been implemented by almost every DBMS. The pseudocode illustrates
+how it works:
+
+```
+# For table r and s, walk through all tuples using a 2-for loop
+for tr in r:
+    for ts in s:
+        if pred(tr, ts):
+            add join(tr, ts) to result
+```

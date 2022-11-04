@@ -1,19 +1,14 @@
 package edu.caltech.nanodb.plannodes;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
-import edu.caltech.nanodb.queryeval.ColumnStats;
-import edu.caltech.nanodb.queryeval.PlanCost;
-import edu.caltech.nanodb.queryeval.SelectivityEstimator;
 import edu.caltech.nanodb.relations.JoinType;
 import edu.caltech.nanodb.relations.Tuple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 
 /**
@@ -24,7 +19,7 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
     /**
      * A logging object for reporting anything interesting that happens.
      */
-    private static Logger logger = LogManager.getLogger(NestedLoopJoinNode.class);
+    private static final Logger logger = LogManager.getLogger(NestedLoopJoinNode.class);
 
 
     /**
@@ -172,8 +167,9 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         // Use the parent class' helper-function to prepare the schema.
         prepareSchemaStats();
 
-        // TODO:  Implement the rest
+        // TODO:  to be implemented
         cost = null;
+        stats = null;
     }
 
 
@@ -212,7 +208,19 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
      * {@code false} if no more pairs of tuples are available to join.
      */
     private boolean getTuplesToJoin() {
-        // TODO:  Implement
+        while (leftTuple != null) {
+            if (rightTuple == null) {
+                // finish a cycle, start another
+                rightChild.initialize();
+                leftTuple = leftChild.getNextTuple();
+            }
+            rightTuple = rightChild.getNextTuple();
+            if (leftTuple != null && rightTuple != null) {
+                return true;
+            }
+        }
+        // no more pairs, have walked through every pair
+        done = true;
         return false;
     }
 
