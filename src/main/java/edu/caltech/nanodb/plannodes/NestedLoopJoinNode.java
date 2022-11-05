@@ -1,19 +1,15 @@
 package edu.caltech.nanodb.plannodes;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
-import edu.caltech.nanodb.queryeval.ColumnStats;
-import edu.caltech.nanodb.queryeval.PlanCost;
-import edu.caltech.nanodb.queryeval.SelectivityEstimator;
+import edu.caltech.nanodb.expressions.TupleLiteral;
 import edu.caltech.nanodb.relations.JoinType;
 import edu.caltech.nanodb.relations.Tuple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 
 /**
@@ -24,7 +20,7 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
     /**
      * A logging object for reporting anything interesting that happens.
      */
-    private static Logger logger = LogManager.getLogger(NestedLoopJoinNode.class);
+    private static final Logger logger = LogManager.getLogger(NestedLoopJoinNode.class);
 
 
     /**
@@ -42,6 +38,18 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
      * Set to true when we have exhausted all tuples from our subplans.
      */
     private boolean done;
+
+    /**
+     * For outer join, if two tuples do not match, return the corresponding
+     * tuple with nullTuple. For LEFT OUTER, FULL OUTER, CROSS.
+     */
+    private Tuple leftNullTuple;
+
+    /**
+     * For outer join, if two tuples do not match, return the corresponding
+     * tuple with nullTuple. For RIGHT OUTER, FULL OUTER, CROSS.
+     */
+    private Tuple rightNullTuple;
 
 
     public NestedLoopJoinNode(PlanNode leftChild, PlanNode rightChild,
@@ -172,8 +180,14 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         // Use the parent class' helper-function to prepare the schema.
         prepareSchemaStats();
 
-        // TODO:  Implement the rest
+        // TODO:  to be implemented
         cost = null;
+
+        if (joinType == JoinType.SEMIJOIN || joinType == JoinType.ANTIJOIN)
+            throw new UnsupportedOperationException("Unimplemented:  join type" + joinType);
+
+        leftNullTuple = TupleLiteral.ofSize(leftSchema.numColumns());
+        rightNullTuple = TupleLiteral.ofSize(rightSchema.numColumns());
     }
 
 
@@ -181,7 +195,7 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         super.initialize();
 
         done = false;
-        leftTuple = null;
+        leftTuple = leftChild.getNextTuple();
         rightTuple = null;
     }
 
@@ -198,6 +212,14 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         while (getTuplesToJoin()) {
             if (canJoinTuples())
                 return joinTuples(leftTuple, rightTuple);
+
+            else if (joinType == JoinType.LEFT_OUTER ||
+                (joinType == JoinType.FULL_OUTER && leftTuple == null))
+                return joinTuples(leftTuple, rightNullTuple);
+
+            else if (joinType == JoinType.RIGHT_OUTER ||
+                (joinType == JoinType.FULL_OUTER && rightTuple == null))
+                return joinTuples(leftNullTuple, rightTuple);
         }
 
         return null;
@@ -206,13 +228,21 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
 
     /**
      * This helper function implements the logic that sets {@link #leftTuple}
-     * and {@link #rightTuple} based on the nested-loops logic.
+     * and {@link #rightTuple} based on the nested-loops logic, return every
+     * <b>possible</b> pair.
      *
      * @return {@code true} if another pair of tuples was found to join, or
      * {@code false} if no more pairs of tuples are available to join.
      */
     private boolean getTuplesToJoin() {
-        // TODO:  Implement
+        if (leftTuple != null) {
+            while ((rightTuple = rightChild.getNextTuple()) == null && leftTuple != null) {
+                leftTuple = leftChild.getNextTuple();
+                rightChild.initialize();
+            }
+            return leftTuple != null;
+        }
+        done = true;
         return false;
     }
 

@@ -117,8 +117,8 @@ public abstract class QueryCommand extends Command {
 
             // Print out the evaluation statistics.
 
-//            out.printf("%s took %f sec to evaluate.%n", queryType,
-//                stats.getElapsedTimeSecs());
+            out.printf("%s took %f sec to evaluate.%n", queryType,
+                stats.getElapsedTimeSecs());
 
             String desc;
             switch (queryType) {
@@ -141,7 +141,7 @@ public abstract class QueryCommand extends Command {
                 default:
                     desc = "(UNKNOWN) ";
             }
-//            out.println(desc + stats.getRowsProduced() + " rows.");
+            out.println(desc + stats.getRowsProduced() + " rows.");
         } else {
             out.println("Explain Plan:");
             plan.printNodeTree(out, true, "    ");

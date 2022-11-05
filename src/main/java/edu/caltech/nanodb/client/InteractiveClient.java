@@ -79,6 +79,7 @@ public abstract class InteractiveClient {
             while (true) {
                 try {
                     if (hasConsole) {
+                        // NOTE: Code block below does not flush in fact
                         if (firstLine) {
                             System.out.print(CMDPROMPT_FIRST);
                             System.out.flush();
