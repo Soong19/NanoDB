@@ -165,9 +165,10 @@ public class SimplePlanner implements Planner {
 
         // Process on GROUP BY
         PlanUtils.validateExpression(groupByExprs, "GROUP BY");
-        if (!processor.getAggregates().isEmpty()) {
-            plan = new HashedGroupAggregateNode(plan, groupByExprs, processor.getAggregates());
-            plan = PlanUtils.addPredicateToPlan(plan, havingExpr);
+        if (!groupByExprs.isEmpty() || !processor.getAggregates().isEmpty()) {
+                plan = new HashedGroupAggregateNode(plan, groupByExprs, processor.getAggregates());
+            if (havingExpr != null)
+                plan = PlanUtils.addPredicateToPlan(plan, havingExpr);
         }
 
         return plan;
