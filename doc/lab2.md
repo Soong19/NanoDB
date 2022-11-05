@@ -155,3 +155,7 @@ Implement approach:
 2. Implement basic Aggregation expression: Use `AggregationProcessor` to
    validate whether there is a nested-aggregation, and replace the aggregation
    with a placeholder `ColumnValue`
+3. Implement Aggregation expression with `GROUP BY`: Add group by attributes
+   to the aggregate and group by node
+4. Implement Aggregation expression with `GROUP BY` and `HAVING`: Add a filter
+   node as the parent node

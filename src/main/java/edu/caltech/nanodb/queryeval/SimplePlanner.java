@@ -3,7 +3,6 @@ package edu.caltech.nanodb.queryeval;
 
 import edu.caltech.nanodb.expressions.AggregationProcessor;
 import edu.caltech.nanodb.expressions.Expression;
-import edu.caltech.nanodb.functions.AggregateFunction;
 import edu.caltech.nanodb.plannodes.*;
 import edu.caltech.nanodb.queryast.FromClause;
 import edu.caltech.nanodb.queryast.SelectClause;
@@ -12,10 +11,7 @@ import edu.caltech.nanodb.storage.StorageManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 
 /**
@@ -30,7 +26,7 @@ public class SimplePlanner implements Planner {
     /**
      * A logging object for reporting anything interesting that happens.
      */
-    private static Logger logger = LogManager.getLogger(SimplePlanner.class);
+    private static final Logger logger = LogManager.getLogger(SimplePlanner.class);
 
 
     /**
@@ -89,28 +85,7 @@ public class SimplePlanner implements Planner {
         }
 
         // 3. Grouping & Aggregation: handle_grouping and aggregation
-        //==== TODO: For now, just put them together. Waiting for simplification.
-
-        // Process on SELECT and HAVING
-        var processor = new AggregationProcessor();
-        var selectValues = selClause.getSelectValues();
-        for (var sv : selectValues) {
-            // Skip select-values that aren't expressions
-            if (!sv.isExpression())
-                continue;
-            Expression e = sv.getExpression().traverse(processor);
-            sv.setExpression(e);
-        }
-
-        // Process on GROUP BY
-        PlanUtils.validateExpression(selClause.getGroupByExprs(), "GROUP BY");
-        if (!selClause.getGroupByExprs().isEmpty()) {
-            throw new UnsupportedOperationException("Not implemented:  Grouping or Aggregation");
-        }
-
-        plan = new HashedGroupAggregateNode(plan, selClause.getGroupByExprs(), processor.getAggregates());
-
-        //==== TODO: For now, just put them together. Waiting for simplification.
+        plan = handleGroupAggregate(plan, selClause);
 
         // 4. Order By: add order-by clause
         if (!selClause.getOrderByExprs().isEmpty()) {
@@ -142,7 +117,7 @@ public class SimplePlanner implements Planner {
                 node = makeSimpleSelect(fromClause.getTableName(), null, null);
                 break;
             case JOIN_EXPR:
-                node = computeJoin(fromClause);
+                node = PlanUtils.computeJoin(fromClause, storageManager);
                 break;
             case SELECT_SUBQUERY:
             case TABLE_FUNCTION:
@@ -153,18 +128,49 @@ public class SimplePlanner implements Planner {
         return node;
     }
 
-    private PlanNode computeJoin(FromClause clause) {
-        if (clause.isBaseTable()) {
-            return makeSimpleSelect(clause.getTableName(), null, null);
+    /**
+     * Process on <tt>GROUP BY</tt>, <tt>HAVING</tt> and {@code Aggregation}.
+     * <p>
+     * First, map every aggregate to an {@code ColumnValue} with auto-generated
+     * name.
+     * Second, initialize {@link HashedGroupAggregateNode} with mapping and
+     * aggregation calls.
+     * Third, add an {@link SimpleFilterNode} if necessary.
+     *
+     * @param plan      child node to getNextTuple
+     * @param selClause select clause to be checked
+     * @return plan node processed <tt>GROUP BY</tt> and {@code Aggregation}
+     */
+    private PlanNode handleGroupAggregate(PlanNode plan, SelectClause selClause) {
+        logger.debug("Group By: " + selClause.getHavingExpr());
+
+        var processor = new AggregationProcessor();
+
+        var selectValues = selClause.getSelectValues();
+        var groupByExprs = selClause.getGroupByExprs();
+        var havingExpr = selClause.getHavingExpr();
+
+        // Process on SELECT
+        for (var sv : selectValues) {
+            // Skip select-values that aren't expressions
+            if (!sv.isExpression())
+                continue;
+            Expression e = sv.getExpression().traverse(processor);
+            sv.setExpression(e);
         }
-        assert clause.isJoinExpr();
 
-        // recursive process: compute left & right, then combine them together
-        var l_node = computeJoin(clause.getLeftChild());
-        var r_node = computeJoin(clause.getRightChild());
+        // Process on HAVING
+        if (havingExpr != null)
+            havingExpr = havingExpr.traverse(processor);
 
-        PlanUtils.validateExpression(clause.getComputedJoinExpr(), "ON");
-        return new NestedLoopJoinNode(l_node, r_node, clause.getJoinType(), clause.getComputedJoinExpr());
+        // Process on GROUP BY
+        PlanUtils.validateExpression(groupByExprs, "GROUP BY");
+        if (!processor.getAggregates().isEmpty()) {
+            plan = new HashedGroupAggregateNode(plan, groupByExprs, processor.getAggregates());
+            plan = PlanUtils.addPredicateToPlan(plan, havingExpr);
+        }
+
+        return plan;
     }
 
 

@@ -1,7 +1,6 @@
 package edu.caltech.nanodb.expressions;
 
 import edu.caltech.nanodb.functions.AggregateFunction;
-import edu.caltech.nanodb.functions.Function;
 import edu.caltech.nanodb.queryeval.InvalidSQLException;
 
 import java.util.HashMap;
@@ -73,8 +72,11 @@ public class AggregationProcessor implements ExpressionProcessor {
             var call = (FunctionCall) node;
             var func = (call).getFunction();
             if (func instanceof AggregateFunction) {
+                hasAggregate = false;
+
                 var columnName = node.toString();
                 aggregates.put(columnName, call);
+
                 return new ColumnValue(new ColumnName(columnName));
             }
         }
