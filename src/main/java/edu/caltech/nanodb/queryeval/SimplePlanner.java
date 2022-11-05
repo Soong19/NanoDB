@@ -98,6 +98,10 @@ public class SimplePlanner implements Planner {
             plan = new ProjectNode(plan, selClause.getSelectValues());
         }
 
+        // 6. Limit & Offset: add a limiter for results
+        if (selClause.getLimit() != 0 || selClause.getOffset() != 0)
+            plan = new LimitOffsetNode(plan, selClause.getLimit(), selClause.getOffset());
+
         plan.prepare();
         return plan;
     }

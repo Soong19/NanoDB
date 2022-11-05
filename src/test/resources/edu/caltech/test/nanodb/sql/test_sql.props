@@ -29,6 +29,22 @@ setup_testSelectProject = \
     INSERT INTO test_select_project VALUES ( 6,   'blue',   50 );
 
 #============================================================================
+# LIMIT AND OFFSET
+#
+
+# This setup SQL is used for the limit-offset test case
+setup_testLimitOffset = \
+    CREATE TABLE test_limit_offset ( \
+        a INTEGER, \
+        b INTEGER \
+    ); \
+    INSERT INTO test_limit_offset VALUES ( 0, NULL ); \
+    INSERT INTO test_limit_offset VALUES ( 1, 10 ); \
+    INSERT INTO test_limit_offset VALUES ( 2, 20 ); \
+    INSERT INTO test_limit_offset VALUES ( 3, 30 ); \
+    INSERT INTO test_limit_offset VALUES ( 4, NULL );
+
+#============================================================================
 # INNER AND OUTER JOIN
 #
 

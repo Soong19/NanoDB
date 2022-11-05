@@ -159,3 +159,9 @@ Implement approach:
    to the aggregate and group by node
 4. Implement Aggregation expression with `GROUP BY` and `HAVING`: Add a filter
    node as the parent node
+
+## Task #5: Extra Credit
+
+> Implementing a LimitOffsetNode
+
+Do not forget to perform test on it though it is easy to implement.
