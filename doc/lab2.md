@@ -10,6 +10,8 @@
   inner and left-outer joins
 * Create some automated tests to ensure that your inner- and outer-join support
   works correctly
+* Implement a processor on aggregation that scans and transforms expressions,
+  identifies and replaces aggregate functions
 
 Before starting the assignment,
 read [数据库内核杂谈](https://www.infoq.cn/theme/46) first.
@@ -130,3 +132,26 @@ My simple test cases:
 
 NanoDB supports: INNER JOIN, FULL OUTER JOIN, LEFT OUTER JOIN, RIGHT OUTER JOIN,
 CROSS JOIN. The SQL statements supports most of SQL queries without GROUP BY.
+
+## Task #4: Grouping and Aggregation
+
+> Implement a processor on aggregation that scans and transforms expressions,
+> identifies and replaces aggregate functions
+
+The two main tasks:
+1. Scanning and/or Transforming Expressions
+2. Identifying and Replacing Aggregate Functions
+
+The three exceptions:
+1. No nested function call
+2. No `WHERE`/`ON` containing aggregation
+3. No `GROUP BY` containing aggregation
+
+---
+
+Implement approach:
+1. Validate whether expressions contain aggregation in 3 situations
+   (`WHERE`/`ON`/`GROUP BY`)
+2. Implement basic Aggregation expression: Use `AggregationProcessor` to
+   validate whether there is a nested-aggregation, and replace the aggregation
+   with a placeholder `ColumnValue`

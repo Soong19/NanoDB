@@ -3,6 +3,11 @@ package edu.caltech.nanodb.plannodes;
 
 import edu.caltech.nanodb.expressions.BooleanOperator;
 import edu.caltech.nanodb.expressions.Expression;
+import edu.caltech.nanodb.expressions.FunctionCall;
+import edu.caltech.nanodb.functions.AggregateFunction;
+import edu.caltech.nanodb.queryeval.InvalidSQLException;
+
+import java.util.List;
 
 
 /**
@@ -45,8 +50,7 @@ public class PlanUtils {
      * @return the (possibly new) top plan-node for the plan with the selection
      * predicate applied
      */
-    public static PlanNode addPredicateToPlan(PlanNode plan,
-                                              Expression predicate) {
+    public static PlanNode addPredicateToPlan(PlanNode plan, Expression predicate) {
         if (plan instanceof SelectNode) {
             SelectNode selectNode = (SelectNode) plan;
 
@@ -69,8 +73,7 @@ public class PlanUtils {
                 if (!handled) {
                     // Oops, the current file-scan predicate wasn't an AND.
                     // Create an AND expression instead.
-                    BooleanOperator bool =
-                        new BooleanOperator(BooleanOperator.Type.AND_EXPR);
+                    BooleanOperator bool = new BooleanOperator(BooleanOperator.Type.AND_EXPR);
                     bool.addTerm(fsPred);
                     bool.addTerm(predicate);
                     selectNode.predicate = bool;
@@ -85,5 +88,35 @@ public class PlanUtils {
         }
 
         return plan;
+    }
+
+    /**
+     * Ensure <tt>WHERE</tt>, <tt>ON</tt> contain no aggregates.
+     *
+     * @param expression the expression to be checked
+     * @param clauseName clause name for more specific exception (it's better to
+     *                   use a record class to record)
+     */
+    public static void validateExpression(Expression expression, String clauseName) {
+        if (expression instanceof FunctionCall) {
+            var func = ((FunctionCall) expression).getFunction();
+            if (func instanceof AggregateFunction) {
+                throw new InvalidSQLException(
+                    "clause " + clauseName.toUpperCase() + " cannot contain aggregates");
+            }
+        }
+    }
+
+    /**
+     * Ensure <tt>GROUP BY</tt> contains no aggregates.
+     *
+     * @param expressions the expressions to be checked
+     * @param clauseName clause name for more specific exception (it's better to
+     *                   use a record class to record)
+     */
+    public static void validateExpression(List<Expression> expressions, String clauseName) {
+        for (var expression : expressions) {
+            validateExpression(expression, clauseName);
+        }
     }
 }

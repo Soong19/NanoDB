@@ -1,7 +1,9 @@
 package edu.caltech.nanodb.queryeval;
 
 
+import edu.caltech.nanodb.expressions.AggregationProcessor;
 import edu.caltech.nanodb.expressions.Expression;
+import edu.caltech.nanodb.functions.AggregateFunction;
 import edu.caltech.nanodb.plannodes.*;
 import edu.caltech.nanodb.queryast.FromClause;
 import edu.caltech.nanodb.queryast.SelectClause;
@@ -82,13 +84,33 @@ public class SimplePlanner implements Planner {
         // 2. WhereClause: add where clause
         if (whereClause != null) {
             logger.debug("Where: " + whereClause);
+            PlanUtils.validateExpression(whereClause, "WHERE");
             plan = PlanUtils.addPredicateToPlan(plan, whereClause);
         }
 
-        // 3. Grouping & Aggregation: TODO
+        // 3. Grouping & Aggregation: handle_grouping and aggregation
+        //==== TODO: For now, just put them together. Waiting for simplification.
+
+        // Process on SELECT and HAVING
+        var processor = new AggregationProcessor();
+        var selectValues = selClause.getSelectValues();
+        for (var sv : selectValues) {
+            // Skip select-values that aren't expressions
+            if (!sv.isExpression())
+                continue;
+            Expression e = sv.getExpression().traverse(processor);
+            sv.setExpression(e);
+        }
+
+        // Process on GROUP BY
+        PlanUtils.validateExpression(selClause.getGroupByExprs(), "GROUP BY");
         if (!selClause.getGroupByExprs().isEmpty()) {
             throw new UnsupportedOperationException("Not implemented:  Grouping or Aggregation");
         }
+
+        plan = new HashedGroupAggregateNode(plan, selClause.getGroupByExprs(), processor.getAggregates());
+
+        //==== TODO: For now, just put them together. Waiting for simplification.
 
         // 4. Order By: add order-by clause
         if (!selClause.getOrderByExprs().isEmpty()) {
@@ -140,6 +162,8 @@ public class SimplePlanner implements Planner {
         // recursive process: compute left & right, then combine them together
         var l_node = computeJoin(clause.getLeftChild());
         var r_node = computeJoin(clause.getRightChild());
+
+        PlanUtils.validateExpression(clause.getComputedJoinExpr(), "ON");
         return new NestedLoopJoinNode(l_node, r_node, clause.getJoinType(), clause.getComputedJoinExpr());
     }
 
