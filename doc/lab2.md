@@ -1,6 +1,6 @@
 # SQL Translation and Joins
 
-> [Assignment 2](http://courses.cms.caltech.edu/cs122/assignments/lab2.html)
+> [Assignment 2](http://courses.cms.caltech.edu/cs122/assignments/lab2.html):
 > SQL Translation and Joins
 > ([Telegraph](https://telegra.ph/Assignment-2-SQL-Translation-and-Joins-11-02))
 
@@ -96,18 +96,18 @@ In practice, we need to deal with different types of join in `getTuplesToJoin`:
 * *right-outer join*: Includes non-matching rows from the right table
 
 ```java
-while(getTuplesToJoin()){
-    if(canJoinTuples())
-    return joinTuples(leftTuple,rightTuple);
+while (getTuplesToJoin()) {
+    if (canJoinTuples())
+        return joinTuples(leftTuple,rightTuple);
 
-    else if(joinType==JoinType.LEFT_OUTER||
-    (joinType==JoinType.FULL_OUTER&&leftTuple==null))
-    return joinTuples(leftTuple,rightNullTuple);
+    else if (joinType==JoinType.LEFT_OUTER ||
+            (joinType==JoinType.FULL_OUTER&&leftTuple==null))
+        return joinTuples(leftTuple,rightNullTuple);
 
-    else if(joinType==JoinType.RIGHT_OUTER||
-    (joinType==JoinType.FULL_OUTER&&rightTuple==null))
-    return joinTuples(leftNullTuple,rightTuple);
-    }
+    else if (joinType==JoinType.RIGHT_OUTER ||
+            (joinType==JoinType.FULL_OUTER&&rightTuple==null))
+        return joinTuples(leftNullTuple,rightTuple);
+}
 ```
 
 ## Task #3: Automated Testing
