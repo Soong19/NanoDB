@@ -10,20 +10,35 @@ A1.  Without going into the details of how you handle grouping and
      aggregation or joins, list the general sequence of steps that your
      planner's makePlan() method follows to translate a SQL query into
      an execution plan.
+LH:  (1) FromClause: generate plan node
+     (2) WhereClause: add where clause
+     (3) Grouping & Aggregation: handle_grouping and aggregation
+     (4) Order By: add order-by clause
+     (5) Project: add a filter for columns
+     (6) Limit & Offset: add a limiter for rows
 
 A2.  Does your planner try to simplify plans in specific circumstances,
      e.g. when a "trivial project" is used (i.e. "SELECT * FROM ...") in
      your planner?  Briefly enumerate all simplifications and optimizations
      your planner employs.
+LH:  No, just normal stuff.
+     (I do not think it is optimization. To be honest, I am just lazy...)
 
 A3.  Describe how you generate the execution-plan fragment for the query's
      FromClause.  Make sure to touch on what you do in the three cases your
      planner is expected to handle - tables, subqueries in the FROM clause,
      and joins.
+LH:  FromClause is used for leave node.
+     (1) 0 table: Make a project node
+     (2) 1 table: Make a simple file scan node
+     (3) 2 or more tables: Compute join => construct a join tree
 
 A4.  Describe how you implemented support for grouping and aggregation.
      Be sure to note any variations from the approach outlined in class,
      if there are any.
+LH:  Make mapping for SELECT and HAVING before initialization of GROUP BY,
+     map a ColumnValue to an AggregateFunction.
+
 
 B:  Nested-Loop Join
 --------------------
@@ -38,14 +53,56 @@ B1.  The join algorithm stated in class is really only suitable for
      algorithm executes, and what state must be saved so that the
      operation can resume at the appropriate place when the next row
      must be returned.
+LH:  Pseudocode:
+     FUNCTION next:
+          IF done: RETURN NULL
+          END IF
+
+          WHILE next_pair:
+               IF canJoin:
+                    RETURN joinedTuple(leftTuple, rightTuple)
+               END IF
+          END WHILE
+
+          RETURN NULL
+
+     FUNCTION next_pair:
+          # leftTuple initialized in prepare phase
+          IF leftTuple = NULL:
+               rightTuple = rightChild.next()
+
+               # New loop: left forward, right re-init
+               WHILE rightTuple = NULL AND leftTuple != NULL:
+                   rightChild.init()
+                   leftTuple = leftChild.next()
+               END WHILE
+
+               RETURN leftTuple != NULL
+          END IF
+
+          DONE = TRUE;
+          RETURN FALSE;
 
 B2.  What tweaks did you need to introduce into the implementation for
      left outer joins?  Keep your answer brief, but please also be specific.
+LH:  In next function, after canJoin check, check whether leftTuple is alive
+     if is, emit (leftTuple, rightNullTuple)
 
 B3.  Enumerate your nested-loop join test cases, following this form:
-
-     * <test-case class name>.<test function>
-       <brief one-sentence description of what the test exercises>
+LH:  All in TestSimpleJoins:
+     * testNormalInnerJoin: Inner Join on 2 normal tables
+     * testNormalLeftOuterJoin: Left Outer Join on 2 normal tables
+     * testNormalRightOuterJoin: Right Outer Join on 2 normal tables
+     * testEmptyLeftOuterJoin: Left Outer Join on empty table (left) and normal
+       table (right)
+     * testEmptyRightOuterJoin: Right Outer Join on empty table (right) and normal
+       table (left)
+     * testOneRowLeft: Inner Join on table with one row (left) and table with
+       multiple rows (right)
+     * testOneRowRight: Inner Join on table with one row (right) and table with
+       multiple rows (left)
+     * testInnerJoinWhere: Cross Join with WHERE
+     * testThreeInnerJoin: Inner Join on 3 tables
 
 C:  Extra Credit [OPTIONAL]
 ---------------------------
@@ -54,12 +111,14 @@ If you implemented any extra-credit tasks for this assignment, describe
 them here.  The description should be like this, with stuff in "<>" replaced.
 (The value i starts at 1 and increments...)
 
-D<i>:  <one-line description>
+D<1>:  Limit & Offset
 
-     <brief summary of what you did, including the specific classes that
-     we should look at for your implementation>
+     src: Implement LIMIT OFFSET primitive. Bulk of the work is in LimitOffsetNode
+          class, the rest is in SimplePlanner (add a filter for rows if LIMIT).
 
-     <brief summary of test-cases that demonstrate/exercise your extra work>
+     test: TestLimitOffset
+
+D<2>:  OUTER Join, CROSS Join (same as previous join)
 
 E:  Feedback [OPTIONAL]
 -----------------------
