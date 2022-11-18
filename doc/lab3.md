@@ -6,7 +6,43 @@
 
 * Complete the implementation of statistics-collection from table data.
 * Complete the plan-costing computations for various plan-nodes.
-* Compute the selectivity of various predicates that can appear within execution plans.
+* Compute the selectivity of various predicates that can appear within execution
+  plans.
 * Update the statistics of tuples output by plan-nodes based on predicates.
 * Perform some simple experiments with your implementations.
 
+## Prepare
+
+Plan costing is **imprecise** operation, and it is involved to implement.
+However, it is really important for a commercial database system to have a good
+planner (maybe based on plan costing). It is critical for a DBMS to choose a
+"better" physical plan from a lot of possible plans for single one logical plan.
+
+## Task #1: Statistics Collection
+
+> Complete the implementation of statistics-collection from table data.
+
+* For each table, store table statistics in `TableStats`
+    * T(R): number of tuples in R
+    * A(R): average size of a tuple in R
+    * B(R): number of data pages in R
+* For each column of a table, store column statistics in `ColumnStats`
+    * V(R,c): number of distinct non-null values of column c in R
+    * N(R,c): number of null values of column c in R
+    * MAX(R,c): maximum value of column c in R (do not collect for string)
+    * MIN(R,c): minimum value of column c in R
+
+What we need to do is to implement `analyze` in `HeapTupleFile`:
+```
+for each data block in the tuple file:
+    update stats based on the data block
+    (e.g. use tuple_data_end – tuple_data_start to update a "total bytes in all tuples" value)
+   
+    for each tuple in the current data block:
+        update stats based on the tuple (e.g. increment the tuple-count)
+        for each column in the current tuple:
+            update column-level stats
+```
+
+For implementation details, use util/static class to help us. It is very
+straightforward.

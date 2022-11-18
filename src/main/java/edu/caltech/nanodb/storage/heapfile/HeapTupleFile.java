@@ -1,6 +1,8 @@
 package edu.caltech.nanodb.storage.heapfile;
 
 
+import edu.caltech.nanodb.queryeval.ColumnStats;
+import edu.caltech.nanodb.queryeval.ColumnStatsCollector;
 import edu.caltech.nanodb.queryeval.TableStats;
 import edu.caltech.nanodb.relations.Schema;
 import edu.caltech.nanodb.relations.Tuple;
@@ -455,10 +457,67 @@ public class HeapTupleFile implements TupleFile {
     }
 
 
+    /**
+     * <tt>ANALYZE</tt> to collect table statistics and each column's statistics.
+     *
+     * <p>
+     * For each table, store table statistics in `TableStats` <br>
+     * 1. T(R): number of tuples in R <br>
+     * 2. A(R): average size of a tuple in R <br>
+     * 3. B(R): number of data pages in R <br>
+     *
+     * <p>
+     * For each column of a table, store column statistics in `ColumnStats` <br>
+     * 1. V(R,c): number of distinct non-null values of column c in R <br>
+     * 2. N(R,c): number of null values of column c in R <br>
+     * 3. MAX(R,c): maximum value of column c in R (do not collect for string) <br>
+     * 4. MIN(R,c): minimum value of column c in R <br>
+     */
     @Override
     public void analyze() {
-        // TODO:  Complete this implementation.
-        throw new UnsupportedOperationException("Not yet implemented!");
+        var numCols = schema.numColumns();
+
+        var numTuples = 0;
+        var numPages = 0;
+        var totalSize = 0;
+        var collectors = new ArrayList<ColumnStatsCollector>();
+        for (int i = 0; i < numCols; i++) {
+            collectors.add(new ColumnStatsCollector(schema.getColumnInfo(i).getType().getBaseType()));
+        }
+
+        // For each page
+        for (int iPage = 1; /* dbPage is not null */ ; iPage++) {
+            var page = storageManager.loadDBPage(dbFile, iPage);
+            if (page == null)
+                break; // no more page
+
+            numPages++;
+            totalSize += DataPage.getTupleDataEnd(page) - DataPage.getTupleDataStart(page);
+            // For each tuple in the page
+            for (int i = 0; i < DataPage.getNumSlots(page); i++) {
+                var offset = DataPage.getSlotValue(page, i);
+                if (offset == DataPage.EMPTY_SLOT) {
+                    continue;
+                }
+                numTuples += 1;
+                var tup = new HeapFilePageTuple(schema, page, i, offset);
+                // For each column in the tuple
+                for (int k = 0; k < numCols; k++) {
+                    collectors.get(k).addValue(tup.getColumnValue(k));
+                }
+                tup.unpin();
+            }
+            page.unpin();
+        }
+
+        // Maintain stats in data structures
+        var cols = new ArrayList<ColumnStats>();
+        for (int i = 0; i < numCols; i++) {
+            cols.add(collectors.get(i).getColumnStats());
+        }
+        stats = new TableStats(numPages, numTuples, (float) totalSize / numTuples, cols);
+        // Serialize them
+        heapFileManager.saveMetadata(this);
     }
 
 
