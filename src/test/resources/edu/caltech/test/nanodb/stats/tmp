@@ -1,0 +1,25 @@
+WARNING: Your jar file is out of date. Please  re-run 'mvn package' to rebuild the project.
+Statistics for table states:
+	51 tuples, 1 data pages, avg tuple size is 15.7 bytes
+	Column state_id:  51 unique values, 0 null values, min = 1, max = 51
+	Column state_name:  51 unique values, 0 null values, min = null, max = null
+Statistics for table cities:
+	254 tuples, 1 data pages, avg tuple size is 23.8 bytes
+	Column city_id:  254 unique values, 0 null values, min = 1, max = 254
+	Column city_name:  244 unique values, 0 null values, min = null, max = null
+	Column population:  254 unique values, 0 null values, min = 100135, max = 8143197
+	Column state_id:  44 unique values, 0 null values, min = 1, max = 44
+Statistics for table stores:
+	2000 tuples, 4 data pages, avg tuple size is 13.0 bytes
+	Column store_id:  2000 unique values, 0 null values, min = 1, max = 2000
+	Column city_id:  254 unique values, 0 null values, min = 1, max = 254
+	Column property_costs:  882 unique values, 0 null values, min = 0, max = 999000
+Statistics for table employees:
+	24932 tuples, 118 data pages, avg tuple size is 36.4 bytes
+	Column emp_id:  24932 unique values, 0 null values, min = 1, max = 24932
+	Column last_name:  4958 unique values, 0 null values, min = null, max = null
+	Column first_name:  4933 unique values, 0 null values, min = null, max = null
+	Column home_loc_id:  254 unique values, 0 null values, min = 1, max = 254
+	Column work_loc_id:  254 unique values, 0 null values, min = 1, max = 254
+	Column salary:  46 unique values, 0 null values, min = 35000, max = 80000
+	Column manager_id:  11754 unique values, 4259 null values, min = 1, max = 24924

@@ -1,3 +1,4 @@
+set property 'nanodb.enforceKeyConstraints' = false;
 INSERT INTO states VALUES (1, 'Alabama');
 INSERT INTO states VALUES (2, 'Alaska');
 INSERT INTO states VALUES (3, 'Arizona');

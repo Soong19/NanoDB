@@ -46,3 +46,5 @@ for each data block in the tuple file:
 
 For implementation details, use util/static class to help us. It is very
 straightforward.
+
+test script: [stats-test.sh](../src/test/resources/edu/caltech/test/nanodb/stats/stats-test.sh)
