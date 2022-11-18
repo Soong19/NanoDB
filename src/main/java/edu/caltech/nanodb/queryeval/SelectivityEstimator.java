@@ -1,23 +1,17 @@
 package edu.caltech.nanodb.queryeval;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import edu.caltech.nanodb.expressions.ArithmeticOperator;
-import edu.caltech.nanodb.expressions.BooleanOperator;
-import edu.caltech.nanodb.expressions.ColumnValue;
-import edu.caltech.nanodb.expressions.CompareOperator;
-import edu.caltech.nanodb.expressions.Expression;
-import edu.caltech.nanodb.expressions.LiteralValue;
-import edu.caltech.nanodb.expressions.TypeConverter;
-
+import edu.caltech.nanodb.expressions.*;
 import edu.caltech.nanodb.relations.ColumnInfo;
 import edu.caltech.nanodb.relations.SQLDataType;
 import edu.caltech.nanodb.relations.Schema;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import static edu.caltech.nanodb.expressions.CompareOperator.Type.*;
 
 
 /**
@@ -150,15 +144,25 @@ public class SelectivityEstimator {
 
         switch (bool.getType()) {
             case AND_EXPR:
-                // TODO:  Compute selectivity of AND expression.
+                // a AND b AND c
+                for (int i = 0; i < bool.getNumTerms(); i++) {
+                    var term = bool.getTerm(i);
+                    selectivity *= estimateSelectivity(term, exprSchema, stats);
+                }
                 break;
 
             case OR_EXPR:
-                // TODO:  Compute selectivity of OR expression.
+                // a OR b OR c == 1- (~a AND ~b AND ~c)
+                for (int i = 0; i < bool.getNumTerms(); i++) {
+                    var term = bool.getTerm(i);
+                    selectivity *= 1.0f - estimateSelectivity(term, exprSchema, stats);
+                }
+                selectivity = 1.0f - selectivity < 0 ? 0 : selectivity;
                 break;
 
             case NOT_EXPR:
-                // TODO:  Compute selectivity of NOT expression.
+                // NOT a
+                selectivity -= estimateSelectivity(bool.getTerm(0), exprSchema, stats);
                 break;
 
             default:
@@ -256,53 +260,48 @@ public class SelectivityEstimator {
         ColumnStats colStats = stats.get(colIndex);
 
         Object value = literalValue.evaluate();
+        var uniqueNum = colStats.getNumUniqueValues();
+        var minValue = colStats.getMinValue();
+        var maxValue = colStats.getMaxValue();
+
+        // Have not Analyzed yet
+        if (uniqueNum == -1)
+            return selectivity;
+        // No non-null value
+        if (uniqueNum == 0)
+            return 0;
 
         switch (compType) {
             case EQUALS:
             case NOT_EQUALS:
-                // Compute the equality value.  Then, if inequality, invert the
-                // result.
-
-                // TODO:  Compute the selectivity.  Note that the ColumnStats type
-                //        will return special values to indicate "unknown" stats;
-                //        your code should detect when this is the case, and fall
-                //        back on the default selectivity.
-
+                // assume: 1/V(R,a) tuples satisfy
+                selectivity = 1 / Float.valueOf(uniqueNum);
+                if (compType == NOT_EQUALS)
+                    selectivity = 1 - selectivity;
                 break;
 
             case GREATER_OR_EQUAL:
             case LESS_THAN:
-                // Compute the greater-or-equal value.  Then, if less-than,
-                // invert the result.
-
-                // Only estimate selectivity for this kind of expression if the
-                // column's type supports it.
-
-                if (typeSupportsCompareEstimates(sqlType) &&
-                    colStats.hasDifferentMinMaxValues()) {
-
-                    // TODO:  Compute the selectivity.  The if-condition ensures
-                    //        that you will only compute selectivities if the type
-                    //        supports it, and if there are valid stats.
+                // Only estimate selectivity for this kind of expression if the column's type supports it.
+                if (typeSupportsCompareEstimates(sqlType) && colStats.hasDifferentMinMaxValues()) {
+                    // >= => (Max - Val) / (Max - Min)
+                    selectivity = computeRatio(value, maxValue, minValue, maxValue);
+                    if (compType == LESS_THAN) {
+                        selectivity = 1 - selectivity;
+                    }
                 }
-
                 break;
 
             case LESS_OR_EQUAL:
             case GREATER_THAN:
-                // Compute the less-or-equal value.  Then, if greater-than,
-                // invert the result.
-
-                // Only estimate selectivity for this kind of expression if the
-                // column's type supports it.
-
-                if (typeSupportsCompareEstimates(sqlType) &&
-                    colStats.hasDifferentMinMaxValues()) {
-
-                    // TODO:  Compute the selectivity.  Watch out for copy-paste
-                    //        bugs...
+                // Only estimate selectivity for this kind of expression if the column's type supports it.
+                if (typeSupportsCompareEstimates(sqlType) && colStats.hasDifferentMinMaxValues()) {
+                    // <= => (Val - Min) / (Max - Min)
+                    selectivity = computeRatio(minValue, value, minValue, maxValue);
+                    if (compType == GREATER_THAN) {
+                        selectivity = 1 - selectivity;
+                    }
                 }
-
                 break;
 
             default:
@@ -343,11 +342,27 @@ public class SelectivityEstimator {
 
         ColumnStats colOneStats = stats.get(colOneIndex);
         ColumnStats colTwoStats = stats.get(colTwoIndex);
+        var uniqueNumOne = colOneStats.getNumUniqueValues();
+        var uniqueNumTwo = colTwoStats.getNumUniqueValues();
 
-        // TODO:  Compute the selectivity.  Note that the ColumnStats type
-        //        will return special values to indicate "unknown" stats;
-        //        your code should detect when this is the case, and fall
-        //        back on the default selectivity.
+        // Have not Analyzed yet
+        if (uniqueNumOne == -1 || uniqueNumTwo == -1)
+            return selectivity;
+        // No non-null value yet
+        if (uniqueNumOne == 0 || uniqueNumTwo == 0)
+            return 0;
+
+        switch (compType) {
+            // Only consider == & !=
+            case EQUALS:
+            case NOT_EQUALS:
+                // assume: 1/V(R,a) tuples satisfy; take the minimum one
+                // NOTE: to support all types, cannot use (max1-min1)∩(max2-min2)/(max-min)
+                selectivity = 1 / Float.max(uniqueNumOne, uniqueNumTwo);
+                if (compType == NOT_EQUALS) {
+                    selectivity = 1 - selectivity;
+                }
+        }
 
         return selectivity;
     }

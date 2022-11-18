@@ -48,3 +48,33 @@ For implementation details, use util/static class to help us. It is very
 straightforward.
 
 test script: [stats-test.sh](../src/test/resources/edu/caltech/test/nanodb/stats/stats-test.sh)
+
+
+## Task #2: Plan Costing and Selectivity Estimates
+
+What we need to do is to estimate cost and column-level statistics for the three
+types of plan nodes:
+* `SimpleFilterNode`: a select applied to a subplan
+* `FileScanNode`: a select applied to a table file stored on disk
+* `NestedLoopJoinNode`: a theta-join applied to two subplans; the join may be an
+  inner or an outer join
+
+The cost is estimated by:
+* number of tuples
+* tuple size
+* CPU cost
+* number of disk-block IOs (for now, assume Mem is enough)
+* number of large disk-seeks
+
+### Selectivity Estimates
+
+> Complete the plan-costing computations for various plan-nodes.
+
+* Estimate Boolean expressions
+  * AND: a * b *...
+  * OR: 1- (1 - a) * (1 - b) *...
+  * NOT: 1 - a
+* Estimate Comparison expressions (Assume: Uniform distribution)
+  * EQ/NE: 1 / V(c)
+  * GE/<: (Max - Val) / (Max - Min)
+  * LE/>: (Val - Val) / (Max - Min)
