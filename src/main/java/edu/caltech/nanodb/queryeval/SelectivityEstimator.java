@@ -268,7 +268,7 @@ public class SelectivityEstimator {
         if (uniqueNum == -1)
             return selectivity;
         // No non-null value
-        if (uniqueNum == 0)
+        if (uniqueNum == 0 || value == null)
             return 0;
 
         switch (compType) {

@@ -1,18 +1,12 @@
 package edu.caltech.nanodb.queryeval;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.caltech.nanodb.expressions.BooleanOperator;
-import edu.caltech.nanodb.expressions.ColumnName;
-import edu.caltech.nanodb.expressions.ColumnValue;
-import edu.caltech.nanodb.expressions.CompareOperator;
-import edu.caltech.nanodb.expressions.Expression;
-import edu.caltech.nanodb.expressions.LiteralValue;
-import edu.caltech.nanodb.expressions.TypeConverter;
+import edu.caltech.nanodb.expressions.*;
 import edu.caltech.nanodb.relations.ColumnInfo;
 import edu.caltech.nanodb.relations.Schema;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,8 +27,7 @@ public class StatisticsUpdater {
      * This class should not be instantiated.
      */
     private StatisticsUpdater() {
-        throw new IllegalArgumentException(
-            "This class should not be instantiated.");
+        throw new IllegalArgumentException("This class should not be instantiated.");
     }
 
 
@@ -63,8 +56,7 @@ public class StatisticsUpdater {
      *                   that will be filtered by the selection predicate
      * @return estimated column statistics
      */
-    public static ArrayList<ColumnStats> updateStats(Expression expr,
-                                                     Schema schema, List<ColumnStats> inputStats) {
+    public static ArrayList<ColumnStats> updateStats(Expression expr, Schema schema, List<ColumnStats> inputStats) {
         // Make a deep copy of the incoming list so we can mutate it safely.
         ArrayList<ColumnStats> outputStats = new ArrayList<>();
         for (ColumnStats stat : inputStats)
@@ -82,8 +74,7 @@ public class StatisticsUpdater {
                         // This conjunct appears to be a comparison.  Unpack
                         // it and try to update the statistics based on the
                         // comparison.
-                        updateCompareStats((CompareOperator) e, schema,
-                            outputStats);
+                        updateCompareStats((CompareOperator) e, schema, outputStats);
                     }
                 }
             }
@@ -105,9 +96,7 @@ public class StatisticsUpdater {
      * @param schema The schema that the operation is evaluated against
      * @param stats  the statistics to update based on the comparison
      */
-    private static void updateCompareStats(CompareOperator comp,
-                                           Schema schema,
-                                           List<ColumnStats> stats) {
+    private static void updateCompareStats(CompareOperator comp, Schema schema, List<ColumnStats> stats) {
         // Move the comparison into a normalized order so that it's easier to
         // write the logic for analysis.  Specifically, this will ensure that
         // if we are comparing a column and a value, the column will always be
@@ -123,8 +112,7 @@ public class StatisticsUpdater {
             // just return.
             ColumnName colName = ((ColumnValue) left).getColumnName();
             int colIdx = schema.getColumnIndex(colName);
-            if (colIdx == -1)
-                return;
+            if (colIdx == -1) return;
 
             // Get the column's type from the schema, so we can coerce the
             // value in the comparison to the same type.
@@ -134,36 +122,25 @@ public class StatisticsUpdater {
 
             ColumnStats stat = stats.get(colIdx);
 
-            /* TODO:  IMPLEMENT THE REST!
-             *
-             * NOTE:  In Java, you can switch on an enumerated type, but you
-             * do not specify the fully qualified name.  Thus, you will end up
-             * with something like this:
-             *
-             * switch (comp.getType()) {
-             *     case EQUALS:
-             *         ...
-             *         break;
-             *
-             *     case NOT_EQUALS:
-             *         ...
-             *         break;
-             *
-             *     ... // etc.
-             * }
-             *
-             * If you need to declare local variables within a switch-block,
-             * you can always declare a nested block, like this:
-             *
-             *     case SOMECASE: {
-             *         int i = ...;
-             *         ... // etc.
-             *         break;
-             *     }
-             *
-             * You may find the SelectivityEstimator.computeRatio() function
-             * to be useful for some of the operations in this code.
-             */
+            var selectivity = SelectivityEstimator.estimateSelectivity(comp, schema, (ArrayList<ColumnStats>) stats);
+            switch (comp.getType()) {
+                case EQUALS:
+                    stat.setNumUniqueValues((int) (stat.getNumUniqueValues() * selectivity));
+                    break;
+                case NOT_EQUALS:
+                    stat.setNumUniqueValues((int) (stat.getNumUniqueValues() * selectivity));
+                    break;
+                case GREATER_OR_EQUAL:
+                case GREATER_THAN:
+                    stat.setNumUniqueValues((int) (stat.getNumUniqueValues() * selectivity));
+                    stat.setMinValue(value);
+                    break;
+                case LESS_OR_EQUAL:
+                case LESS_THAN:
+                    stat.setNumUniqueValues((int) (stat.getNumUniqueValues() * selectivity));
+                    stat.setMaxValue(value);
+                    break;
+            }
         }
     }
 }

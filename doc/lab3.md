@@ -47,10 +47,42 @@ for each data block in the tuple file:
 For implementation details, use util/static class to help us. It is very
 straightforward.
 
-test script: [stats-test.sh](../src/test/resources/edu/caltech/test/nanodb/stats/stats-test.sh)
+test
+script: [stats-test.sh](../src/test/resources/edu/caltech/test/nanodb/stats/stats-test.sh)
 
+## Task #2: Selectivity Estimates
 
-## Task #2: Plan Costing and Selectivity Estimates
+### Selectivity Estimates
+
+> Complete the plan-costing computations for various plan-nodes.
+
+* Estimate Boolean expressions
+    * AND: a * b *...
+    * OR: 1- (1 - a) * (1 - b) *...
+    * NOT: 1 - a
+* Estimate Comparison expressions (Assume: Uniform distribution)
+    * EQ/NE: 1 / V(c)
+    * GE/<: (Max - Val) / (Max - Min)
+    * LE/>: (Val - Val) / (Max - Min)
+
+### Update Plan-Node Column Statistics
+
+> Update the statistics of tuples output by plan-nodes based on predicates.
+
+Assume that the distribution is uniform, we **only** perform update on the
+specific column:
+* COLUMN op VALUE, where op is one of the following
+    * =, ≠: perform selectivity on unique values
+    * \>, ≥: perform selectivity on unique values & update MinValue
+    * \<, ≤: perform selectivity on unique values & update MaxValue
+* P1 AND P2 AND ...
+    * Just computes P2 based on P1, and so on
+
+There is very little to do, hopefully I do not get wrong here.
+
+### Task #3: Plan Node Costing
+
+> Complete the plan-costing computations for various plan-nodes.
 
 What we need to do is to estimate cost and column-level statistics for the three
 types of plan nodes:
@@ -66,15 +98,4 @@ The cost is estimated by:
 * number of disk-block IOs (for now, assume Mem is enough)
 * number of large disk-seeks
 
-### Selectivity Estimates
-
-> Complete the plan-costing computations for various plan-nodes.
-
-* Estimate Boolean expressions
-  * AND: a * b *...
-  * OR: 1- (1 - a) * (1 - b) *...
-  * NOT: 1 - a
-* Estimate Comparison expressions (Assume: Uniform distribution)
-  * EQ/NE: 1 / V(c)
-  * GE/<: (Max - Val) / (Max - Min)
-  * LE/>: (Val - Val) / (Max - Min)
+TODO:
