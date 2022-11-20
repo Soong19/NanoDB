@@ -103,8 +103,8 @@ types of plan nodes:
 * `NestedLoopJoinNode`: a theta-join applied to two subplans; the join may be an
   inner or an outer join
     * Inherit statistics from left & right
-    * For cpuCost, because use left table as the base table => lcpu + (ltuples * rcpu)<br/>
-      the cpu means: cost to retrieve all data from the node
+    * For cpuCost, because use left table as the base table => ltup + (ltup * rtup)
+      (And also plus two inherited costs)
     * For # of tuples, multiply the two numbers and apply predicate => Inner Join<br/>
       If outer join, plus the specific number of tuples again.
     * May need to apply predicate
@@ -190,6 +190,24 @@ Explain Plan:
                     FileScan[table:  stores] cost=[tuples=2000.0, tupSize=13.0, cpuCost=2000.0, blockIOs=4, largeSeeks=4]
                     FileScan[table:  cities] cost=[tuples=254.0, tupSize=23.8, cpuCost=254.0, blockIOs=1, largeSeeks=1]
                 FileScan[table:  states] cost=[tuples=51.0, tupSize=15.7, cpuCost=51.0, blockIOs=1, largeSeeks=1]
+
+Estimated 19.588217 tuples with average size 11.656460
+Estimated number of block IOs:  6
+
+# EXPLAIN SELECT store_id, property_costs
+# FROM stores JOIN cities ON stores.city_id = cities.city_id
+#             JOIN (SELECT * FROM states WHERE state_name = 'Oregon') AS states
+#             ON cities.state_id = states.state_id
+# WHERE property_costs > 500000;
+Explain Plan:
+    Project[values:  [stores.store_id, stores.property_costs]] cost=[tuples=19.6, tupSize=11.7, cpuCost=516313.8, blockIOs=6, largeSeeks=6]
+        SimpleFilter[pred:  stores.property_costs > 500000] cost=[tuples=19.6, tupSize=52.5, cpuCost=516294.2, blockIOs=6, largeSeeks=6]
+            NestedLoop[pred:  cities.state_id == states.state_id] cost=[tuples=39.2, tupSize=52.5, cpuCost=516255.0, blockIOs=6, largeSeeks=6]
+                NestedLoop[pred:  cities.city_id == stores.city_id] cost=[tuples=2000.0, tupSize=36.8, cpuCost=512254.0, blockIOs=5, largeSeeks=5]
+                    FileScan[table:  stores] cost=[tuples=2000.0, tupSize=13.0, cpuCost=2000.0, blockIOs=4, largeSeeks=4]
+                    FileScan[table:  cities] cost=[tuples=254.0, tupSize=23.8, cpuCost=254.0, blockIOs=1, largeSeeks=1]
+                Rename[resultTableName=states] cost=[tuples=1.0, tupSize=15.7, cpuCost=1.0, blockIOs=1, largeSeeks=1]
+                    FileScan[table:  states, pred:  states.state_name == 'Oregon'] cost=[tuples=1.0, tupSize=15.7, cpuCost=1.0, blockIOs=1, largeSeeks=1]
 
 Estimated 19.588217 tuples with average size 11.656460
 Estimated number of block IOs:  6

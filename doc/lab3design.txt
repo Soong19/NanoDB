@@ -9,28 +9,47 @@ A:  Statistics Collection
 A1.  Using pseudocode, summarize the implementation of your HeapTupleFile
      analyze() function.  Please summarize your actual code; do not simply
      paste in the assignment description or the actual code you wrote.
+LH:  while there is a non-empty data page:
+        update stats based on the data page (increment totalSize & numPages)
+        for each tuple in the current data block:
+            update stats based on the tuple (increment numTuples)
+            for each column in the current tuple:
+                update column-level stats (use collector)
 
 B:  Plan Costing Estimates
 ----------------------------------------
 
 B1.  Briefly describe how you estimate the number of tuples and the cost
      of a file-scan plan node.  What factors does your cost include?
+LH:  Inherit the statistics from the table. Only one more thing to do for
+     numTuples and columnStatistics -- Apply the predicate.
 
 B2.  Briefly describe how you estimate the number of tuples and the cost
      of a simple-filter plan node.  What factors does your cost include?
+LH:  For cpuCost, we need to walk through the whole table, so it is numTuples.
+     For numTuples, apply the selectivity.
 
 B3.  Briefly describe how you estimate the number of tuples and the cost
      of a nested-loop join plan node.  What factors does your cost include?
+LH:  For Inner-Join: lNumTup * rNumTup * selectivity
+     For Left-Outer: lNumTup * rNumTup * selectivity + lNumTup (for null-key)
+     For Right-Outer: lNumTup * rNumTup * selectivity + rNumTup
+     For Full-Outer: lNumTup * rNumTup * selectivity + lNumTup + rNumTup
 
 B4.  For each kind of comparison (==, !=, >, <, >=, <=), how do you update the
      estimated number of distinct values for each kind of comparison that your
      StatisticsUpdater implementation supports?  Are there cases where you make
      no changes to the statistics?
+LH:  Use SelectivityEstimator to estimate selectivity, multiply numTuple with it.
+     No.
 
 B5.  For each kind of comparison (==, !=, >, <, >=, <=), how do you update the
      estimated min and max values for each kind of comparison that your
      StatisticsUpdater implementation supports?  Are there cases where you make
      no changes to the statistics?
+LH:  For > & >= => Update min value to val.
+     For < & <= => Update max value to val.
+     For = & !=, do not change anything.
 
 C:  Costing SQL Queries
 -----------------------
@@ -40,44 +59,80 @@ have analyzed all of the tables in that schema.
 
 C1.  Paste the output of running:  EXPLAIN SELECT * FROM cities;
      Do not include debug lines, just the output of the command itself.
+LH:
+# EXPLAIN SELECT * FROM cities;
+Explain Plan:
+    FileScan[table:  cities] cost=[tuples=254.0, tupSize=23.8, cpuCost=254.0, blockIOs=1, largeSeeks=1]
+
+Estimated 254.000000 tuples with average size 23.787401
+Estimated number of block IOs:  1
+
 
 C2.  What is the estimated number of tuples that will be produced by each
      of these queries:
 
-     SELECT * FROM cities WHERE population > 1000000;
+# EXPLAIN SELECT * FROM cities WHERE population > 1000000; => 9
+Explain Plan:
+    FileScan[table:  cities, pred:  cities.population > 1000000] cost=[tuples=225.0, tupSize=23.8, cpuCost=225.0, blockIOs=1, largeSeeks=1]
 
-     <paste output here>
+Estimated 225.000000 tuples with average size 23.787401
+Estimated number of block IOs:  1
 
-     SELECT * FROM cities WHERE population > 5000000;
+# EXPLAIN SELECT * FROM cities WHERE population > 5000000; => 1
+Explain Plan:
+    FileScan[table:  cities, pred:  cities.population > 5000000] cost=[tuples=99.0, tupSize=23.8, cpuCost=99.0, blockIOs=1, largeSeeks=1]
 
-     <paste output here>
+Estimated 99.000000 tuples with average size 23.787401
+Estimated number of block IOs:  1
 
-     SELECT * FROM cities WHERE population > 8000000;
+# EXPLAIN SELECT * FROM cities WHERE population > 8000000; => 1
+Explain Plan:
+    FileScan[table:  cities, pred:  cities.population > 8000000] cost=[tuples=4.0, tupSize=23.8, cpuCost=4.0, blockIOs=1, largeSeeks=1]
 
-     <paste output here>
-
-     How many tuples does each query produce?
+Estimated 4.000000 tuples with average size 23.787401
+Estimated number of block IOs:  1
 
      Briefly explain the difference between the estimated number of tuples
      and the actual number of tuples for these queries.
+LH:  I assume that the tuples follows uniform distribution, but in fact they're
+     randomly distributed.
 
 C3.  Paste the output of running these commands:
 
-     EXPLAIN SELECT store_id FROM stores, cities
-     WHERE stores.city_id = cities.city_id AND
-           cities.population > 1000000;
+# EXPLAIN SELECT store_id FROM stores, cities
+# WHERE stores.city_id = cities.city_id AND cities.population > 1000000; => 74
+Explain Plan:
+    Project[values:  [stores.store_id]] cost=[tuples=1776.2, tupSize=5.3, cpuCost=1022030.3, blockIOs=5, largeSeeks=5]
+        SimpleFilter[pred:  cities.city_id == stores.city_id AND cities.population > 1000000] cost=[tuples=1776.2, tupSize=36.8, cpuCost=1020254.0, blockIOs=5, largeSeeks=5]
+            NestedLoop[no pred] cost=[tuples=508000.0, tupSize=36.8, cpuCost=512254.0, blockIOs=5, largeSeeks=5]
+                FileScan[table:  stores] cost=[tuples=2000.0, tupSize=13.0, cpuCost=2000.0, blockIOs=4, largeSeeks=4]
+                FileScan[table:  cities] cost=[tuples=254.0, tupSize=23.8, cpuCost=254.0, blockIOs=1, largeSeeks=1]
 
-     <paste output here>
+Estimated 1776.238159 tuples with average size 5.255343
+Estimated number of block IOs:  5
 
-     EXPLAIN SELECT store_id FROM stores JOIN
-                    (SELECT city_id FROM cities
-                     WHERE population > 1000000) AS big_cities
-                    ON stores.city_id = big_cities.city_id;
+# EXPLAIN SELECT store_id
+# FROM stores JOIN
+#      (SELECT city_id FROM cities
+#       WHERE population > 1000000) AS big_cities
+#      ON stores.city_id = big_cities.city_id; => 74
+Explain Plan:
+    Project[values:  [stores.store_id]] cost=[tuples=1771.7, tupSize=4.7, cpuCost=456221.7, blockIOs=5, largeSeeks=5]
+        NestedLoop[pred:  big_cities.city_id == stores.city_id] cost=[tuples=1771.7, tupSize=18.9, cpuCost=454450.0, blockIOs=5, largeSeeks=5]
+            FileScan[table:  stores] cost=[tuples=2000.0, tupSize=13.0, cpuCost=2000.0, blockIOs=4, largeSeeks=4]
+            Rename[resultTableName=big_cities] cost=[tuples=225.0, tupSize=5.9, cpuCost=450.0, blockIOs=1, largeSeeks=1]
+                Project[values:  [cities.city_id]] cost=[tuples=225.0, tupSize=5.9, cpuCost=450.0, blockIOs=1, largeSeeks=1]
+                    FileScan[table:  cities, pred:  cities.population > 1000000] cost=[tuples=225.0, tupSize=23.8, cpuCost=225.0, blockIOs=1, largeSeeks=1]
 
-     <paste output here>
+Estimated 1771.653564 tuples with average size 4.736712
+Estimated number of block IOs:  5
 
      The estimated number of tuples produced should be the same, but the
      costs should be different.  Explain why.
+LH:  They are equivalent in relational algebra, so the number of tuples are
+     almost the same. But cpu cost is computed by two numTuples of the tables,
+     it varies by the FROM clauses. Besides, the filter node's position plays an
+     important role in the query plan.
 
 C4.  The assignment gives this example "slow" query:
 
@@ -88,14 +143,47 @@ C4.  The assignment gives this example "slow" query:
            state_name = 'Oregon' AND property_costs > 500000;
 
      How long does this query take to run, in seconds?
+LH:  It takes 15.28 seconds in my case.
 
-     Include the EXPLAIN output for the above query here.
+# EXPLAIN SELECT store_id, property_costs
+# FROM stores, cities, states
+# WHERE stores.city_id = cities.city_id AND
+#       cities.state_id = states.state_id AND
+#       state_name = 'Oregon' AND property_costs > 500000; => 7
+Explain Plan:
+    Project[values:  [stores.store_id, stores.property_costs]] cost=[tuples=19.6, tupSize=11.7, cpuCost=52836324.0, blockIOs=6, largeSeeks=6]
+        SimpleFilter[pred:  cities.city_id == stores.city_id AND cities.state_id == states.state_id AND states.state_name == 'Oregon' AND stores.property_costs > 500000] cost=[tuples=19.6, tupSize=52.5, cpuCost=52836304.0, blockIOs=6, largeSeeks=6]
+            NestedLoop[no pred] cost=[tuples=25908000.0, tupSize=52.5, cpuCost=26928304.0, blockIOs=6, largeSeeks=6]
+                NestedLoop[no pred] cost=[tuples=508000.0, tupSize=36.8, cpuCost=512254.0, blockIOs=5, largeSeeks=5]
+                    FileScan[table:  stores] cost=[tuples=2000.0, tupSize=13.0, cpuCost=2000.0, blockIOs=4, largeSeeks=4]
+                    FileScan[table:  cities] cost=[tuples=254.0, tupSize=23.8, cpuCost=254.0, blockIOs=1, largeSeeks=1]
+                FileScan[table:  states] cost=[tuples=51.0, tupSize=15.7, cpuCost=51.0, blockIOs=1, largeSeeks=1]
 
-     <paste output here>
+Estimated 19.588217 tuples with average size 11.656460
+Estimated number of block IOs:  6
 
      How would you rewrite this query (e.g. using ON clauses, subqueries
      in the FROM clause, etc.) to be as optimal as possible?  Also include
      the result of EXPLAINing your query.
+LH:  => actually takes 0.28 second to finish.
+
+# EXPLAIN SELECT store_id, property_costs
+# FROM stores JOIN cities ON stores.city_id = cities.city_id
+#             JOIN (SELECT * FROM states WHERE state_name = 'Oregon') AS states
+#             ON cities.state_id = states.state_id
+# WHERE property_costs > 500000;
+Explain Plan:
+    Project[values:  [stores.store_id, stores.property_costs]] cost=[tuples=19.6, tupSize=11.7, cpuCost=516313.8, blockIOs=6, largeSeeks=6]
+        SimpleFilter[pred:  stores.property_costs > 500000] cost=[tuples=19.6, tupSize=52.5, cpuCost=516294.2, blockIOs=6, largeSeeks=6]
+            NestedLoop[pred:  cities.state_id == states.state_id] cost=[tuples=39.2, tupSize=52.5, cpuCost=516255.0, blockIOs=6, largeSeeks=6]
+                NestedLoop[pred:  cities.city_id == stores.city_id] cost=[tuples=2000.0, tupSize=36.8, cpuCost=512254.0, blockIOs=5, largeSeeks=5]
+                    FileScan[table:  stores] cost=[tuples=2000.0, tupSize=13.0, cpuCost=2000.0, blockIOs=4, largeSeeks=4]
+                    FileScan[table:  cities] cost=[tuples=254.0, tupSize=23.8, cpuCost=254.0, blockIOs=1, largeSeeks=1]
+                Rename[resultTableName=states] cost=[tuples=1.0, tupSize=15.7, cpuCost=1.0, blockIOs=1, largeSeeks=1]
+                    FileScan[table:  states, pred:  states.state_name == 'Oregon'] cost=[tuples=1.0, tupSize=15.7, cpuCost=1.0, blockIOs=1, largeSeeks=1]
+
+Estimated 19.588217 tuples with average size 11.656460
+Estimated number of block IOs:  6
 
 D:  Extra Credit [OPTIONAL]
 ---------------------------
@@ -135,4 +223,3 @@ E4.  Were there any critical details that you wish had been provided with the
 
 E5.  Do you have any other suggestions for how future versions of the
      assignment can be improved?
-
