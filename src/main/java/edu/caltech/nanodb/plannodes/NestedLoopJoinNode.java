@@ -4,6 +4,9 @@ package edu.caltech.nanodb.plannodes;
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
 import edu.caltech.nanodb.expressions.TupleLiteral;
+import edu.caltech.nanodb.queryeval.PlanCost;
+import edu.caltech.nanodb.queryeval.SelectivityEstimator;
+import edu.caltech.nanodb.queryeval.StatisticsUpdater;
 import edu.caltech.nanodb.relations.JoinType;
 import edu.caltech.nanodb.relations.Tuple;
 import org.apache.logging.log4j.LogManager;
@@ -180,14 +183,33 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         // Use the parent class' helper-function to prepare the schema.
         prepareSchemaStats();
 
-        // TODO:  to be implemented
-        cost = null;
-
         if (joinType == JoinType.SEMIJOIN || joinType == JoinType.ANTIJOIN)
             throw new UnsupportedOperationException("Unimplemented:  join type" + joinType);
 
         leftNullTuple = TupleLiteral.ofSize(leftSchema.numColumns());
         rightNullTuple = TupleLiteral.ofSize(rightSchema.numColumns());
+
+        // Compute the cost of the plan node (ignore the predicate)
+        var lcost = leftChild.getCost();
+        var rcost = rightChild.getCost();
+        // Inherit both left and right cost
+        cost = new PlanCost(lcost);
+        cost.cpuCost += rcost.cpuCost;
+        cost.numBlockIOs += rcost.numBlockIOs;
+        cost.numLargeSeeks += rcost.numLargeSeeks;
+        cost.tupleSize += rcost.tupleSize;
+        cost.numTuples = lcost.numTuples * rcost.numTuples;
+        // Join cost
+        cost.cpuCost += lcost.numTuples * rcost.numTuples;
+        // Apply predicate => (T(l) + T(r)) / max(T(l), T(r))
+        if (predicate != null) {
+            cost.numTuples *= SelectivityEstimator.estimateSelectivity(predicate, schema, stats);
+        }
+
+        // Update the statistics based on the predicate.
+        if (predicate != null) {
+            stats = StatisticsUpdater.updateStats(predicate, schema, stats);
+        }
     }
 
 

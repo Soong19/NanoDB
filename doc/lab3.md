@@ -84,13 +84,6 @@ There is very little to do, hopefully I do not get wrong here.
 
 > Complete the plan-costing computations for various plan-nodes.
 
-What we need to do is to estimate cost and column-level statistics for the three
-types of plan nodes:
-* `SimpleFilterNode`: a select applied to a subplan
-* `FileScanNode`: a select applied to a table file stored on disk
-* `NestedLoopJoinNode`: a theta-join applied to two subplans; the join may be an
-  inner or an outer join
-
 The cost is estimated by:
 * number of tuples
 * tuple size
@@ -98,4 +91,16 @@ The cost is estimated by:
 * number of disk-block IOs (for now, assume Mem is enough)
 * number of large disk-seeks
 
-TODO:
+What we need to do is to estimate cost and column-level statistics for the three
+types of plan nodes:
+* `SimpleFilterNode`: a select applied to a subplan
+  * Increase CPU cost with numTuples (need to walk through all the tuples)
+  * Decrease # of tuples with selectivity
+* `FileScanNode`: a select applied to a table file stored on disk
+  * Inherit statistics from table
+  * May need to apply predicate
+* `NestedLoopJoinNode`: a theta-join applied to two subplans; the join may be an
+  inner or an outer join
+  * Inherit statistics from left & right (plus them together)
+  * For # of tuples, multiply the two numbers and apply predicate
+  * May need to apply predicate
