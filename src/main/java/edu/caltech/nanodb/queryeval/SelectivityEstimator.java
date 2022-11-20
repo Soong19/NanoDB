@@ -339,6 +339,9 @@ public class SelectivityEstimator {
 
         int colOneIndex = exprSchema.getColumnIndex(columnOne.getColumnName());
         int colTwoIndex = exprSchema.getColumnIndex(columnTwo.getColumnName());
+        if (colOneIndex == -1 || colTwoIndex == -1) {
+           return selectivity;
+        }
 
         ColumnStats colOneStats = stats.get(colOneIndex);
         ColumnStats colTwoStats = stats.get(colTwoIndex);

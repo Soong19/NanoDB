@@ -128,16 +128,18 @@ public class PlanUtils {
      * tree.
      *
      * @param fromClause     The from-clause contains 0 or 1 or more tables.
+     * @param storageManager The storage manager to open tables.
      * @return a [maybe nested] NestedLoopJoinNode
      */
-    public static PlanNode computeJoin(FromClause fromClause) {
-        assert fromClause.isJoinExpr();
+    public static PlanNode computeJoin(FromClause fromClause, StorageManager storageManager) {
         if (!fromClause.isJoinExpr()) {
-            return new SimplePlanner().makePlan(fromClause.getSelectClause(), null);
+            var planner = new SimplePlanner();
+            planner.setStorageManager(storageManager);
+            return planner.makeSelect(fromClause);
         } else {
             // recursive process: compute left & right, then combine them together
-            var l_node = computeJoin(fromClause.getLeftChild());
-            var r_node = computeJoin(fromClause.getRightChild());
+            var l_node = computeJoin(fromClause.getLeftChild(), storageManager);
+            var r_node = computeJoin(fromClause.getRightChild(), storageManager);
 
             PlanUtils.validateExpression(fromClause.getComputedJoinExpr(), "ON");
             return new NestedLoopJoinNode(l_node, r_node, fromClause.getJoinType(), fromClause.getComputedJoinExpr());

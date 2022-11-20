@@ -120,7 +120,7 @@ public class SimplePlanner implements Planner {
                 node = makeSimpleSelect(fromClause.getTableName(), null, null);
                 break;
             case JOIN_EXPR:
-                node = PlanUtils.computeJoin(fromClause);
+                node = PlanUtils.computeJoin(fromClause, storageManager);
                 break;
             case SELECT_SUBQUERY:
                 node = makePlan(fromClause.getSelectClause(), null);

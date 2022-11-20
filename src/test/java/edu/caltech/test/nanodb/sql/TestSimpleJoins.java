@@ -174,15 +174,15 @@ public class TestSimpleJoins extends SqlTestCase {
             };
         } finally {
             CommandResult result0 = server.doCommand(
-                "SELECT * FROM test_join_empty_left INNER JOIN test_join_right ON a = c", true);
+                "SELECT * FROM test_join_empty_left INNER JOIN test_join_right ON e = c", true);
             assert checkUnorderedResults(expected, result0);
 
             CommandResult result1 = server.doCommand(
-                "SELECT * FROM test_join_empty_left LEFT OUTER JOIN test_join_right ON a = c", true);
+                "SELECT * FROM test_join_empty_left LEFT OUTER JOIN test_join_right ON e = c", true);
             assert checkUnorderedResults(expected, result1);
 
             CommandResult result2 = server.doCommand(
-                "SELECT * FROM test_join_empty_left RIGHT OUTER JOIN test_join_right ON a = c", true);
+                "SELECT * FROM test_join_empty_left RIGHT OUTER JOIN test_join_right ON e = c", true);
             assert checkUnorderedResults(expected, result2);
         }
     }
@@ -202,15 +202,15 @@ public class TestSimpleJoins extends SqlTestCase {
             };
         } finally {
             CommandResult result0 = server.doCommand(
-                "SELECT * FROM test_join_left INNER JOIN test_join_empty_right ON a = c", true);
+                "SELECT * FROM test_join_left INNER JOIN test_join_empty_right ON a = q", true);
             assert checkUnorderedResults(expected, result0);
 
             CommandResult result1 = server.doCommand(
-                "SELECT * FROM test_join_left LEFT OUTER JOIN test_join_empty_right ON a = c", true);
+                "SELECT * FROM test_join_left LEFT OUTER JOIN test_join_empty_right ON a = q", true);
             assert checkUnorderedResults(expected, result1);
 
             CommandResult result2 = server.doCommand(
-                "SELECT * FROM test_join_left RIGHT OUTER JOIN test_join_empty_right ON a = c", true);
+                "SELECT * FROM test_join_left RIGHT OUTER JOIN test_join_empty_right ON a = q", true);
             assert checkUnorderedResults(expected, result2);
         }
     }
@@ -231,15 +231,15 @@ public class TestSimpleJoins extends SqlTestCase {
             };
         } finally {
             CommandResult result0 = server.doCommand(
-                "SELECT * FROM test_join_empty_left INNER JOIN test_join_empty_right ON a = c", true);
+                "SELECT * FROM test_join_empty_left INNER JOIN test_join_empty_right ON e = q", true);
             assert checkUnorderedResults(expected, result0);
 
             CommandResult result1 = server.doCommand(
-                "SELECT * FROM test_join_empty_left LEFT OUTER JOIN test_join_empty_right ON a = c", true);
+                "SELECT * FROM test_join_empty_left LEFT OUTER JOIN test_join_empty_right ON e = q", true);
             assert checkUnorderedResults(expected, result1);
 
             CommandResult result2 = server.doCommand(
-                "SELECT * FROM test_join_empty_left RIGHT OUTER JOIN test_join_empty_right ON a = c", true);
+                "SELECT * FROM test_join_empty_left RIGHT OUTER JOIN test_join_empty_right ON e = q", true);
             assert checkUnorderedResults(expected, result2);
         }
     }
