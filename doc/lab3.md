@@ -213,8 +213,8 @@ Estimated 19.588217 tuples with average size 11.656460
 Estimated number of block IOs:  6
 ```
 
-I am doubtful about whether the planner based on my plan costing can do things
-better or even worse.
+It works well for trivial cases. But the estimation of numTuples is always bad
+when the distribution is unbalanced. 
 
 ### Updating Column Statistics
 
@@ -249,4 +249,4 @@ Estimated 180.000000 tuples with average size 23.787401
 Estimated number of block IOs:  1
 ```
 
-From the cpuCost, the updater works (but don't works well or not).
+From the cpuCost, the updater works (but don't know works well or not).
