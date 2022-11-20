@@ -189,22 +189,32 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         leftNullTuple = TupleLiteral.ofSize(leftSchema.numColumns());
         rightNullTuple = TupleLiteral.ofSize(rightSchema.numColumns());
 
-        // Compute the cost of the plan node (ignore the predicate)
+        // Compute the cost of the plan node (ignore the candidate-key)
         var lcost = leftChild.getCost();
         var rcost = rightChild.getCost();
-        // Inherit both left and right cost
-        cost = new PlanCost(lcost);
-        cost.cpuCost += rcost.cpuCost;
-        cost.numBlockIOs += rcost.numBlockIOs;
-        cost.numLargeSeeks += rcost.numLargeSeeks;
-        cost.tupleSize += rcost.tupleSize;
-        cost.numTuples = lcost.numTuples * rcost.numTuples;
-        // Join cost
-        cost.cpuCost += lcost.numTuples * rcost.numTuples;
-        // Apply predicate => (T(l) + T(r)) / max(T(l), T(r))
+        // Inherit both left and right cost (Inner Join)
+        var tupleSize = lcost.tupleSize + rcost.tupleSize;
+        var numBlockIOs = lcost.numBlockIOs + rcost.numBlockIOs;
+        var numLargeSeeks = lcost.numLargeSeeks + rcost.numLargeSeeks;
+        var numTuples = lcost.numTuples * rcost.numTuples;
+        var cpuCost = lcost.cpuCost + rcost.cpuCost +
+            lcost.numTuples + lcost.numTuples * rcost.numTuples;
         if (predicate != null) {
-            cost.numTuples *= SelectivityEstimator.estimateSelectivity(predicate, schema, stats);
+            numTuples *= SelectivityEstimator.estimateSelectivity(predicate, schema, stats);
         }
+        switch (joinType) {
+            // upper bound
+            case RIGHT_OUTER:
+                numTuples += rcost.numTuples;
+                break;
+            case LEFT_OUTER:
+                numTuples += lcost.numTuples;
+                break;
+            case FULL_OUTER:
+                numTuples += lcost.numTuples + rcost.numTuples;
+                break;
+        }
+        cost = new PlanCost(numTuples, tupleSize, cpuCost, numBlockIOs, numBlockIOs);
 
         // Update the statistics based on the predicate.
         if (predicate != null) {

@@ -102,8 +102,11 @@ types of plan nodes:
     * May need to apply predicate
 * `NestedLoopJoinNode`: a theta-join applied to two subplans; the join may be an
   inner or an outer join
-    * Inherit statistics from left & right (plus them together)
-    * For # of tuples, multiply the two numbers and apply predicate
+    * Inherit statistics from left & right
+    * For cpuCost, because use left table as the base table => lcpu + (ltuples * rcpu)<br/>
+      the cpu means: cost to retrieve all data from the node
+    * For # of tuples, multiply the two numbers and apply predicate => Inner Join<br/>
+      If outer join, plus the specific number of tuples again.
     * May need to apply predicate
 
 ## Task #4: Testing Plan Costing
