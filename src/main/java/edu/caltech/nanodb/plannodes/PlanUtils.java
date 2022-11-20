@@ -7,7 +7,7 @@ import edu.caltech.nanodb.expressions.FunctionCall;
 import edu.caltech.nanodb.functions.AggregateFunction;
 import edu.caltech.nanodb.queryast.FromClause;
 import edu.caltech.nanodb.queryeval.InvalidSQLException;
-import edu.caltech.nanodb.relations.TableInfo;
+import edu.caltech.nanodb.queryeval.SimplePlanner;
 import edu.caltech.nanodb.storage.StorageManager;
 
 import java.util.List;
@@ -128,24 +128,21 @@ public class PlanUtils {
      * tree.
      *
      * @param fromClause     The from-clause contains 0 or 1 or more tables.
-     * @param storageManager the storage to retrieve base table
+     * @param storageManager The storage manager to open tables.
      * @return a [maybe nested] NestedLoopJoinNode
      */
     public static PlanNode computeJoin(FromClause fromClause, StorageManager storageManager) {
-        if (fromClause.isBaseTable()) {
-            if (fromClause.getTableName() == null)
-                throw new IllegalArgumentException("tableName cannot be null");
+        if (!fromClause.isJoinExpr()) {
+            var planner = new SimplePlanner();
+            planner.setStorageManager(storageManager);
+            return planner.makeSelect(fromClause);
+        } else {
+            // recursive process: compute left & right, then combine them together
+            var l_node = computeJoin(fromClause.getLeftChild(), storageManager);
+            var r_node = computeJoin(fromClause.getRightChild(), storageManager);
 
-            TableInfo tableInfo = storageManager.getTableManager().openTable(fromClause.getTableName());
-            return new FileScanNode(tableInfo, null);
+            PlanUtils.validateExpression(fromClause.getComputedJoinExpr(), "ON");
+            return new NestedLoopJoinNode(l_node, r_node, fromClause.getJoinType(), fromClause.getComputedJoinExpr());
         }
-        assert fromClause.isJoinExpr();
-
-        // recursive process: compute left & right, then combine them together
-        var l_node = computeJoin(fromClause.getLeftChild(), storageManager);
-        var r_node = computeJoin(fromClause.getRightChild(), storageManager);
-
-        PlanUtils.validateExpression(fromClause.getComputedJoinExpr(), "ON");
-        return new NestedLoopJoinNode(l_node, r_node, fromClause.getJoinType(), fromClause.getComputedJoinExpr());
     }
 }

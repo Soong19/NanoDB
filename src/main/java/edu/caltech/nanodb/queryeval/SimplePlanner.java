@@ -57,8 +57,7 @@ public class SimplePlanner implements Planner {
     public PlanNode makePlan(SelectClause selClause,
                              List<SelectClause> enclosingSelects) {
         if (enclosingSelects != null && !enclosingSelects.isEmpty()) {
-            throw new UnsupportedOperationException(
-                "Not implemented:  enclosing queries");
+            logger.debug("Subquery");
         }
 
         PlanNode plan; // root node
@@ -113,7 +112,7 @@ public class SimplePlanner implements Planner {
      * @param fromClause The from-clause contains 0 or 1 or more tables.
      * @return A new plan-node for evaluating the select operation.
      */
-    private PlanNode makeSelect(FromClause fromClause) {
+    public PlanNode makeSelect(FromClause fromClause) {
         PlanNode node = null;
         logger.debug("From: " + fromClause);
         switch (fromClause.getClauseType()) {
@@ -124,11 +123,18 @@ public class SimplePlanner implements Planner {
                 node = PlanUtils.computeJoin(fromClause, storageManager);
                 break;
             case SELECT_SUBQUERY:
+                node = makePlan(fromClause.getSelectClause(), null);
+                break;
             case TABLE_FUNCTION:
-                throw new UnsupportedOperationException("Not implemented:  Subquery or Table Function");
+                throw new UnsupportedOperationException("Not implemented:  Table Function");
             default:
                 assert false;
         }
+        // rename node for AS; SELECT tbl2.a FROM tbl1 AS tbl2
+        if (fromClause.isRenamed()) {
+            node = new RenameNode(node, fromClause.getResultName());
+        }
+
         return node;
     }
 

@@ -3,6 +3,7 @@ package edu.caltech.nanodb.plannodes;
 
 import java.util.List;
 
+import edu.caltech.nanodb.queryeval.StatisticsUpdater;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -220,23 +221,30 @@ public class FileScanNode extends SelectNode {
 
 
     protected void prepareSchema() {
-        // Grab the schema from the table.
+        // Grab the schema and statistics from the table file.
         schema = tupleFile.getSchema();
     }
 
 
     // Inherit javadocs from base class.
     public void prepare() {
-        // Grab the schema and statistics from the table file.
 
-        schema = tupleFile.getSchema();
+        prepareSchema();
         TableStats tableStats = tupleFile.getStats();
 
-        // TODO:  Compute the cost of the plan node!
-        cost = null;
+        // Compute the cost of the plan node!
+        var numTuples = tableStats.numTuples;
+        if (predicate != null) {
+            numTuples *= SelectivityEstimator.estimateSelectivity(predicate, schema, tableStats.getAllColumnStats());
+        }
+        cost = new PlanCost(numTuples, tableStats.avgTupleSize, numTuples, tableStats.numDataPages, tableStats.numDataPages);
 
-        // TODO:  Update the statistics based on the predicate.
-        stats = tableStats.getAllColumnStats();
+        // Update the statistics based on the predicate.
+        if (predicate != null) {
+            stats = StatisticsUpdater.updateStats(predicate, schema, tableStats.getAllColumnStats());
+        } else {
+            stats = tableStats.getAllColumnStats();
+        }
     }
 
 

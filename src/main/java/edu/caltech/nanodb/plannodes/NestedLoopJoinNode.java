@@ -4,6 +4,9 @@ package edu.caltech.nanodb.plannodes;
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
 import edu.caltech.nanodb.expressions.TupleLiteral;
+import edu.caltech.nanodb.queryeval.PlanCost;
+import edu.caltech.nanodb.queryeval.SelectivityEstimator;
+import edu.caltech.nanodb.queryeval.StatisticsUpdater;
 import edu.caltech.nanodb.relations.JoinType;
 import edu.caltech.nanodb.relations.Tuple;
 import org.apache.logging.log4j.LogManager;
@@ -180,14 +183,43 @@ public class NestedLoopJoinNode extends ThetaJoinNode {
         // Use the parent class' helper-function to prepare the schema.
         prepareSchemaStats();
 
-        // TODO:  to be implemented
-        cost = null;
-
         if (joinType == JoinType.SEMIJOIN || joinType == JoinType.ANTIJOIN)
             throw new UnsupportedOperationException("Unimplemented:  join type" + joinType);
 
         leftNullTuple = TupleLiteral.ofSize(leftSchema.numColumns());
         rightNullTuple = TupleLiteral.ofSize(rightSchema.numColumns());
+
+        // Compute the cost of the plan node (ignore the candidate-key)
+        var lcost = leftChild.getCost();
+        var rcost = rightChild.getCost();
+        // Inherit both left and right cost (Inner Join)
+        var tupleSize = lcost.tupleSize + rcost.tupleSize;
+        var numBlockIOs = lcost.numBlockIOs + rcost.numBlockIOs;
+        var numLargeSeeks = lcost.numLargeSeeks + rcost.numLargeSeeks;
+        var numTuples = lcost.numTuples * rcost.numTuples;
+        var cpuCost = lcost.cpuCost + rcost.cpuCost +
+            lcost.numTuples + lcost.numTuples * rcost.numTuples;
+        if (predicate != null) {
+            numTuples *= SelectivityEstimator.estimateSelectivity(predicate, schema, stats);
+        }
+        switch (joinType) {
+            // upper bound
+            case RIGHT_OUTER:
+                numTuples += rcost.numTuples;
+                break;
+            case LEFT_OUTER:
+                numTuples += lcost.numTuples;
+                break;
+            case FULL_OUTER:
+                numTuples += lcost.numTuples + rcost.numTuples;
+                break;
+        }
+        cost = new PlanCost(numTuples, tupleSize, cpuCost, numBlockIOs, numBlockIOs);
+
+        // Update the statistics based on the predicate.
+        if (predicate != null) {
+            stats = StatisticsUpdater.updateStats(predicate, schema, stats);
+        }
     }
 
 

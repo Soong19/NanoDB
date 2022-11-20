@@ -1,14 +1,15 @@
 package edu.caltech.nanodb.plannodes;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
 import edu.caltech.nanodb.queryeval.ColumnStats;
 import edu.caltech.nanodb.queryeval.PlanCost;
 import edu.caltech.nanodb.queryeval.SelectivityEstimator;
+import edu.caltech.nanodb.queryeval.StatisticsUpdater;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -116,11 +117,14 @@ public class SimpleFilterNode extends SelectNode {
         schema = leftChild.getSchema();
         ArrayList<ColumnStats> childStats = leftChild.getStats();
 
-        // TODO:  Compute the cost of the plan node!
-        cost = null;
+        // Compute the cost of the plan node!
+        var selectivity = SelectivityEstimator.estimateSelectivity(predicate, schema, childStats);
+        cost = new PlanCost(leftChild.getCost());
+        cost.cpuCost += cost.numTuples; // a filter must walk through all the tuples
+        cost.numTuples *= selectivity;
 
-        // TODO:  Update the statistics based on the predicate.
-        stats = childStats;
+        // Update the statistics based on the predicate.
+        stats = StatisticsUpdater.updateStats(predicate, schema, childStats);
     }
 
 

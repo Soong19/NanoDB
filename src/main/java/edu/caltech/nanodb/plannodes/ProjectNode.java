@@ -1,22 +1,20 @@
 package edu.caltech.nanodb.plannodes;
 
 
+import edu.caltech.nanodb.expressions.*;
+import edu.caltech.nanodb.queryast.SelectValue;
+import edu.caltech.nanodb.queryeval.ColumnStats;
+import edu.caltech.nanodb.queryeval.PlanCost;
+import edu.caltech.nanodb.relations.ColumnInfo;
+import edu.caltech.nanodb.relations.Schema;
+import edu.caltech.nanodb.relations.Tuple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import edu.caltech.nanodb.expressions.*;
-import edu.caltech.nanodb.queryeval.ColumnStats;
-import edu.caltech.nanodb.queryeval.PlanCost;
-import edu.caltech.nanodb.relations.Schema;
-import edu.caltech.nanodb.relations.Tuple;
-import edu.caltech.nanodb.relations.ColumnInfo;
-
-import edu.caltech.nanodb.queryast.SelectValue;
 
 
 /**
@@ -184,7 +182,17 @@ public class ProjectNode extends PlanNode {
             cost = inputCost;
         }
 
-        // TODO:  Estimate the final tuple-size.  It isn't hard, just tedious.
+        // Estimate the final tuple-size.
+        var avgSize = cost.tupleSize;
+        cost.tupleSize = 0;
+        for (int i = 0; i < schema.numColumns(); i++) {
+            var type = schema.getColumnInfo(i).getType();
+            if (type.hasLength()) {
+                cost.tupleSize += type.getLength();
+            } else {
+                cost.tupleSize += avgSize / inputSchema.numColumns();
+            }
+        }
     }
 
 
