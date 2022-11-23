@@ -36,3 +36,15 @@ pushing conjuncts down benefits.
   * base-table
   * subquery
   * outer join (handling outer join is grungy)
+
+## Step #3: Generating Optimal Leaf-Plans
+
+> Apply selections as early as possible.
+
+To support Dynamic Programming, we need to generate base/leaf node first. What
+we need to do is to implement `makeLeafNode`. It seems very similar to
+`makeSelect` in `SimplePlanner`. Only one more thing to do: push predicate down.
+
+* Base table => <code>makeSimpleSelect</code> => <code>FileScanNode</code>
+* Sub-Query => <code>makePlan</code> => <code>PlanNode</code>
+* Outer-Join => <code>makeJoinPlan</code> => <code>NestedLoopJoinNode</code>

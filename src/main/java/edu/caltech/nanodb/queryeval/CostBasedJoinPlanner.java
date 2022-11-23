@@ -3,7 +3,10 @@ package edu.caltech.nanodb.queryeval;
 
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.PredicateUtils;
+import edu.caltech.nanodb.plannodes.NestedLoopJoinNode;
 import edu.caltech.nanodb.plannodes.PlanNode;
+import edu.caltech.nanodb.plannodes.PlanUtils;
+import edu.caltech.nanodb.plannodes.RenameNode;
 import edu.caltech.nanodb.queryast.FromClause;
 import edu.caltech.nanodb.queryast.SelectClause;
 import org.apache.logging.log4j.LogManager;
@@ -108,7 +111,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
     public PlanNode makePlan(SelectClause selClause,
                              List<SelectClause> enclosingSelects) {
 
-        makeJoinPlan(selClause.getFromClause(), null);
+        makeJoinPlan(selClause.getFromClause(), Collections.singleton(selClause.getWhereExpr()));
         //
         // This is a very rough sketch of how this function will work,
         // focusing mainly on join planning:
@@ -259,7 +262,16 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
 
     /**
      * Constructs a plan tree for evaluating the specified from-clause.
-     * TODO:  COMPLETE THE DOCUMENTATION
+     * <li>
+     * Base table => <code>makeSimpleSelect</code> => <code>FileScanNode</code>
+     * <li>
+     * Sub-Query => <code>makePlan</code> => <code>PlanNode</code>
+     * <li>
+     * Outer-Join => <code>makeJoinPlan</code> => <code>NestedLoopJoinNode</code>
+     * <p>
+     * To apply predicates, we need to ensure the resulting plan will still be
+     * equivalent to the original query. Only need to notice: do not perform
+     * predicate to inner join side (non-outer join side).
      *
      * @param fromClause    the select nodes that need to be joined.
      * @param conjuncts     additional conjuncts that can be applied when
@@ -274,18 +286,54 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
      */
     private PlanNode makeLeafPlan(FromClause fromClause,
                                   Collection<Expression> conjuncts, HashSet<Expression> leafConjuncts) {
+        PlanNode node = null;
+        switch (fromClause.getClauseType()) {
+            case BASE_TABLE:
+                node = makeSimpleSelect(fromClause.getTableName(), null, null);
+                break;
+            case SELECT_SUBQUERY:
+                node = makePlan(fromClause.getSelectClause(), null);
+                break;
+            case JOIN_EXPR:
+                assert (fromClause.isOuterJoin());
+                var lcomp = makeJoinPlan(fromClause.getLeftChild(),
+                    fromClause.hasOuterJoinOnRight() ? null : conjuncts);
+                var rcomp = makeJoinPlan(fromClause.getRightChild(),
+                    fromClause.hasOuterJoinOnLeft() ? null : conjuncts);
+                leafConjuncts.addAll(lcomp.conjunctsUsed);
+                leafConjuncts.addAll(rcomp.conjunctsUsed);
+                node = new NestedLoopJoinNode(lcomp.joinPlan, rcomp.joinPlan,
+                    fromClause.getJoinType(), fromClause.getComputedJoinExpr());
+            default:
+                throw new UnsupportedOperationException("Not implemented:  Table Function");
+        }
 
-        throw new UnsupportedOperationException("Unimplemented: makeLeafPlan");
+        node.prepare(); // prepare for schema
 
-        // TODO:  IMPLEMENT.
-        //        If you apply any conjuncts then make sure to add them to the
-        //        leafConjuncts collection.
-        //
-        //        Don't forget that all from-clauses can specify an alias.
-        //
-        //        Concentrate on properly handling cases other than outer
-        //        joins first, then focus on outer joins once you have the
-        //        typical cases supported.
+        // find the usable conjuncts (can be used solely) in unused conjuncts
+        // e.g.: SELECT * FROM t1 FULL OUTER JOIN t2 ON t1.a = t2.b WHERE t2.c > 100;
+        //       for child node {t2}, {t2.c > 100} is usable
+        //       for parent node {t1 JOIN t2}, {t1.a = t2.b} is usable
+        var unusedConjuncts = new HashSet<>(conjuncts);
+        unusedConjuncts.removeAll(leafConjuncts); // ATTENTION: is this necessary?
+
+        var usableConjuncts = new HashSet<Expression>();
+        PredicateUtils.findExprsUsingSchemas(unusedConjuncts, false, usableConjuncts, node.getSchema());
+
+        if (!usableConjuncts.isEmpty()) {
+            var combinedPred = PredicateUtils.makePredicate(usableConjuncts);
+            PlanUtils.addPredicateToPlan(node, combinedPred);
+            leafConjuncts.addAll(usableConjuncts);
+        }
+
+        // rename node for AS; SELECT tbl2.a FROM tbl1 AS tbl2
+        if (fromClause.isRenamed()) {
+            node = new RenameNode(node, fromClause.getResultName());
+        }
+
+        // update statistics
+        node.prepare();
+        return node;
     }
 
 
