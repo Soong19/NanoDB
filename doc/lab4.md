@@ -23,9 +23,14 @@ and aggregation. Besides basic functionalities we implemented in Assignment 2,
 we need to support generating an optimal join plan. So, we need to know how the
 join-related components work.
 
-TODO: Need a rough description about `MakePlan`
+For `makePlan`, we only need to handle `WHERE` & `FROM` together for join
+optimization. The rest is the same with `SimplePlanner`.
+1. Walk through `WHERE` & `FROM` to retrieve all the top-level conjuncts so that
+   we can put them properly.
+2. Create an optimal join plan by the following steps
+3. Add unused conjuncts to the top of the plan
 
-## Step #2: Collecting details from the `From`Clause
+## Step #2: Collecting details from the `FROM`Clause
 
 To provide the base information for Join Optimization, we need to retrieve some
 details about leaf nodes and predicates. Because join ordering matters a lot and
