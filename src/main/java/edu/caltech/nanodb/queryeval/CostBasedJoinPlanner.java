@@ -358,6 +358,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         var usableConjuncts = new HashSet<Expression>();
         PredicateUtils.findExprsUsingSchemas(unusedConjuncts, false, usableConjuncts, node.getSchema());
 
+        var oldNode = node;
         if (!usableConjuncts.isEmpty()) {
             var pred = PredicateUtils.makePredicate(usableConjuncts);
             PlanUtils.addPredicateToPlan(node, pred);
@@ -370,7 +371,8 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         }
 
         // update statistics
-        node.prepare();
+        if (node != oldNode)
+            node.prepare();
         return node;
     }
 
