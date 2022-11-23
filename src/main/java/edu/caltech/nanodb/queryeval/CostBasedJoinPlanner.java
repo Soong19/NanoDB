@@ -6,6 +6,7 @@ import edu.caltech.nanodb.expressions.PredicateUtils;
 import edu.caltech.nanodb.plannodes.*;
 import edu.caltech.nanodb.queryast.FromClause;
 import edu.caltech.nanodb.queryast.SelectClause;
+import edu.caltech.nanodb.relations.JoinType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -340,6 +341,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
                 leafConjuncts.addAll(rcomp.conjunctsUsed);
                 node = new NestedLoopJoinNode(lcomp.joinPlan, rcomp.joinPlan,
                     fromClause.getJoinType(), fromClause.getComputedJoinExpr());
+                break;
             default:
                 throw new UnsupportedOperationException("Not implemented:  Table Function");
         }
@@ -351,14 +353,14 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         //       for child node {t2}, {t2.c > 100} is usable
         //       for parent node {t1 JOIN t2}, {t1.a = t2.b} is usable
         var unusedConjuncts = new HashSet<>(conjuncts);
-        unusedConjuncts.removeAll(leafConjuncts); // DEBUG: is this necessary?
+        unusedConjuncts.removeAll(leafConjuncts); // to avoid redundant predicates
 
         var usableConjuncts = new HashSet<Expression>();
         PredicateUtils.findExprsUsingSchemas(unusedConjuncts, false, usableConjuncts, node.getSchema());
 
         if (!usableConjuncts.isEmpty()) {
-            var combinedPred = PredicateUtils.makePredicate(usableConjuncts);
-            PlanUtils.addPredicateToPlan(node, combinedPred);
+            var pred = PredicateUtils.makePredicate(usableConjuncts);
+            PlanUtils.addPredicateToPlan(node, pred);
             leafConjuncts.addAll(usableConjuncts);
         }
 
@@ -402,7 +404,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         //   * etc.
         // At the end, the collection will contain ONE entry, which is the
         // optimal way to join all N leaves.  Go Go Gadget Dynamic Programming!
-        HashMap<HashSet<PlanNode>, JoinComponent> joinPlans = new HashMap<>();
+        var joinPlans = new HashMap<HashSet<PlanNode>, JoinComponent>();
 
         // Initially populate joinPlans with just the N leaf plans.
         for (JoinComponent leaf : leafComponents)
@@ -414,15 +416,49 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
             // This is the set of "next plans" we will generate.  Plans only
             // get stored if they are the first plan that joins together the
             // specified leaves, or if they are better than the current plan.
-            HashMap<HashSet<PlanNode>, JoinComponent> nextJoinPlans = new HashMap<>();
+            var nextJoinPlans = new HashMap<HashSet<PlanNode>, JoinComponent>();
 
-            // TODO:  IMPLEMENT THE CODE THAT GENERATES OPTIMAL PLANS THAT
-            //        JOIN N + 1 LEAVES
+            // Generate plan with N+1 nodes
+            for (var entry : joinPlans.entrySet()) {
+                var nodes = entry.getKey();
+                var joinComp = entry.getValue();
+                var joinNode = joinComp.joinPlan;
+                for (var leafComp : leafComponents) {
+                    var leaf = leafComp.joinPlan;
+                    if (nodes.contains(leaf)) continue; // already join
+
+                    /* Get all usable conjuncts from unused conjuncts */
+                    var subplanConjuncts = new HashSet<>(joinComp.conjunctsUsed);
+                    subplanConjuncts.addAll(leafComp.conjunctsUsed);
+                    var unusedConjuncts = new HashSet<>(conjuncts);
+                    unusedConjuncts.removeAll(subplanConjuncts);
+
+                    var usableConjuncts = new HashSet<Expression>();
+                    PredicateUtils.findExprsUsingSchemas(unusedConjuncts, false, usableConjuncts,
+                        joinNode.getSchema(), leaf.getSchema());
+
+                    /* Generate inner join node with predicate */
+                    var pred = PredicateUtils.makePredicate(usableConjuncts);
+                    var newPlan = new NestedLoopJoinNode(joinNode, leaf, JoinType.INNER, pred);
+
+                    newPlan.prepare(); // update statistics
+                    var newConjuncts = new HashSet<>(subplanConjuncts);
+                    newConjuncts.add(pred);
+                    var newComp = new JoinComponent(newPlan, joinComp.leavesUsed, newConjuncts);
+
+                    /* Check if already have the plan, if is, then choose the less cost one, otherwise init */
+                    var newNodes = new HashSet<>(nodes);
+                    newNodes.add(leaf);
+                    if (!nextJoinPlans.containsKey(newNodes) ||
+                        nextJoinPlans.get(newNodes).joinPlan.getCost().cpuCost < newComp.joinPlan.getCost().cpuCost) {
+                        nextJoinPlans.put(newNodes, newComp);
+                    }
+                }
+            }
 
             // Now that we have generated all plans joining N leaves, time to
             // create all plans joining N + 1 leaves.
             joinPlans = nextJoinPlans;
-            throw new UnsupportedOperationException("Unimplemented: generateOptimalJoin");
         }
 
         // At this point, the set of join plans should only contain one plan,
