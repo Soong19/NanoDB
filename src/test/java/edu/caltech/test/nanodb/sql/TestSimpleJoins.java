@@ -38,7 +38,7 @@ public class TestSimpleJoins extends SqlTestCase {
         };
 
         CommandResult result = server.doCommand(
-            "SELECT * FROM test_join_left INNER JOIN test_join_right ON a = c", true);
+            "SELECT a, b, c, d FROM test_join_left INNER JOIN test_join_right ON a = c", true);
         assert checkUnorderedResults(expected, result);
     }
 
@@ -107,7 +107,6 @@ public class TestSimpleJoins extends SqlTestCase {
      * @throws Exception if any query parsing or execution issues occur.
      */
     public void testNormalRightOuterJoin() throws Throwable {
-        // TODO:
         TupleLiteral[] expected = null;
         try {
             expected = new TupleLiteral[]{
@@ -259,7 +258,7 @@ public class TestSimpleJoins extends SqlTestCase {
             };
         } finally {
             CommandResult result = server.doCommand(
-                "SELECT * FROM test_join_one_row INNER JOIN test_join_multiple_row ON a = c", true);
+                "SELECT a, b, c, d, e FROM test_join_one_row INNER JOIN test_join_multiple_row ON a = c", true);
             assert checkUnorderedResults(expected, result);
         }
     }
@@ -279,7 +278,7 @@ public class TestSimpleJoins extends SqlTestCase {
             };
         } finally {
             CommandResult result = server.doCommand(
-                "SELECT * FROM test_join_multiple_row INNER JOIN test_join_one_row ON a = c", true);
+                "SELECT c, d, e, a, b FROM test_join_multiple_row INNER JOIN test_join_one_row ON a = c", true);
             assert checkUnorderedResults(expected, result);
         }
     }
@@ -300,7 +299,7 @@ public class TestSimpleJoins extends SqlTestCase {
         };
 
         CommandResult result = server.doCommand(
-            "SELECT * FROM test_join_left, test_join_right WHERE a = c", true);
+            "SELECT a, b, c, d FROM test_join_left, test_join_right WHERE a = c", true);
         assert checkUnorderedResults(expected, result);
     }
 
@@ -319,11 +318,11 @@ public class TestSimpleJoins extends SqlTestCase {
         };
 
         CommandResult result1 = server.doCommand(
-            "SELECT * FROM test_join_left INNER JOIN test_join_right ON a = c INNER JOIN test_join_mid ON a = e", true);
+            "SELECT a, b, c, d, e, f FROM test_join_left INNER JOIN test_join_right ON a = c INNER JOIN test_join_mid ON a = e", true);
         assert checkUnorderedResults(expected, result1);
 
         CommandResult result2 = server.doCommand(
-            "SELECT * FROM test_join_left, test_join_right, test_join_mid WHERE a = e AND a = c", true);
+            "SELECT a, b, c, d, e, f FROM test_join_left, test_join_right, test_join_mid WHERE a = e AND a = c", true);
         assert checkUnorderedResults(expected, result2);
     }
 }

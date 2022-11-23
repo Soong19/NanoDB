@@ -1,9 +1,9 @@
 package edu.caltech.nanodb.server.properties;
 
 
-import java.io.File;
-
 import edu.caltech.nanodb.storage.DBFile;
+
+import java.io.File;
 
 public interface ServerProperties {
 
@@ -75,16 +75,14 @@ public interface ServerProperties {
      * The name of the property to enable or disable the "create indexes on
      * keys" functionality in "<tt>CREATE TABLE ...</tt>".
      */
-    public static final String PROP_CREATE_INDEXES_ON_KEYS =
-        "nanodb.createIndexesOnKeys";
+    public static final String PROP_CREATE_INDEXES_ON_KEYS = "nanodb.createIndexesOnKeys";
 
 
     /**
      * The system property that can be used to turn on or off transaction
      * processing.
      */
-    public static final String PROP_ENABLE_TRANSACTIONS =
-        "nanodb.enableTransactions";
+    public static final String PROP_ENABLE_TRANSACTIONS = "nanodb.enableTransactions";
 
 
     /**
@@ -105,6 +103,5 @@ public interface ServerProperties {
      * This class is the default planner used in NanoDB, unless
      * overridden in the configuration.
      */
-    public static final String DEFAULT_PLANNER_CLASS =
-        "edu.caltech.nanodb.queryeval.SimplePlanner";
+    public static final String DEFAULT_PLANNER_CLASS = "edu.caltech.nanodb.queryeval.CostBasedJoinPlanner";
 }
