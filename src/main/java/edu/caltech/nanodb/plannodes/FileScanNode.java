@@ -1,21 +1,20 @@
 package edu.caltech.nanodb.plannodes;
 
 
-import java.util.List;
-
-import edu.caltech.nanodb.queryeval.StatisticsUpdater;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
 import edu.caltech.nanodb.indexes.IndexInfo;
 import edu.caltech.nanodb.queryeval.PlanCost;
 import edu.caltech.nanodb.queryeval.SelectivityEstimator;
+import edu.caltech.nanodb.queryeval.StatisticsUpdater;
 import edu.caltech.nanodb.queryeval.TableStats;
 import edu.caltech.nanodb.relations.TableInfo;
 import edu.caltech.nanodb.storage.FilePointer;
 import edu.caltech.nanodb.storage.TupleFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 
 /**
@@ -237,7 +236,8 @@ public class FileScanNode extends SelectNode {
         if (predicate != null) {
             numTuples *= SelectivityEstimator.estimateSelectivity(predicate, schema, tableStats.getAllColumnStats());
         }
-        cost = new PlanCost(numTuples, tableStats.avgTupleSize, numTuples, tableStats.numDataPages, tableStats.numDataPages);
+        cost = new PlanCost(numTuples, tableStats.avgTupleSize, tableStats.numTuples,
+            tableStats.numDataPages, tableStats.numDataPages);
 
         // Update the statistics based on the predicate.
         if (predicate != null) {
