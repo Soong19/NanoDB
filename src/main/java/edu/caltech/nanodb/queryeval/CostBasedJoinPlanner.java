@@ -1,25 +1,15 @@
 package edu.caltech.nanodb.queryeval;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import edu.caltech.nanodb.expressions.Expression;
+import edu.caltech.nanodb.expressions.PredicateUtils;
+import edu.caltech.nanodb.plannodes.PlanNode;
+import edu.caltech.nanodb.queryast.FromClause;
+import edu.caltech.nanodb.queryast.SelectClause;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.caltech.nanodb.expressions.Expression;
-import edu.caltech.nanodb.plannodes.FileScanNode;
-import edu.caltech.nanodb.plannodes.PlanNode;
-import edu.caltech.nanodb.plannodes.SelectNode;
-import edu.caltech.nanodb.queryast.FromClause;
-import edu.caltech.nanodb.queryast.SelectClause;
-import edu.caltech.nanodb.relations.TableInfo;
-import edu.caltech.nanodb.storage.StorageManager;
+import java.util.*;
 
 
 /**
@@ -33,8 +23,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
     /**
      * A logging object for reporting anything interesting that happens.
      */
-    private static Logger logger = LogManager.getLogger(
-        CostBasedJoinPlanner.class);
+    private static Logger logger = LogManager.getLogger(CostBasedJoinPlanner.class);
 
     /**
      * This helper class is used to keep track of one "join component" in the
@@ -119,7 +108,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
     public PlanNode makePlan(SelectClause selClause,
                              List<SelectClause> enclosingSelects) {
 
-        // TODO:  Implement!
+        makeJoinPlan(selClause.getFromClause(), null);
         //
         // This is a very rough sketch of how this function will work,
         // focusing mainly on join planning:
@@ -171,6 +160,10 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         logger.debug("    Collected conjuncts:  " + conjuncts);
         logger.debug("    Collected FROM-clauses:  " + leafFromClauses);
         logger.debug("    Extra conjuncts:  " + extraConjuncts);
+        System.out.println("Making join-plan for " + fromClause);
+        System.out.println("    Collected conjuncts:  " + conjuncts);
+        System.out.println("    Collected FROM-clauses:  " + leafFromClauses);
+        System.out.println("    Extra conjuncts:  " + extraConjuncts);
 
         if (extraConjuncts != null)
             conjuncts.addAll(extraConjuncts);
@@ -181,27 +174,21 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
 
         // Create a subplan for every single leaf FROM-clause, and prepare the
         // leaf-plan.
-
         logger.debug("Generating plans for all leaves");
-        ArrayList<JoinComponent> leafComponents = generateLeafJoinComponents(
-            leafFromClauses, roConjuncts);
+        ArrayList<JoinComponent> leafComponents = generateLeafJoinComponents(leafFromClauses, roConjuncts);
 
         // Print out the results, for debugging purposes.
         if (logger.isDebugEnabled()) {
             for (JoinComponent leaf : leafComponents) {
-                logger.debug("    Leaf plan:\n" +
-                    PlanNode.printNodeTreeToString(leaf.joinPlan, true));
+                logger.debug("    Leaf plan:\n" + PlanNode.printNodeTreeToString(leaf.joinPlan, true));
             }
         }
 
         // Build up the full query-plan using a dynamic programming approach.
-
-        JoinComponent optimalJoin =
-            generateOptimalJoin(leafComponents, roConjuncts);
+        JoinComponent optimalJoin = generateOptimalJoin(leafComponents, roConjuncts);
 
         PlanNode plan = optimalJoin.joinPlan;
-        logger.info("Optimal join plan generated:\n" +
-            PlanNode.printNodeTreeToString(plan, true));
+        logger.info("Optimal join plan generated:\n" + PlanNode.printNodeTreeToString(plan, true));
 
         return optimalJoin;
     }
@@ -211,7 +198,8 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
      * This helper method pulls the essential details for join optimization
      * out of a <tt>FROM</tt> clause.
      * <p>
-     * TODO:  FILL IN DETAILS.
+     * It collects conjuncts from the predicate of non-leaf node and leaf
+     * nodes (base-table, subquery, outer-join).
      *
      * @param fromClause      the from-clause to collect details from
      * @param conjuncts       the collection to add all conjuncts to
@@ -219,8 +207,16 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
      */
     private void collectDetails(FromClause fromClause,
                                 HashSet<Expression> conjuncts, ArrayList<FromClause> leafFromClauses) {
-
-        // TODO:  IMPLEMENT
+        // check if is leaf node => base of recursion
+        if (fromClause.isBaseTable() || fromClause.getClauseType() == FromClause.ClauseType.SELECT_SUBQUERY ||
+            fromClause.isOuterJoin()) {
+            leafFromClauses.add(fromClause);
+        } else {
+            // INNER JOIN: collect conjuncts & recursively collect details from child nodes
+            PredicateUtils.collectConjuncts(fromClause.getComputedJoinExpr(), conjuncts);
+            collectDetails(fromClause.getLeftChild(), conjuncts, leafFromClauses);
+            collectDetails(fromClause.getRightChild(), conjuncts, leafFromClauses);
+        }
     }
 
 
@@ -251,8 +247,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         for (FromClause leafClause : leafFromClauses) {
             HashSet<Expression> leafConjuncts = new HashSet<>();
 
-            PlanNode leafPlan =
-                makeLeafPlan(leafClause, conjuncts, leafConjuncts);
+            PlanNode leafPlan = makeLeafPlan(leafClause, conjuncts, leafConjuncts);
 
             JoinComponent leaf = new JoinComponent(leafPlan, leafConjuncts);
             leafComponents.add(leaf);
@@ -280,6 +275,8 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
     private PlanNode makeLeafPlan(FromClause fromClause,
                                   Collection<Expression> conjuncts, HashSet<Expression> leafConjuncts) {
 
+        throw new UnsupportedOperationException("Unimplemented: makeLeafPlan");
+
         // TODO:  IMPLEMENT.
         //        If you apply any conjuncts then make sure to add them to the
         //        leafConjuncts collection.
@@ -289,8 +286,6 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         //        Concentrate on properly handling cases other than outer
         //        joins first, then focus on outer joins once you have the
         //        typical cases supported.
-
-        return null;
     }
 
 
@@ -331,8 +326,7 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
             joinPlans.put(leaf.leavesUsed, leaf);
 
         while (joinPlans.size() > 1) {
-            logger.debug("Current set of join-plans has " + joinPlans.size() +
-                " plans in it.");
+            logger.debug("Current set of join-plans has " + joinPlans.size() + " plans in it.");
 
             // This is the set of "next plans" we will generate.  Plans only
             // get stored if they are the first plan that joins together the
