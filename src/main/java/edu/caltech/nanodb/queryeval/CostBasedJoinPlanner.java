@@ -443,14 +443,16 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
 
                     newPlan.prepare(); // update statistics
                     var newConjuncts = new HashSet<>(subplanConjuncts);
-                    newConjuncts.add(pred);
-                    var newComp = new JoinComponent(newPlan, joinComp.leavesUsed, newConjuncts);
+                    newConjuncts.addAll(usableConjuncts);
+                    var newLeavesUsed = new HashSet<>(joinComp.leavesUsed);
+                    newLeavesUsed.add(leaf);
+                    var newComp = new JoinComponent(newPlan, newLeavesUsed, newConjuncts);
 
                     /* Check if already have the plan, if is, then choose the less cost one, otherwise init */
                     var newNodes = new HashSet<>(nodes);
                     newNodes.add(leaf);
                     if (!nextJoinPlans.containsKey(newNodes) ||
-                        nextJoinPlans.get(newNodes).joinPlan.getCost().cpuCost < newComp.joinPlan.getCost().cpuCost) {
+                        nextJoinPlans.get(newNodes).joinPlan.getCost().cpuCost > newComp.joinPlan.getCost().cpuCost) {
                         nextJoinPlans.put(newNodes, newComp);
                     }
                 }
