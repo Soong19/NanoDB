@@ -3,10 +3,7 @@ package edu.caltech.nanodb.plannodes;
 
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
-import edu.caltech.nanodb.queryeval.ColumnStats;
-import edu.caltech.nanodb.queryeval.PlanCost;
-import edu.caltech.nanodb.queryeval.SelectivityEstimator;
-import edu.caltech.nanodb.queryeval.StatisticsUpdater;
+import edu.caltech.nanodb.queryeval.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +117,12 @@ public class SimpleFilterNode extends SelectNode {
         // Compute the cost of the plan node!
         var selectivity = SelectivityEstimator.estimateSelectivity(predicate, schema, childStats);
         cost = new PlanCost(leftChild.getCost());
-        cost.cpuCost += cost.numTuples; // a filter must walk through all the tuples
+        // For each row, need to evaluate the predicate once.
+        var costCalc = new ExpressionCostCalculator();
+        predicate.traverse(costCalc);
+        assert costCalc.getCost().cpuCost > 0;
+        cost.cpuCost += cost.numTuples * costCalc.getCost().cpuCost; // a filter must walk through all the tuples
+
         cost.numTuples *= selectivity;
 
         // Update the statistics based on the predicate.
