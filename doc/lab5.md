@@ -37,3 +37,22 @@ summarize cost of the one expression.
 * `SimpleFilterNode`: Get the cost to evaluate a predicate, then multiply it by
   [non-selectivity] estimated number of rows.
 * `FileScanNode`: Same with previous one.
+
+## Step #3: Correlated Evaluation
+
+> Add support for correlated evaluation
+
+A correlated subquery is a subquery that refers to a column of a table that is
+not in its `FROM` clause. The column can be in the Projection clause or in the
+`WHERE` clause. An environment provides schemas for tuples to find out where it
+goes. An expression might refer columns that are not in current table, but in
+parent.
+
+In order to support correlated evaluation, NanoDB uses a naive approach:
+an environment might have one parent env or more parent envs so that an
+expression can be passed along the env-chain until all info is ok. A subquery
+need to see the tuples produced by enclosing selects => using the way of parent
+envs.
+
+What we need to do at this step is to implement correlated evaluation within a
+query engine. (For now, NanoDB doesn't support de-correlate)

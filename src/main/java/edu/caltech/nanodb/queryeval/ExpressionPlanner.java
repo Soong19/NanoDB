@@ -1,11 +1,11 @@
 package edu.caltech.nanodb.queryeval;
 
-import edu.caltech.nanodb.commands.ExecutionException;
 import edu.caltech.nanodb.expressions.*;
 import edu.caltech.nanodb.queryast.SelectClause;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ExpressionPlanner is a class that traverses an entire expression,
@@ -23,15 +23,20 @@ public class ExpressionPlanner implements ExpressionProcessor {
     // Enclosing selects inherited from parent planner.
     private final List<SelectClause> enclosingSels;
 
-    // TODO:
+    // The expression-planner's environment.
     private Environment env = new Environment();
 
     private List<SubqueryOperator> subqueryOperators = new ArrayList<>();
 
     ExpressionPlanner(SelectClause selectClause, Planner joinPlanner, List<SelectClause> enclosingSelects) {
         planner = joinPlanner;
-        enclosingSels = enclosingSelects;
         selClause = selectClause;
+
+        // for child subquery to find outer query's columns (a.k.a., current root node)
+        enclosingSels = new ArrayList<>();
+        if (enclosingSelects != null)
+            enclosingSels.addAll(enclosingSelects);
+        enclosingSels.add(selectClause);
 
         validateGroupBy(selectClause.getGroupByExprs());
         validateOrderBy(selectClause.getOrderByExprs());
@@ -42,13 +47,15 @@ public class ExpressionPlanner implements ExpressionProcessor {
      * <p>
      * Possible subqueries: {@link SubqueryOperator}
      */
-    public void scanSelVals() {
+    public boolean scanSelVals() {
         var selVals = selClause.getSelectValues();
         assert !selVals.isEmpty();
 
+        AtomicBoolean doMakePlan = new AtomicBoolean(false);
         selVals.stream()
             .filter(sv -> sv.isExpression())
-            .forEach(sv -> makePlan(sv.getExpression()));
+            .forEach(sv -> doMakePlan.set(makePlan(sv.getExpression()) || doMakePlan.get()));
+        return doMakePlan.get();
     }
 
     /**
@@ -56,8 +63,8 @@ public class ExpressionPlanner implements ExpressionProcessor {
      * <p>
      * Possible subqueries: {@link SubqueryOperator}, {@link InSubqueryOperator}, {@link ExistsOperator}
      */
-    public void scanWhere() {
-        makePlan(selClause.getWhereExpr());
+    public boolean scanWhere() {
+        return makePlan(selClause.getWhereExpr());
     }
 
     /**
@@ -65,26 +72,30 @@ public class ExpressionPlanner implements ExpressionProcessor {
      * <p>
      * Possible subqueries: {@link SubqueryOperator}, {@link InSubqueryOperator}, {@link ExistsOperator}
      */
-    public void scanHaving() {
-        makePlan(selClause.getHavingExpr());
+    public boolean scanHaving() {
+        return makePlan(selClause.getHavingExpr());
     }
 
     /**
      * Generate a plan node for a subquery expression.
+     *
+     * @return true if make a plan for expr, false otherwise
      */
-    private void makePlan(Expression expr) {
+    private boolean makePlan(Expression expr) {
         if (expr == null) {
-            return;
+            return false;
         }
         // walk through the expr to get all the subqueries
         expr.traverse(this);
         // Generate plan for each subquery
         subqueryOperators.stream().forEach(sq -> {
             var plan = planner.makePlan(sq.getSubquery(), enclosingSels);
+            plan.addParentEnvironmentToPlanTree(env);
             sq.setSubqueryPlan(plan);
         });
         // clear the subqueries for next invocation
         subqueryOperators.clear();
+        return true;
     }
 
     /**

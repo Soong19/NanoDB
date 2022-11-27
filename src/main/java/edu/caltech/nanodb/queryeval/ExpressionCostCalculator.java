@@ -18,7 +18,8 @@ public class ExpressionCostCalculator implements ExpressionProcessor {
     @Override
     public void enter(Expression node) {
         if (node instanceof SubqueryOperator) {
-            cost.cpuCost += ((SubqueryOperator) node).getSubqueryPlan().getCost().cpuCost;
+            var subCost = ((SubqueryOperator) node).getSubqueryPlan().getCost().cpuCost;
+            cost.cpuCost += subCost > 0 ? subCost : 1;
         } else {
             cost.cpuCost++;
         }

@@ -140,12 +140,14 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
             var pred = PredicateUtils.makePredicate(conjuncts);
             plan = PlanUtils.addPredicateToPlan(plan, pred);
         }
-        subqueryPlanner.scanWhere();
+        if (subqueryPlanner.scanWhere())
+            plan.setEnvironment(subqueryPlanner.getEnvironment()); // set an environment for subquery to look for
 
         /*=== Exactly the same with SimplePlanner ===*/
         // 4. Grouping & Aggregation: handle_grouping and aggregation
         plan = handleGroupAggregate(plan, selClause);
-        subqueryPlanner.scanHaving();
+        if (subqueryPlanner.scanHaving())
+            plan.setEnvironment(subqueryPlanner.getEnvironment());
 
         // 5. Order By: add order-by clause
         if (!selClause.getOrderByExprs().isEmpty())
@@ -154,7 +156,8 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         // 6. Project: add a filter for columns
         if (!selClause.isTrivialProject()) {
             plan = new ProjectNode(plan, selClause.getSelectValues());
-            subqueryPlanner.scanSelVals();
+            if (subqueryPlanner.scanSelVals())
+                plan.setEnvironment(subqueryPlanner.getEnvironment());
         }
 
         // 7. Limit & Offset: add a limiter for results
