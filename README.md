@@ -10,3 +10,7 @@
 * [hw4](./doc/lab4.md): Join Optimization [1 day]
 * [hw5](./doc/lab5.md): Advanced Subquery [2 days]
 
+## Blogs
+
+* [planner](https://telegra.ph/planner-11-28): Database Query Planner
+
