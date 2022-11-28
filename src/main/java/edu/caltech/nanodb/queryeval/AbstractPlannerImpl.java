@@ -86,7 +86,7 @@ public abstract class AbstractPlannerImpl implements Planner {
      * @return plan node processed <tt>GROUP BY</tt> and {@code Aggregation}
      */
     protected PlanNode handleGroupAggregate(PlanNode plan, SelectClause selClause) {
-        logger.debug("Group By: " + selClause.getHavingExpr());
+        logger.debug("Group By: " + selClause.getGroupByExprs());
 
         var processor = new AggregationProcessor();
 
@@ -99,7 +99,7 @@ public abstract class AbstractPlannerImpl implements Planner {
             // Skip select-values that aren't expressions
             if (!sv.isExpression())
                 continue;
-            Expression e = sv.getExpression().traverse(processor);
+            var e = sv.getExpression().traverse(processor);
             sv.setExpression(e);
         }
 
