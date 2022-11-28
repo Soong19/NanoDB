@@ -11,6 +11,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * ExpressionPlanner is a class that traverses an entire expression,
  * planning any subqueries that appear in the expression, and ensure
  * <tt>ORDER BY</tt> & <tt>GROUP BY</tt> clauses have no subquery.
+ * <p>
+ * The main task of this class is: build an environment chain so that
+ * subquery can walk bottom-up to get tuple from parent environment.
+ * <p>
+ * To support correlated subquery, NanoDB uses an environment chain.
+ * That is, a subquery will add its parent (and parent's parent) env
+ * to its own env. Therefore, when an expression is evaluated in this
+ * node and a column cannot be found, it will pass the reference to
+ * its parent env until the column reference can be resolved. When
+ * retrieving a tuple from a node, it also stores tuple in its
+ * environment. Therefore, when subquery acquires a tuple, it can
+ * easily get it from the parent environment.
  */
 public class ExpressionPlanner implements ExpressionProcessor {
 
@@ -21,22 +33,23 @@ public class ExpressionPlanner implements ExpressionProcessor {
     private final SelectClause selClause;
 
     // Enclosing selects inherited from parent planner.
-    private final List<SelectClause> enclosingSels;
+    private final List<SelectClause> enclosingSels = null;
 
     // The expression-planner's environment.
     private Environment env = new Environment();
 
+    // Record subqueries in an expression.
     private List<SubqueryOperator> subqueryOperators = new ArrayList<>();
 
     ExpressionPlanner(SelectClause selectClause, Planner joinPlanner, List<SelectClause> enclosingSelects) {
         planner = joinPlanner;
         selClause = selectClause;
 
+        /*=== Enclosing selects => have no impact *===*/
         // for child subquery to find outer query's columns (a.k.a., current root node)
-        enclosingSels = new ArrayList<>();
-        if (enclosingSelects != null)
-            enclosingSels.addAll(enclosingSelects);
-        enclosingSels.add(selectClause);
+        // enclosingSels = new ArrayList<>();
+        // if (enclosingSelects != null) enclosingSels.addAll(enclosingSelects);
+        // enclosingSels.add(selectClause);
 
         validateGroupBy(selectClause.getGroupByExprs());
         validateOrderBy(selectClause.getOrderByExprs());

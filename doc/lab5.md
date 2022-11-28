@@ -50,9 +50,28 @@ parent.
 
 In order to support correlated evaluation, NanoDB uses a naive approach:
 an environment might have one parent env or more parent envs so that an
-expression can be passed along the env-chain until all info is ok. A subquery
+expression can be passed along the env-chain until all info is ok. <s>A subquery
 need to see the tuples produced by enclosing selects => using the way of parent
-envs.
+envs.</s>
 
 What we need to do at this step is to implement correlated evaluation within a
 query engine. (For now, NanoDB doesn't support de-correlate)
+
+For each clause (Projection, Where or Having), when we generate the plan for
+subquery, also add its parent environment to it. After planning process of each
+clause (already generated plans), set current plan's environment as the env just
+generated. => build an environment-chain
+
+For example, when executing "SELECT a FROM test_1 t1 WHERE EXISTS(SELECT b FROM
+test_2 t2 WHERE t1.a * 10 = b)", after retrieving one column value from `test_1`,
+will always use the predicate to check if satisfy or not. Firstly, in `Exists`
+operator, initialize subquery plan node. Secondly, in [subquery's] `Compare`
+operator, get lhs & rhs, then compare them. The computation of rhs is easy, but
+for lhs:
+1. In subquery's environment, walk through current schema to find out whether
+   there is the column => Not found
+2. Enter the parent environment, get the **current tuple** of `t1` => Found
+
+So, it is clear now. When retrieving a tuple from a node, it also stores tuple
+in its environment. Therefore, when subquery acquires a tuple, it can easily
+get from the parent environment. => acquire tuple from parent environment
