@@ -4,10 +4,7 @@ package edu.caltech.nanodb.plannodes;
 import edu.caltech.nanodb.expressions.Expression;
 import edu.caltech.nanodb.expressions.OrderByExpression;
 import edu.caltech.nanodb.indexes.IndexInfo;
-import edu.caltech.nanodb.queryeval.PlanCost;
-import edu.caltech.nanodb.queryeval.SelectivityEstimator;
-import edu.caltech.nanodb.queryeval.StatisticsUpdater;
-import edu.caltech.nanodb.queryeval.TableStats;
+import edu.caltech.nanodb.queryeval.*;
 import edu.caltech.nanodb.relations.TableInfo;
 import edu.caltech.nanodb.storage.FilePointer;
 import edu.caltech.nanodb.storage.TupleFile;
@@ -233,10 +230,13 @@ public class FileScanNode extends SelectNode {
 
         // Compute the cost of the plan node!
         var numTuples = tableStats.numTuples;
+        var costCal = new ExpressionCostCalculator();
         if (predicate != null) {
             numTuples *= SelectivityEstimator.estimateSelectivity(predicate, schema, tableStats.getAllColumnStats());
+            predicate.traverse(costCal);
         }
-        cost = new PlanCost(numTuples, tableStats.avgTupleSize, tableStats.numTuples,
+        cost = new PlanCost(numTuples, tableStats.avgTupleSize,
+            costCal.getCost().cpuCost > 0 ? tableStats.numTuples * costCal.getCost().cpuCost : tableStats.numTuples,
             tableStats.numDataPages, tableStats.numDataPages);
 
         // Update the statistics based on the predicate.

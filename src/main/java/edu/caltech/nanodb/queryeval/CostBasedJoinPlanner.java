@@ -113,6 +113,8 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
         var fromClause = selClause.getFromClause();
         var whereClause = selClause.getWhereExpr();
 
+        var subqueryPlanner = new ExpressionPlanner(selClause, this, enclosingSelects);
+
         // 1. Pull out the top-level conjuncts from WHERE & FROM
         var conjuncts = new HashSet<Expression>();
         if (whereClause != null) {
@@ -138,18 +140,25 @@ public class CostBasedJoinPlanner extends AbstractPlannerImpl {
             var pred = PredicateUtils.makePredicate(conjuncts);
             plan = PlanUtils.addPredicateToPlan(plan, pred);
         }
+        if (subqueryPlanner.scanWhere())
+            plan.setEnvironment(subqueryPlanner.getEnvironment()); // set an environment for subquery to look for
 
         /*=== Exactly the same with SimplePlanner ===*/
         // 4. Grouping & Aggregation: handle_grouping and aggregation
         plan = handleGroupAggregate(plan, selClause);
+        if (subqueryPlanner.scanHaving())
+            plan.setEnvironment(subqueryPlanner.getEnvironment());
 
         // 5. Order By: add order-by clause
         if (!selClause.getOrderByExprs().isEmpty())
             plan = new SortNode(plan, selClause.getOrderByExprs());
 
         // 6. Project: add a filter for columns
-        if (!selClause.isTrivialProject())
+        if (!selClause.isTrivialProject()) {
             plan = new ProjectNode(plan, selClause.getSelectValues());
+            if (subqueryPlanner.scanSelVals())
+                plan.setEnvironment(subqueryPlanner.getEnvironment());
+        }
 
         // 7. Limit & Offset: add a limiter for results
         if (selClause.getLimit() != 0 || selClause.getOffset() != 0)

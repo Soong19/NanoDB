@@ -4,6 +4,7 @@ package edu.caltech.nanodb.plannodes;
 import edu.caltech.nanodb.expressions.*;
 import edu.caltech.nanodb.queryast.SelectValue;
 import edu.caltech.nanodb.queryeval.ColumnStats;
+import edu.caltech.nanodb.queryeval.ExpressionCostCalculator;
 import edu.caltech.nanodb.queryeval.PlanCost;
 import edu.caltech.nanodb.relations.ColumnInfo;
 import edu.caltech.nanodb.relations.Schema;
@@ -153,17 +154,20 @@ public class ProjectNode extends PlanNode {
             // project-node, since it is a complicated operation.
             prepareSchemaStats(leftChild.getSchema(), leftChild.getStats());
 
-            // Come up with a cost estimate now.  Projection does require some
-            // computation, so increase the CPU cost based on the number of
-            // tuples expected to come into this plan-node.
+            // Come up with a cost estimate now.
+            // Besides inherit child cost, need also add cpu to retrieve tuples from expression.
+
+            // Per-row cost
+            var costCalc = new ExpressionCostCalculator();
+            projectionSpec.stream().forEach(sv -> sv.getExpression().traverse(costCalc));
+            assert costCalc.getCost().cpuCost > 0;
 
             inputCost = leftChild.getCost();
             if (inputCost != null) {
                 cost = new PlanCost(inputCost);
-                cost.cpuCost += inputCost.numTuples;
+                cost.cpuCost += inputCost.numTuples * costCalc.getCost().cpuCost;
             } else {
-                logger.debug(
-                    "Child's cost not available; not computing this node's cost.");
+                logger.debug("Child's cost not available; not computing this node's cost.");
             }
         } else {
             // The project operator is a leaf in the plan, so it must generate

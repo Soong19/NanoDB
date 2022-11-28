@@ -6,13 +6,21 @@ A:  Subquery Planning
 
 A1.  Which planner did your team add subquery planning to?  How easy or
      difficult was it to incorporate subquery-planning into the planner?
+LH:  CostBasedJoinPlanner. Just need to initialize an ExpressionPlanner, then
+     walk through WHERE, HAVING, SELECT to generate subquery plan node and set
+     parent environment.
 
 A2.  Briefly outline the process by which you perform subquery planning in
      your query planner.  Also explain briefly how your subquery-planner works.
+LH:  1. Walk through each expression in SELECT, WHERE, HAVING
+     2. Determine whether it is a subquery or not
+     3. If is, make a plan for it. Otherwise, do nothing.
 
 A3.  Briefly describe how you detect whether there are subqueries in the
      GROUP BY and ORDER BY clauses.  How do you make sure this doesn't
      interfere with subqueries in other clauses?
+LH:  When initializing, walk through GroupBy & OrderBy to ensure no subquery
+     there.
 
 B:  Correlated Evaluation
 -------------------------
@@ -20,6 +28,9 @@ B:  Correlated Evaluation
 B1.  How easy or difficult was it to incorporate support for correlated
      evaluation into your query planner?  Did it affect the sequence of
      steps in any substantial ways?
+LH:  It is easy for who know about how environment works well. No, just set env
+     in makePlan, addParentEnvironmentToPlanTree for subqueries. It will build
+     an environment-chain naturally.
 
 D:  Extra Credit [OPTIONAL]
 ---------------------------

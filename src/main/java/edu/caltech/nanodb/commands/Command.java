@@ -1,8 +1,8 @@
 package edu.caltech.nanodb.commands;
 
 
-import edu.caltech.nanodb.server.SessionState;
 import edu.caltech.nanodb.server.NanoDBServer;
+import edu.caltech.nanodb.server.SessionState;
 
 import java.io.PrintStream;
 
@@ -83,6 +83,5 @@ public abstract class Command {
      *
      * @throws ExecutionException if an issue occurs during command execution
      */
-    public abstract void execute(NanoDBServer server)
-        throws ExecutionException;
+    public abstract void execute(NanoDBServer server) throws ExecutionException;
 }
