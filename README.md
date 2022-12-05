@@ -9,6 +9,7 @@
 * [hw3](./doc/lab3.md): Table Statistics and Plan Costing [2 days]
 * [hw4](./doc/lab4.md): Join Optimization [1 day]
 * [hw5](./doc/lab5.md): Advanced Subquery [2 days]
+* [hw6](./doc/lab6.md): B+Tree Indexes [1 days]  (Skip this assignment in fact\)
 
 ## Blogs
 
