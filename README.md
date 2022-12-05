@@ -13,4 +13,5 @@
 ## Blogs
 
 * [planner](https://telegra.ph/planner-11-28): Database Query Planner
+* [optimizer](https://telegra.ph/optimizer-11-30): Database Query Optimizer
 
