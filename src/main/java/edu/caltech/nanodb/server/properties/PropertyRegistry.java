@@ -133,10 +133,10 @@ public class PropertyRegistry implements ServerProperties {
             new BooleanFlagValidator(), true);
 
         addProperty(PROP_ENABLE_INDEXES,
-            new BooleanFlagValidator(), false, /* reaadonly */ true);
+            new BooleanFlagValidator(), true, /* reaadonly */ true);
 
         addProperty(PROP_CREATE_INDEXES_ON_KEYS,
-            new BooleanFlagValidator(), false);
+            new BooleanFlagValidator(), true);
 
         addProperty(PROP_PLANNER_CLASS,
             new PlannerClassValidator(), DEFAULT_PLANNER_CLASS);
