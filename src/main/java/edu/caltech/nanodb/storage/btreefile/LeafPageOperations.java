@@ -1,17 +1,16 @@
 package edu.caltech.nanodb.storage.btreefile;
 
 
-import java.util.List;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.expressions.TupleComparator;
 import edu.caltech.nanodb.expressions.TupleLiteral;
 import edu.caltech.nanodb.relations.Tuple;
 import edu.caltech.nanodb.storage.DBFile;
 import edu.caltech.nanodb.storage.DBPage;
 import edu.caltech.nanodb.storage.StorageManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 
 /**
@@ -445,8 +444,7 @@ public class LeafPageOperations {
             return null;    // There aren't any siblings to relocate to.
 
         if (pagePath.get(pathSize - 1) != page.getPageNo()) {
-            throw new IllegalArgumentException(
-                "leaf page number doesn't match last page-number in page path");
+            throw new IllegalArgumentException("leaf page number doesn't match last page-number in page path");
         }
 
         int parentPageNo = 0;
@@ -470,14 +468,12 @@ public class LeafPageOperations {
                 // See if we can move some of this leaf's tuples to the
                 // previous leaf, to free up space.
 
-                int count = tryLeafRelocateForSpace(page, prevPage, false,
-                    bytesRequired);
+                int count = tryLeafRelocateForSpace(page, prevPage, false, bytesRequired);
 
                 if (count > 0) {
                     // Yes, we can do it!
-                    logger.debug(String.format("Relocating %d tuples from " +
-                            "leaf-page %d to left-sibling leaf-page %d", count,
-                        page.getPageNo(), prevPage.getPageNo()));
+                    logger.debug(String.format("Relocating %d tuples from leaf-page %d to left-sibling leaf-page %d",
+                        count, page.getPageNo(), prevPage.getPageNo()));
 
                     logger.debug("Space before relocation:  Leaf = " +
                         page.getFreeSpace() + " bytes\t\tSibling = " +
@@ -520,15 +516,13 @@ public class LeafPageOperations {
                 // See if we can move some of this leaf's tuples to the next
                 // leaf, to free up space.
 
-                int count = tryLeafRelocateForSpace(page, nextPage, true,
-                    bytesRequired);
+                int count = tryLeafRelocateForSpace(page, nextPage, true, bytesRequired);
 
                 if (count > 0) {
                     // Yes, we can do it!
 
-                    logger.debug(String.format("Relocating %d tuples from " +
-                            "leaf-page %d to right-sibling leaf-page %d", count,
-                        page.getPageNo(), nextPage.getPageNo()));
+                    logger.debug(String.format("Relocating %d tuples from leaf-page %d to right-sibling leaf-page %d",
+                        count, page.getPageNo(), nextPage.getPageNo()));
 
                     logger.debug("Space before relocation:  Leaf = " +
                         page.getFreeSpace() + " bytes\t\tSibling = " +
@@ -589,15 +583,13 @@ public class LeafPageOperations {
         if (TupleComparator.compareTuples(tuple, firstRightTuple) < 0) {
             // The new tuple goes in the left page.  Hopefully there is room
             // for it...
-            logger.debug("Adding tuple to left leaf " + prevLeaf.getPageNo() +
-                " in pair");
+            logger.debug("Adding tuple to left leaf " + prevLeaf.getPageNo() + " in pair");
             if (prevLeaf.getFreeSpace() >= tuple.getStorageSize())
                 result = prevLeaf.addTuple(tuple);
         } else {
             // The new tuple goes in the right page.  Again, hopefully there
             // is room for it...
-            logger.debug("Adding tuple to right leaf " + nextLeaf.getPageNo() +
-                " in pair");
+            logger.debug("Adding tuple to right leaf " + nextLeaf.getPageNo() + " in pair");
             if (nextLeaf.getFreeSpace() >= tuple.getStorageSize())
                 result = nextLeaf.addTuple(tuple);
         }
@@ -699,16 +691,15 @@ public class LeafPageOperations {
      */
     private BTreeFilePageTuple splitLeafAndAddTuple(LeafPage leaf,
                                                     List<Integer> pagePath, TupleLiteral tuple) {
+        BTreeFilePageTuple res;
 
         int pathSize = pagePath.size();
         if (pagePath.get(pathSize - 1) != leaf.getPageNo()) {
-            throw new IllegalArgumentException(
-                "Leaf page number doesn't match last page-number in page path");
+            throw new IllegalArgumentException("Leaf page number doesn't match last page-number in page path");
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Splitting leaf-page " + leaf.getPageNo() +
-                " into two leaves.");
+            logger.debug("Splitting leaf-page " + leaf.getPageNo() + " into two leaves.");
             logger.debug("    Old next-page:  " + leaf.getNextPageNo());
         }
 
@@ -718,16 +709,51 @@ public class LeafPageOperations {
         DBPage newDBPage = fileOps.getNewDataPage();
         LeafPage newLeaf = LeafPage.init(newDBPage, tupleFile.getSchema());
 
-        /* TODO:  IMPLEMENT THE REST OF THIS METHOD.
-         *
-         * The LeafPage class provides some helpful operations for moving leaf-
-         * entries to a left or right sibling.
-         *
-         * The parent page must also be updated.  If the leaf node doesn't have
-         * a parent, the tree's depth will increase by one level.
-         */
-        logger.error("NOT YET IMPLEMENTED:  splitLeafAndAddKey()");
-        return null;
+        // 0. Update siblings relation
+        newLeaf.setNextPageNo(leaf.getNextPageNo());
+        leaf.setNextPageNo(newLeaf.getPageNo());
+
+        // 1. Move half of tuples to right including inserting tuple
+        // [3, 4, 6, 7, 8] (inserting 5)
+        //   => left [3, 4, 6], right [7, 8] (not performed yet)
+        //   => need to (inserting 5). left [3, 4], right [6, 7, 8]
+        //   => inserting into left. left [3, 4, 5], right [6, 7, 8]
+        var numTuples = leaf.getNumTuples();
+        var midTuple = leaf.getTuple(numTuples / 2);
+        var cmp = TupleComparator.comparePartialTuples(midTuple, tuple, TupleComparator.CompareMode.SHORTER_IS_LESS);
+        if (cmp > 0) {
+            // insert into left
+            var numTuplesToMove = (numTuples - 1) / 2 + 1;
+            leaf.moveTuplesRight(newLeaf, numTuplesToMove);
+            res = leaf.addTuple(tuple);
+        } else {
+            // insert into right
+            var numTuplesToMove = (numTuples - 1) / 2;
+            leaf.moveTuplesRight(newLeaf, numTuplesToMove);
+            res = newLeaf.addTuple(tuple);
+        }
+
+        // 2. Update parent page (Create a parent node and insert, or just insert)
+        pagePath.remove(pathSize - 1); // remove leaf temporarily
+        var pkey = newLeaf.getTuple(0);
+        assert (pagePath.size() == pathSize - 1);
+        if (pathSize == 1) {
+            // there is only one leaf page => create a parent/root node
+            var dbpRoot = fileOps.getNewDataPage();
+            var rootPageNo = dbpRoot.getPageNo();
+            DBPage dbpHeader = storageManager.loadDBPage(tupleFile.getDBFile(), 0);
+            HeaderPage.setRootPageNo(dbpHeader, rootPageNo);
+            // insert child [leaf | pkey | newLeaf]
+            pagePath.add(rootPageNo);
+            InnerPage.init(dbpRoot, tupleFile.getSchema(), leaf.getPageNo(), pkey, newLeaf.getPageNo());
+        } else {
+            // there is a parent => insert child [leaf | pkey | newLeaf]
+            var parentPg = innerPageOps.loadPage(pagePath.get(pathSize - 2));
+            innerPageOps.addTuple(parentPg, pagePath, leaf.getPageNo(), pkey, newLeaf.getPageNo());
+        }
+        pagePath.add(leaf.getPageNo()); // restore leaf
+
+        return res; // for pin & unpin (bad design actually)
     }
 
 
@@ -797,8 +823,7 @@ public class LeafPageOperations {
                 break;
         }
 
-        logger.debug("Can relocate " + numRelocated +
-            " tuples to satisfy minimum space requirements.");
+        logger.debug("Can relocate " + numRelocated + " tuples to satisfy minimum space requirements.");
 
         return numRelocated;
     }
