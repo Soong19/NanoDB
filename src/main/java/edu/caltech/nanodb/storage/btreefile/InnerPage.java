@@ -1,18 +1,17 @@
 package edu.caltech.nanodb.storage.btreefile;
 
 
-import java.util.List;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.expressions.TupleLiteral;
 import edu.caltech.nanodb.relations.Schema;
 import edu.caltech.nanodb.relations.Tuple;
 import edu.caltech.nanodb.storage.DBPage;
 import edu.caltech.nanodb.storage.PageTuple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.*;
+import java.util.List;
+
+import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.BTREE_INNER_PAGE;
 
 
 /**
@@ -706,151 +705,46 @@ public class InnerPage implements DataPage {
             }
         }
 
-        /* TODO:  IMPLEMENT THE REST OF THIS METHOD.
-         *
-         * You can use PageTuple.storeTuple() to write a key into a DBPage.
-         *
-         * The DBPage.write() method is useful for copying a large chunk of
-         * data from one DBPage to another.
-         *
-         * Your implementation also needs to properly handle the incoming
-         * parent-key, and produce a new parent-key as well.
-         */
-        logger.error("NOT YET IMPLEMENTED:  movePointersLeft()");
+        TupleLiteral newPartitionKey = null;
+        if (count - 1 < getNumKeys()) {
+            newPartitionKey = TupleLiteral.fromTuple(getKey(count - 1));
+        }
+
+        int moveEndOffset = pointerOffsets[count - 1] + 2;
+        int len = moveEndOffset - OFFSET_FIRST_POINTER;
+
+        if (parentKey != null) {
+            // update metadata of right sibling => insert parentKey in the middle (new & old)
+            PageTuple.storeTuple(leftSibling.dbPage, leftSibling.endOffset, schema, parentKey);
+        }
+
+        // Copy the pointer-data across
+        leftSibling.dbPage.write(leftSibling.endOffset + parentKeyLen, dbPage.getPageData(),
+            OFFSET_FIRST_POINTER, len);
+
+        // Update the pointer-count
+        leftSibling.dbPage.writeShort(OFFSET_NUM_POINTERS, leftSibling.numPointers + count);
+
+        // Remove that range of pointer-data from this page.
+        // deleteEndOffset and deleteLen include the key tuple that
+        // will be moved to the parent node.
+        int deleteEndOffset = count >= numPointers ? endOffset : pointerOffsets[count];
+        int deleteLen = deleteEndOffset - OFFSET_FIRST_POINTER;
+
+        dbPage.moveDataRange(deleteEndOffset, OFFSET_FIRST_POINTER, endOffset - deleteEndOffset);
+        dbPage.writeShort(OFFSET_NUM_POINTERS, numPointers - count);
+
+        // Only erase the old data in the leaf page if we are trying to make
+        // sure everything works properly.
+        if (BTreeTupleFile.CLEAR_OLD_DATA)
+            dbPage.setDataRange(endOffset - deleteLen, deleteLen, (byte) 0);
 
         // Update the cached info for both non-leaf pages.
         loadPageContents();
         leftSibling.loadPageContents();
 
-        return null;
+        return newPartitionKey;
     }
-
-
-    /**
-     * Returns the page path to the right sibling, including the right sibling
-     * itself. Empty list if there is none.
-     *
-     * @param pagePath the page path from root to this leaf
-     * @param innerOps the inner page ops that allows this method to
-     *        load inner pages and navigate the tree
-     *
-     * @return the page path to the right sibling leaf node
-     *
-    public List<Integer> getRightSibling(List<Integer> pagePath,
-    InnerPageOperations innerOps) {
-    // Verify that the last node in the page path is this leaf page.
-    if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
-    throw new IllegalArgumentException("The page path provided does" +
-    " not terminate on this leaf page.");
-    }
-
-    ArrayList<Integer> rightPath = new ArrayList<Integer>();
-
-    InnerPage inner = null;
-    int index = 0;
-    int i = pagePath.size() - 2;
-    try {
-    while (i >= 0) {
-    inner = innerOps.loadPage(idxFileInfo, pagePath.get(i));
-    index = inner.getIndexOfPointer(pagePath.get(i+1));
-    if (index != inner.getNumPointers() - 1) {
-    // This means that the subtree this leaf is in has a right
-    // sibling subtree from the current inner node.
-    rightPath.addAll(pagePath.subList(0, i+1));
-    break;
-    }
-    i--;
-    }
-
-    int nextPage;
-    if (inner == null || i == -1) {
-    return rightPath;
-    }
-
-    // Add to the rightPath the page corresponding to one to the
-    // right of the current index
-    rightPath.add(inner.getPointer(index + 1));
-    i++;
-
-    while (i <= pagePath.size() - 2) {
-    index = 0;
-    nextPage = inner.getPointer(index);
-    rightPath.add(nextPage);
-    inner = innerOps.loadPage(idxFileInfo, nextPage);
-    i++;
-    }
-
-    } catch (IOException e) {
-    throw new IllegalArgumentException("A page failed to load!");
-    }
-
-    // Can assert that for the last entry, leaf.getNextLeafPage
-    // should be last pagePath entry here
-    return rightPath;
-    }
-
-
-    /**
-     * Returns the page path to the left sibling, including the left sibling
-     * itself.  Empty list if there is none.
-     *
-     * @param pagePath the page path from root to this leaf
-     * @param innerOps the inner page ops that allows this method
-     *        to load inner pages and navigate the tree
-     *
-     * @return the page path to the left sibling leaf node
-     *
-    public List<Integer> getLeftSibling(List<Integer> pagePath, InnerPageOperations innerOps) {
-    // Verify that the last node in the page path is this leaf page.
-    if (pagePath.get(pagePath.size() - 1) != getPageNo()) {
-    throw new IllegalArgumentException("The page path provided does" +
-    " not terminate on this leaf page.");
-    }
-
-    ArrayList<Integer> leftPath = new ArrayList<Integer>();
-    // Note to self - not sure on behavior for initializing a for loop
-    // with an i that does not satisfy condition.  If it doesn't do any
-    // iterations, then that would be ideal behavior.  That case should
-    // never occur anyways...
-    InnerPage inner = null;
-    int index = 0;
-    int i = pagePath.size() - 2;
-    try {
-    while (i >= 0) {
-    inner = innerOps.loadPage(idxFileInfo, pagePath.get(i));
-    index = inner.getIndexOfPointer(pagePath.get(i+1));
-    if (index != 0) {
-    // This means that the subtree this leaf is in has a left
-    // sibling subtree from the current inner node.
-    leftPath.addAll(pagePath.subList(0, i+1));
-    break;
-    }
-    i--;
-    }
-
-    int nextPage;
-    if (inner == null || i == -1) {
-    return leftPath;
-    }
-    // Add to the leftPath the page corresponding to one to the
-    // left of the current index
-    leftPath.add(inner.getPointer(index - 1));
-    i++;
-
-    while (i <= pagePath.size() - 2) {
-    index = inner.getNumPointers() - 1;
-    nextPage = inner.getPointer(index);
-    leftPath.add(nextPage);
-    inner = innerOps.loadPage(idxFileInfo, nextPage);
-    i++;
-    }
-    }
-    catch (IOException e) {
-    throw new IllegalArgumentException("A page failed to load!");
-    }
-    return leftPath;
-    }
-     */
 
 
     /**
@@ -916,17 +810,35 @@ public class InnerPage implements DataPage {
             }
         }
 
-        /* TODO:  IMPLEMENT THE REST OF THIS METHOD.
-         *
-         * You can use PageTuple.storeTuple() to write a key into a DBPage.
-         *
-         * The DBPage.write() method is useful for copying a large chunk of
-         * data from one DBPage to another.
-         *
-         * Your implementation also needs to properly handle the incoming
-         * parent-key, and produce a new parent-key as well.
-         */
-        logger.error("NOT YET IMPLEMENTED:  movePointersRight()");
+        // [ptr0 | key0 | ptr1 | key1 | ptr2 | key2 | ptr3 ...]
+        // #(ptr) == #(key+1)
+        TupleLiteral newPartitionKey = null;
+        if (getNumKeys() - count >= 0) {
+            newPartitionKey = TupleLiteral.fromTuple(getKey(getNumKeys() - count));
+        }
+
+        if (parentKey != null) {
+            // make room for coming key-ptr
+            rightSibling.dbPage.moveDataRange(OFFSET_FIRST_POINTER,
+                OFFSET_FIRST_POINTER + len + parentKeyLen,
+                rightSibling.endOffset - OFFSET_FIRST_POINTER);
+
+            // update metadata of right sibling => insert parentKey in the middle (new & old)
+            PageTuple.storeTuple(rightSibling.dbPage, OFFSET_FIRST_POINTER + len, schema, parentKey);
+        }
+
+        // copy pointers to right
+        rightSibling.dbPage.write(OFFSET_FIRST_POINTER, dbPage.getPageData(), startOffset, len);
+
+        // update the pointer-count
+        rightSibling.dbPage.writeShort(OFFSET_NUM_POINTERS, rightSibling.numPointers + count);
+
+        // remove that range of pointer-data from this page.
+        dbPage.writeShort(OFFSET_NUM_POINTERS, numPointers - count);
+
+        // Only erase the old data in the leaf page if we are trying to make sure everything works properly.
+        if (BTreeTupleFile.CLEAR_OLD_DATA)
+            dbPage.setDataRange(startOffset, len, (byte) 0);
 
         // Update the cached info for both non-leaf pages.
         loadPageContents();
@@ -941,7 +853,7 @@ public class InnerPage implements DataPage {
                 rightSibling.toFormattedString());
         }
 
-        return null;
+        return newPartitionKey;
     }
 
 

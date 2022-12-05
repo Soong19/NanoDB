@@ -1,29 +1,22 @@
 package edu.caltech.nanodb.storage.btreefile;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.expressions.OrderByExpression;
 import edu.caltech.nanodb.expressions.TupleComparator;
 import edu.caltech.nanodb.expressions.TupleLiteral;
 import edu.caltech.nanodb.queryeval.TableStats;
 import edu.caltech.nanodb.relations.Schema;
 import edu.caltech.nanodb.relations.Tuple;
-import edu.caltech.nanodb.storage.DBFile;
-import edu.caltech.nanodb.storage.DBPage;
-import edu.caltech.nanodb.storage.FilePointer;
-import edu.caltech.nanodb.storage.InvalidFilePointerException;
-import edu.caltech.nanodb.storage.PageTuple;
-import edu.caltech.nanodb.storage.SequentialTupleFile;
-import edu.caltech.nanodb.storage.StorageManager;
-import edu.caltech.nanodb.storage.TupleFileManager;
+import edu.caltech.nanodb.storage.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.BTREE_INNER_PAGE;
+import static edu.caltech.nanodb.storage.btreefile.BTreePageTypes.BTREE_LEAF_PAGE;
 
 
 /**
@@ -224,8 +217,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
                 leaf = new LeafPage(dbPage, schema);
                 if (nextIndex >= leaf.getNumTuples()) {
                     throw new IllegalStateException(String.format(
-                        "The \"next tuple\" field of deleted tuple is too " +
-                            "large (must be less than %d; got %d)",
+                        "The \"next tuple\" field of deleted tuple is too large (must be less than %d; got %d)",
                         leaf.getNumTuples(), nextIndex));
                 }
 
@@ -259,8 +251,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
                     } else {
                         // This would be *highly* unusual.  Leaves are
                         // supposed to be at least 1/2 full, always!
-                        logger.error(String.format(
-                            "Next leaf node %d has no entries?!", nextPageNo));
+                        logger.error(String.format("Next leaf node %d has no entries?!", nextPageNo));
                     }
 
                     dbPage.unpin();
@@ -346,9 +337,8 @@ public class BTreeTupleFile implements SequentialTupleFile {
             }
 
             int nextPageNo = leaf.getNextPageNo();
-            logger.debug("Scanned through entire leaf page %d without " +
-                    "finding tuple.  Next page is %d.", leaf.getPageNo(),
-                nextPageNo);
+            logger.debug("Scanned through entire leaf page %d without finding tuple.  Next page is %d.",
+                leaf.getPageNo(), nextPageNo);
 
             // If we get here, we need to go to the next leaf-page.
             leaf.getDBPage().unpin();
@@ -481,10 +471,9 @@ public class BTreeTupleFile implements SequentialTupleFile {
             if (!createIfNeeded)
                 return null;
 
-            // We need to create a brand new leaf page and make it the root.
+            // We need to create a brand-new leaf page and make it the root.
 
-            logger.debug("BTree file currently has no data pages; " +
-                "finding/creating one to use as the root!");
+            logger.debug("BTree file currently has no data pages; finding/creating one to use as the root!");
 
             dbpRoot = fileOps.getNewDataPage();
             rootPageNo = dbpRoot.getPageNo();
@@ -503,33 +492,49 @@ public class BTreeTupleFile implements SequentialTupleFile {
             logger.debug("BTree file root pageNo is " + rootPageNo);
         }
 
-        // Next, descend down the file's structure until we find the proper
+        // Next, descend the file's structure until we find the proper
         // leaf-page based on the key value(s).
 
         DBPage dbPage = dbpRoot;
         int pageType = dbPage.readByte(0);
         if (pageType != BTREE_INNER_PAGE && pageType != BTREE_LEAF_PAGE) {
-            throw new BTreeTupleFileException(
-                "Invalid page type encountered:  " + pageType);
+            throw new BTreeTupleFileException("Invalid page type encountered:  " + pageType);
         }
 
         if (pagePath != null)
             pagePath.add(rootPageNo);
 
-        /* TODO:  IMPLEMENT THE REST OF THIS METHOD.
-         *
-         * Don't forget to update the page-path as you navigate the index
-         * structure, if it is provided by the caller.
-         *
-         * Use the TupleComparator.comparePartialTuples() method for comparing
-         * the index's keys with the passed-in search key.
-         *
-         * It's always a good idea to code defensively:  if you see an invalid
-         * page-type, flag it with an IOException, as done earlier.
-         */
-        logger.error("NOT YET IMPLEMENTED:  navigateToLeafPage()");
+        while (pageType != BTREE_LEAF_PAGE) {
+            int nextPgNo = -1;
+            var innerPage = new InnerPage(dbPage, schema);
+            var numKeys = innerPage.getNumKeys();
 
-        return null;
+            // find first key > search key, choose the previous pointer of it
+            // [P0 | K1 | P1 | K2 | P2 | ...]. Pi >= Ki
+            for (var i = 0; i < numKeys; i++) {
+                var cmp = TupleComparator.comparePartialTuples(
+                    innerPage.getKey(i), searchKey,
+                    TupleComparator.CompareMode.SHORTER_IS_LESS);
+                if (cmp > 0) {
+                    nextPgNo = innerPage.getPointer(i); // get previous pointer
+                    break;
+                }
+                if (cmp == 0 || numKeys == i + 1) {
+                    nextPgNo = innerPage.getPointer(i + 1); // get current pointer
+                    break;
+                }
+            }
+
+            assert (nextPgNo != -1);
+            dbPage = storageManager.loadDBPage(dbFile, nextPgNo);
+            pageType = dbPage.readByte(0);
+            assert (pageType == BTREE_INNER_PAGE || pageType == BTREE_LEAF_PAGE);
+
+            if (pagePath != null)
+                pagePath.add(nextPgNo);
+        }
+
+        return new LeafPage(dbPage, schema);
     }
 
 
@@ -541,8 +546,7 @@ public class BTreeTupleFile implements SequentialTupleFile {
 
     @Override
     public List<String> verify() {
-        BTreeFileVerifier verifier =
-            new BTreeFileVerifier(storageManager, this);
+        BTreeFileVerifier verifier = new BTreeFileVerifier(storageManager, this);
 
         return verifier.verify();
     }

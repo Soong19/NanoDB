@@ -13,7 +13,7 @@ index is built against a single integer column:
          value VARCHAR(20)
      );
 
-Answer the following questions.
+Answer the following questions. => skip
 
 A1.  What is the total size of the index's search-key for the primary-key
      index, in bytes?  Break down this size into its individual components;
