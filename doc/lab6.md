@@ -28,3 +28,14 @@ removing a tuple, or searching for tuples. (Of course, basic operations)
   When moving pointers, we need retrieve the child page to get partition key and
   also update parent partition key.<br/>
   Mostly copy from [CS122](https://github.com/AChelikani/CS122), it's too boring.
+
+## Part 2: Support for B+ Tree Indexes
+
+NanoDB uses event-listener to sync indexes with corresponding table. What we
+need to do is easy:
+* `addRowToIndexes()`: iterate through the table's indexes, construct a suitable
+  index-tuple for each index (based on the columns in the index), and then add
+  this index-tuple to the index's tuple file.
+* The removeRowFromIndexes() method is called when a row is updated or deleted
+  on a table. As before, this method must iterate through the table's indexes,
+  removing the corresponding index-tuple from each index.

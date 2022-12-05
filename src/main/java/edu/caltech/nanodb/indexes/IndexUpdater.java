@@ -1,18 +1,16 @@
 package edu.caltech.nanodb.indexes;
 
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.expressions.TupleLiteral;
 import edu.caltech.nanodb.relations.IndexColumnRefs;
 import edu.caltech.nanodb.relations.Schema;
 import edu.caltech.nanodb.relations.TableInfo;
 import edu.caltech.nanodb.relations.Tuple;
 import edu.caltech.nanodb.server.RowEventListener;
-import edu.caltech.nanodb.storage.TupleFile;
 import edu.caltech.nanodb.storage.PageTuple;
 import edu.caltech.nanodb.storage.StorageManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -123,10 +121,10 @@ public class IndexUpdater implements RowEventListener {
         Schema schema = tblFileInfo.getSchema();
         for (IndexColumnRefs indexDef : schema.getIndexes()) {
             TupleLiteral idxTup;
-            IndexInfo indexInfo = indexManager.openIndex(tblFileInfo,
-                indexDef.getIndexName());
+            IndexInfo indexInfo = indexManager.openIndex(tblFileInfo, indexDef.getIndexName());
 
-            // TODO:  Implement!
+            idxTup = IndexUtils.makeTableSearchKey(indexDef, ptup, true);
+            indexInfo.getTupleFile().addTuple(idxTup);
         }
     }
 
@@ -147,7 +145,13 @@ public class IndexUpdater implements RowEventListener {
         // Iterate over the indexes in the table.
         Schema schema = tableInfo.getSchema();
         for (IndexColumnRefs indexDef : schema.getIndexes()) {
-            // TODO:  Implement!
+            TupleLiteral idxTup;
+            IndexInfo indexInfo = indexManager.openIndex(tableInfo, indexDef.getIndexName());
+
+            idxTup = IndexUtils.makeTableSearchKey(indexDef, ptup, true);
+            var delTup = IndexUtils.findTupleInIndex(idxTup, indexInfo.getTupleFile());
+            assert (delTup != null);
+            indexInfo.getTupleFile().deleteTuple(delTup);
         }
     }
 }
