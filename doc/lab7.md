@@ -27,7 +27,7 @@ a change to disk.
   * NO-FORCE: not required a txn write to disk before commit => commit before
     apply to disk
 * Log entry: lsn, txn-id, obj-id, before-val (undo), after-val (redo)
-* `<BEGIN>` log entries... `<COMMIT>`
+* `<BEGIN>` log entries... `<COMMIT>` / `<ABORT>`
 * `<CHECKPOINT>` is used as the start point to analyze log
 
 ## Step #1: Enable Transaction Processing in NanoDB
@@ -36,3 +36,11 @@ a change to disk.
 > setting
 
 Follow the guide, then done.
+
+## Step #2: Add Logging to Heap Tuple Files
+
+> Update heap tuple files to log state changes to the write-ahead log
+
+While adding/updating/removing a tuple, storing statistics, updating
+non-full-page lists, need to call `logDBPageWrite(DBPage)` in the end to ensure
+writing changes to log.
