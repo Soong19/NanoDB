@@ -4,3 +4,35 @@
 > Write-Ahead Logging
 > ([Telegraph](https://telegra.ph/Assignment-7-Write-Ahead-Logging-12-06))
 
+* Enable transaction support in NanoDB, and disable the "flush after command"
+  setting
+* Update heap tuple files to log state changes to the write-ahead log
+* Implement an atomic "force WAL" operation
+* Implement code that enforces the Write-Ahead Logging Rule when the Buffer
+  Manager evicts data pages to disk
+* Implement transaction rollback using the write-ahead log
+* Implement both the redo and undo phases of recovery processing
+
+## Prepare
+
+Transaction: `BEGIN [ WORK ]` ... `COMMIT [ WORK ]` / `ROLLBACK [ WORK ]`
+
+---
+
+WAL (Write-Ahead Logging): Maintain a log file separated from data files that
+contains changes that txns make to database. Write to log file before applying
+a change to disk.
+* Buffer Pool Policy: STEAL & NO-FORCE
+  * STEAL: allow an uncommitted txn to overwrite
+  * NO-FORCE: not required a txn write to disk before commit => commit before
+    apply to disk
+* Log entry: lsn, txn-id, obj-id, before-val (undo), after-val (redo)
+* `<BEGIN>` log entries... `<COMMIT>`
+* `<CHECKPOINT>` is used as the start point to analyze log
+
+## Step #1: Enable Transaction Processing in NanoDB
+
+> Enable transaction support in NanoDB, and disable the "flush after command"
+> setting
+
+Follow the guide, then done.
