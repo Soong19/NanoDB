@@ -1,27 +1,15 @@
 package edu.caltech.nanodb.transactions;
 
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import edu.caltech.nanodb.server.NanoDBServer;
+import edu.caltech.nanodb.server.SessionState;
+import edu.caltech.nanodb.storage.*;
+import edu.caltech.nanodb.storage.writeahead.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.caltech.nanodb.server.SessionState;
-
-import edu.caltech.nanodb.server.NanoDBServer;
-
-import edu.caltech.nanodb.storage.BufferManager;
-import edu.caltech.nanodb.storage.BufferManagerObserver;
-import edu.caltech.nanodb.storage.DBFile;
-import edu.caltech.nanodb.storage.DBFileType;
-import edu.caltech.nanodb.storage.DBPage;
-import edu.caltech.nanodb.storage.StorageManager;
-
-import edu.caltech.nanodb.storage.writeahead.LogSequenceNumber;
-import edu.caltech.nanodb.storage.writeahead.RecoveryInfo;
-import edu.caltech.nanodb.storage.writeahead.WALManager;
-import edu.caltech.nanodb.storage.writeahead.WALRecordType;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -304,7 +292,7 @@ public class TransactionManager implements BufferManagerObserver {
     }
 
 
-    public void rollbackTransaction() throws TransactionException {
+    public void rollbackTransaction() throws TransactionException, WALFileException {
         SessionState state = SessionState.get();
         TransactionState txnState = state.getTransactionState();
 
@@ -344,29 +332,21 @@ public class TransactionManager implements BufferManagerObserver {
      */
     @Override
     public void beforeWriteDirtyPages(List<DBPage> pages) {
-        // TODO:  IMPLEMENT
-        //
-        // This implementation must enforce the write-ahead logging rule (aka
-        // the WAL rule) by ensuring that the write-ahead log reflects all
-        // changes to all of the specified pages, on disk, before any of these
-        // pages may be written to disk.
-        //
-        // Recall that DBPages have a pageLSN field that is set to the LSN
-        // of the last WAL record describing a change to the page.  This value
-        // is not always set; it will be null if the page is part of a data
-        // file whose type is not logged.  (It may also be null if there is a
-        // bug in the write-ahead logging code.  It would be wise to report a
-        // warning, or throw an exception, if a page doesn't have a LSN when
-        // it ought to.)
-        //
-        // Some file types are not recorded to the write-ahead log; these
-        // pages should be ignored when determining how to update the WAL.
-        // You can find a page's file-type by doing something like this:
-        // dbPage.getDBFile().getType().  If it is WRITE_AHEAD_LOG_FILE or
-        // TXNSTATE_FILE then you should ignore the page.
-        //
-        // Finally, you can use the forceWAL(LogSequenceNumber) function to
-        // force the WAL to be written out to the specified LSN.
+        logger.debug("Write WAL before writing dirty pages");
+        LogSequenceNumber maxLSN = null;
+
+        for (DBPage pg : pages) {
+            var dbType = pg.getDBFile().getType();
+            if (dbType != DBFileType.WRITE_AHEAD_LOG_FILE && dbType != DBFileType.TXNSTATE_FILE) {
+                // Get page's LSN
+                var lsn = pg.getPageLSN();
+                if (lsn == null)
+                    logger.debug("Page[" + pg.getPageNo() + "] has no lsn");
+
+                maxLSN = maxLSN == null || maxLSN.compareTo(lsn) < 0 ? lsn : maxLSN;
+            }
+        }
+        forceWAL(maxLSN);
     }
 
 
@@ -374,20 +354,69 @@ public class TransactionManager implements BufferManagerObserver {
      * This method forces the write-ahead log out to at least the specified
      * log sequence number, syncing the log to ensure that all essential
      * records have reached the disk itself.
+     * <p>
+     * Atomicity: Write LSNs first, update nextLSN second. The redundant LSNs
+     * do not matter.
+     * <p>
+     * Duration: Write pages to disk.
      *
      * @param lsn All WAL data up to this value must be forced to disk and
      *            sync'd.  This value may be one past the end of the current WAL
      *            file during normal operation.
      */
     public void forceWAL(LogSequenceNumber lsn) {
-        // TODO:  IMPLEMENT
-        //
-        // Note that the "next LSN" value must be determined from both the
-        // current LSN *and* its record size; otherwise we lose the last log
-        // record in the WAL file.  You can use this static method:
-        //
-        // int lastPosition = lsn.getFileOffset() + lsn.getRecordSize();
-        // WALManager.computeNextLSN(lsn.getLogFileNo(), lastPosition);
+        // 1. check whether we need to sync
+        if (lsn == null || txnStateNextLSN.compareTo(lsn) >= 0) {
+            return;
+        }
+
+        // 2. write part of buffered-logs to files
+        DBFile file;
+        int fileNo;
+        var bpm = storageManager.getBufferManager();
+
+        int lastPosition = lsn.getFileOffset() + lsn.getRecordSize();
+        var newNext = WALManager.computeNextLSN(lsn.getLogFileNo(), lastPosition);
+        var oldNext = txnStateNextLSN;
+
+        if (oldNext.getLogFileNo() == newNext.getLogFileNo()) {
+            // the buffered-logs all in the same file
+            fileNo = oldNext.getLogFileNo();
+            file = bpm.getFile(WALManager.getWALFileName(oldNext.getLogFileNo()));
+            writePages(fileNo,
+                (oldNext.getFileOffset() - 1) / file.getPageSize(),
+                (newNext.getFileOffset() - 1) / file.getPageSize());
+        } else {
+            // write to start page
+            fileNo = oldNext.getLogFileNo();
+            file = bpm.getFile(WALManager.getWALFileName(fileNo));
+            writePages(fileNo,
+                (oldNext.getFileOffset() - 1) / file.getPageSize(),
+                file.getNumPages() - 1);
+
+            // write (start, end) pages
+            for (fileNo = oldNext.getLogFileNo() + 1; fileNo < newNext.getLogFileNo(); fileNo++) {
+                file = bpm.getFile(WALManager.getWALFileName(fileNo));
+                writePages(fileNo, 0, file.getNumPages() - 1);
+            }
+
+            // write end page
+            fileNo = newNext.getLogFileNo();
+            file = bpm.getFile(WALManager.getWALFileName(fileNo));
+            writePages(fileNo, 0, (newNext.getFileOffset() - 1) / file.getPageSize());
+        }
+
+        txnStateNextLSN = newNext;
+        storeTxnStateToFile();
+    }
+
+    private void writePages(int fileNo, int startPgNo, int endPgNo) {
+        var bpm = storageManager.getBufferManager();
+        var file = bpm.getFile(WALManager.getWALFileName(fileNo));
+        if (file != null) {
+            bpm.writeDBFile(file, startPgNo, endPgNo, true);
+            logger.debug(String.format("Syncing files[%d], pages [%d, %d]", fileNo, startPgNo, endPgNo));
+        }
     }
 
 

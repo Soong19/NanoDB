@@ -140,6 +140,8 @@ public class HeapTupleFileManager implements TupleFileManager {
 
         // Unpin header since no need for header
         headerPage.unpin();
+
+        storageManager.logDBPageWrite(headerPage);
     }
 
 

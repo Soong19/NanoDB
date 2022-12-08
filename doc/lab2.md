@@ -90,6 +90,37 @@ for tr in r:
             add join(tr, ts) to result
 ```
 
+---
+
+NOTE: There is something wrong with OUTER JOIN, because I misunderstood what it
+means.
+
+For example, left outer join with "SELECT * FROM tbl_a LEFT JOIN tbl_b ON a=c"
+
+```
+ tbl_a
+| a | b |
+|---|---|
+| 1 | 2 |
+| 2 | 3 |
+| 3 | 4 |
+
+ tbl_b
+| c | d |
+|---|---|
+| 1 | 2 |
+| 2 | 3 |
+
+=> result
+| a | b | c | d |
+|---|---|---|---|
+| 1 | 2 | 1 | 2 |
+| 2 | 3 | 2 | 3 |
+| 3 | 4 | \ | \ |
+```
+
+---
+
 In practice, we need to deal with different types of join in `getTuplesToJoin`:
 * *inner join*: Basic join return all matching tuples
 * *left-outer join*: Includes non-matching rows from the left table

@@ -340,8 +340,7 @@ public class HeapTupleFile implements TupleFile {
             dbPage = storageManager.loadDBPage(dbFile, pageNo);
 
             int freeSpace = DataPage.getFreeSpaceInPage(dbPage);
-            logger.trace(String.format("Page %d has %d bytes of free space.",
-                pageNo, freeSpace));
+            logger.trace(String.format("Page %d has %d bytes of free space.", pageNo, freeSpace));
 
             // If this page has enough free space to add a new tuple, break
             // out of the loop.  (The "+ 2" is for the new slot entry we will
@@ -379,11 +378,9 @@ public class HeapTupleFile implements TupleFile {
         int slot = DataPage.allocNewTuple(dbPage, tupSize);
         int tupOffset = DataPage.getSlotValue(dbPage, slot);
 
-        logger.debug(String.format(
-            "New tuple will reside on page %d, slot %d.", pageNo, slot));
+        logger.debug(String.format("New tuple will reside on page %d, slot %d.", pageNo, slot));
 
-        HeapFilePageTuple pageTup =
-            HeapFilePageTuple.storeNewTuple(schema, dbPage, slot, tupOffset, tup);
+        HeapFilePageTuple pageTup = HeapFilePageTuple.storeNewTuple(schema, dbPage, slot, tupOffset, tup);
 
         DataPage.sanityCheck(dbPage);
 
@@ -391,6 +388,8 @@ public class HeapTupleFile implements TupleFile {
         dbPage.unpin();
         headerPage.unpin();
 
+        storageManager.logDBPageWrite(dbPage);
+        storageManager.logDBPageWrite(headerPage);
         return pageTup;
     }
 
@@ -408,8 +407,7 @@ public class HeapTupleFile implements TupleFile {
     public void updateTuple(Tuple tup, Map<String, Object> newValues) {
 
         if (!(tup instanceof HeapFilePageTuple)) {
-            throw new IllegalArgumentException(
-                "Tuple must be of type HeapFilePageTuple; got " + tup.getClass());
+            throw new IllegalArgumentException("Tuple must be of type HeapFilePageTuple; got " + tup.getClass());
         }
         HeapFilePageTuple ptup = (HeapFilePageTuple) tup;
 
@@ -423,6 +421,8 @@ public class HeapTupleFile implements TupleFile {
 
         DBPage dbPage = ptup.getDBPage();
         DataPage.sanityCheck(dbPage);
+
+        storageManager.logDBPageWrite(dbPage);
     }
 
 
@@ -431,8 +431,7 @@ public class HeapTupleFile implements TupleFile {
     public void deleteTuple(Tuple tup) {
 
         if (!(tup instanceof HeapFilePageTuple)) {
-            throw new IllegalArgumentException(
-                "Tuple must be of type HeapFilePageTuple; got " + tup.getClass());
+            throw new IllegalArgumentException("Tuple must be of type HeapFilePageTuple; got " + tup.getClass());
         }
         HeapFilePageTuple ptup = (HeapFilePageTuple) tup;
 
@@ -454,6 +453,9 @@ public class HeapTupleFile implements TupleFile {
         DataPage.setFreeNext(dbPage, prev);
 
         headerPage.unpin();
+
+        storageManager.logDBPageWrite(headerPage);
+        storageManager.logDBPageWrite(dbPage); // has been deleted
     }
 
 

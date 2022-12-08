@@ -127,21 +127,21 @@ public class PropertyRegistry implements ServerProperties {
                 "Specified page-size %d is invalid."), DEFAULT_PAGE_SIZE);
 
         addProperty(PROP_ENABLE_TRANSACTIONS,
-            new BooleanFlagValidator(), false, /* readonly */ true);
+            new BooleanFlagValidator(), true, /* readonly */ true);
 
         addProperty(PROP_ENFORCE_KEY_CONSTRAINTS,
             new BooleanFlagValidator(), true);
 
         addProperty(PROP_ENABLE_INDEXES,
-            new BooleanFlagValidator(), true, /* reaadonly */ true);
+            new BooleanFlagValidator(), false, /* reaadonly */ true);
 
         addProperty(PROP_CREATE_INDEXES_ON_KEYS,
-            new BooleanFlagValidator(), true);
+            new BooleanFlagValidator(), false);
 
         addProperty(PROP_PLANNER_CLASS,
             new PlannerClassValidator(), DEFAULT_PLANNER_CLASS);
 
-        addProperty(PROP_FLUSH_AFTER_CMD, new BooleanFlagValidator(), true);
+        addProperty(PROP_FLUSH_AFTER_CMD, new BooleanFlagValidator(), false);
     }
 
 

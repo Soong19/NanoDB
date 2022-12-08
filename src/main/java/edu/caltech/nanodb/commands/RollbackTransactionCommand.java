@@ -3,6 +3,7 @@ package edu.caltech.nanodb.commands;
 
 import edu.caltech.nanodb.server.NanoDBServer;
 import edu.caltech.nanodb.storage.StorageManager;
+import edu.caltech.nanodb.storage.writeahead.WALFileException;
 import edu.caltech.nanodb.transactions.TransactionException;
 
 
@@ -24,6 +25,8 @@ public class RollbackTransactionCommand extends Command {
             storageManager.getTransactionManager().rollbackTransaction();
         } catch (TransactionException e) {
             throw new ExecutionException(e);
+        } catch (WALFileException e) {
+            throw new RuntimeException(e);
         }
     }
 }
