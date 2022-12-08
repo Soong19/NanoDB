@@ -1,26 +1,17 @@
 package edu.caltech.nanodb.storage.writeahead;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import edu.caltech.nanodb.server.SessionState;
-import edu.caltech.nanodb.storage.BufferManager;
-import edu.caltech.nanodb.storage.DBFile;
-import edu.caltech.nanodb.storage.DBFileReader;
-import edu.caltech.nanodb.storage.DBFileType;
-import edu.caltech.nanodb.storage.DBFileWriter;
-import edu.caltech.nanodb.storage.DBPage;
-import edu.caltech.nanodb.storage.DataFormatException;
-import edu.caltech.nanodb.storage.StorageException;
-import edu.caltech.nanodb.storage.StorageManager;
+import edu.caltech.nanodb.storage.*;
 import edu.caltech.nanodb.transactions.TransactionManager;
 import edu.caltech.nanodb.transactions.TransactionState;
 import edu.caltech.nanodb.util.ArrayUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 
 /**
@@ -1125,7 +1116,7 @@ public class WALManager {
      * not used during recovery processing; the {@link #performUndo} method is
      * used to rollback all incomplete transactions in the logs.
      */
-    public void rollbackTransaction() {
+    public void rollbackTransaction() throws WALFileException {
         // Get the details for the transaction to rollback.
         TransactionState txnState = SessionState.get().getTransactionState();
 
@@ -1137,8 +1128,7 @@ public class WALManager {
 
         LogSequenceNumber lsn = txnState.getLastLSN();
 
-        logger.info("Rolling back transaction %d.  Last LSN = %s",
-            transactionID, lsn);
+        logger.info("Rolling back transaction %d.  Last LSN = %s", transactionID, lsn);
 
         // Scan backward through the log records for this transaction to roll
         // it back.
@@ -1154,32 +1144,49 @@ public class WALManager {
                 // different transaction than the one we are rolling back.
                 throw new DataFormatException(String.format(
                     "Sent to WAL record for transaction %d at LSN %s, " +
-                        "during rollback of transaction %d.", recordTxnID, lsn,
-                    transactionID));
+                        "during rollback of transaction %d.", recordTxnID, lsn, transactionID));
             }
 
-            logger.debug("Undoing WAL record at %s.  Type = %s, TxnID = %d",
-                lsn, type, transactionID);
+            logger.debug("Undoing WAL record at %s.  Type = %s, TxnID = %d", lsn, type, transactionID);
 
-            // TODO:  IMPLEMENT THE REST
-            //
-            //        Use logging statements liberally to help verify and
-            //        debug your work.
-            //
-            //        If you encounter invalid WAL contents, throw a
-            //        WALFileException to indicate the problem immediately.
-            //
-            // TODO:  SET lsn TO PREVIOUS LSN TO WALK BACKWARD THROUGH WAL.
+            if (type == null) {
+                throw new WALFileException("Invalid LSN type " + lsn + " of txn[" + recordTxnID + "]");
+            }
 
-            // TODO:  This break is just here so the code will compile; when
-            //        you provide your own implementation, get rid of it!
-            break;
+            if (type == WALRecordType.START_TXN) {
+                break; // => end of ROLLBACK
+            }
+
+            assert type == WALRecordType.UPDATE_PAGE;
+
+            /* UPDATE log
+             * 1B     WALRecordType.UPDATE_PAGE     // type
+             * 4B     Transaction ID                // recordTxnID
+             * 6B     PrevLSN                       // fileNo & offset
+             * 1-256B Filename of the modified file // filename
+             * 2B     Page number of modified page  // pageNo
+             * ?      Old value and new value
+             *        2B - number of segments Ns    // numSegments
+             *        ...
+             */
+            var prevLsn = new LogSequenceNumber(walReader.readUnsignedShort(), walReader.readInt());
+            var filename = walReader.readVarString255();
+            var pageNo = walReader.readUnsignedShort();
+            var numSegments = walReader.readUnsignedShort();
+
+            var file = storageManager.openDBFile(filename);
+            var page = storageManager.loadDBPage(file, pageNo);
+
+            // restore changes
+            var changes = applyUndoAndGenRedoOnlyData(walReader, page, numSegments);
+            writeRedoOnlyUpdatePageRecord(page, numSegments, changes);
+
+            lsn = prevLsn;
         }
 
         // All done rolling back the transaction!  Record that it was aborted
         // in the WAL.
         writeTxnRecord(WALRecordType.ABORT_TXN);
-        logger.info(String.format("Transaction %d:  Rollback complete.",
-            transactionID));
+        logger.info(String.format("Transaction %d:  Rollback complete.", transactionID));
     }
 }

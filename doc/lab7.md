@@ -63,3 +63,13 @@ writing changes to log.
 Every time a dirty page is evicted, we must write WAL before write the dirty
 page. NanoDB uses event-handler to ensure WAL. More specifically, use the
 `forceWAL()` to write logs.
+
+## Step 5: Implement Transaction Rollback
+
+> Implement transaction rollback using the write-ahead log
+
+In this step, we will support such situation:
+In runtime (no crash), we type `ROLLBACK` and enter, it does ROLLBACK.
+
+From the last LSN, walk up according the prevLSN to the START record. For each
+UPDATE record, restore the changes. => Very straightforward.

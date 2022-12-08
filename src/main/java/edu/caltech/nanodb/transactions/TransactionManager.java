@@ -4,10 +4,7 @@ package edu.caltech.nanodb.transactions;
 import edu.caltech.nanodb.server.NanoDBServer;
 import edu.caltech.nanodb.server.SessionState;
 import edu.caltech.nanodb.storage.*;
-import edu.caltech.nanodb.storage.writeahead.LogSequenceNumber;
-import edu.caltech.nanodb.storage.writeahead.RecoveryInfo;
-import edu.caltech.nanodb.storage.writeahead.WALManager;
-import edu.caltech.nanodb.storage.writeahead.WALRecordType;
+import edu.caltech.nanodb.storage.writeahead.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -295,7 +292,7 @@ public class TransactionManager implements BufferManagerObserver {
     }
 
 
-    public void rollbackTransaction() throws TransactionException {
+    public void rollbackTransaction() throws TransactionException, WALFileException {
         SessionState state = SessionState.get();
         TransactionState txnState = state.getTransactionState();
 
