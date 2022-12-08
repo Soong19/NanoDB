@@ -44,3 +44,13 @@ Follow the guide, then done.
 While adding/updating/removing a tuple, storing statistics, updating
 non-full-page lists, need to call `logDBPageWrite(DBPage)` in the end to ensure
 writing changes to log.
+
+## Step 3: Implement an Atomic Force-WAL Operation
+
+> Implement an atomic "force WAL" operation
+
+`forceWAL()` forces the WAL out to disk, at least to the specific lsn =>
+1. Walk through all the files between oldNext and newNext
+2. For each file, compute the start page number and the end page number. Write
+   the pages to disk.
+3. Update transaction state, i.e. txnNextLSN
