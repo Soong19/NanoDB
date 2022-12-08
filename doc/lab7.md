@@ -73,3 +73,11 @@ In runtime (no crash), we type `ROLLBACK` and enter, it does ROLLBACK.
 
 From the last LSN, walk up according the prevLSN to the START record. For each
 UPDATE record, restore the changes. => Very straightforward.
+
+## Step 6: Implement Redo and Undo Processing
+
+> Implement both the redo and undo phases of recovery processing
+
+* Redo & Analysis Phase: For each WAL record, record START, redo UPDATE, mark
+  ABORT/COMMIT. => redo all the UPDATEs even uncommitted, get the info of all
+  incomplete transactions for *Undo Phase*.
