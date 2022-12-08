@@ -54,3 +54,12 @@ writing changes to log.
 2. For each file, compute the start page number and the end page number. Write
    the pages to disk.
 3. Update transaction state, i.e. txnNextLSN
+
+## Step 4: Enforce the Write-Ahead Logging Rule
+
+> Implement code that enforces the Write-Ahead Logging Rule when the Buffer
+> Manager evicts data pages to disk
+
+Every time a dirty page is evicted, we must write WAL before write the dirty
+page. NanoDB uses event-handler to ensure WAL. More specifically, use the
+`forceWAL()` to write logs.

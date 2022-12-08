@@ -335,29 +335,21 @@ public class TransactionManager implements BufferManagerObserver {
      */
     @Override
     public void beforeWriteDirtyPages(List<DBPage> pages) {
-        // TODO:  IMPLEMENT
-        //
-        // This implementation must enforce the write-ahead logging rule (aka
-        // the WAL rule) by ensuring that the write-ahead log reflects all
-        // changes to all of the specified pages, on disk, before any of these
-        // pages may be written to disk.
-        //
-        // Recall that DBPages have a pageLSN field that is set to the LSN
-        // of the last WAL record describing a change to the page.  This value
-        // is not always set; it will be null if the page is part of a data
-        // file whose type is not logged.  (It may also be null if there is a
-        // bug in the write-ahead logging code.  It would be wise to report a
-        // warning, or throw an exception, if a page doesn't have a LSN when
-        // it ought to.)
-        //
-        // Some file types are not recorded to the write-ahead log; these
-        // pages should be ignored when determining how to update the WAL.
-        // You can find a page's file-type by doing something like this:
-        // dbPage.getDBFile().getType().  If it is WRITE_AHEAD_LOG_FILE or
-        // TXNSTATE_FILE then you should ignore the page.
-        //
-        // Finally, you can use the forceWAL(LogSequenceNumber) function to
-        // force the WAL to be written out to the specified LSN.
+        logger.debug("Write WAL before writing dirty pages");
+        LogSequenceNumber maxLSN = null;
+
+        for (DBPage pg : pages) {
+            var dbType = pg.getDBFile().getType();
+            if (dbType != DBFileType.WRITE_AHEAD_LOG_FILE && dbType != DBFileType.TXNSTATE_FILE) {
+                // Get page's LSN
+                var lsn = pg.getPageLSN();
+                if (lsn == null)
+                    throw new IllegalStateException("Page[" + pg.getPageNo() + "] has no lsn");
+
+                maxLSN = maxLSN == null || maxLSN.compareTo(lsn) < 0 ? lsn : maxLSN;
+            }
+        }
+        forceWAL(maxLSN);
     }
 
 
@@ -366,9 +358,10 @@ public class TransactionManager implements BufferManagerObserver {
      * log sequence number, syncing the log to ensure that all essential
      * records have reached the disk itself.
      * <p>
-     * Atomicity: TODO:
+     * Atomicity: Write LSNs first, update nextLSN second. The redundant LSNs
+     * do not matter.
      * <p>
-     * Duration: TODO:
+     * Duration: Write pages to disk.
      *
      * @param lsn All WAL data up to this value must be forced to disk and
      *            sync'd.  This value may be one past the end of the current WAL
@@ -376,8 +369,7 @@ public class TransactionManager implements BufferManagerObserver {
      */
     public void forceWAL(LogSequenceNumber lsn) {
         // 1. check whether we need to sync
-        assert lsn != null;
-        if (txnStateNextLSN.compareTo(lsn) >= 0) {
+        if (lsn == null || txnStateNextLSN.compareTo(lsn) >= 0) {
             return;
         }
 
