@@ -10,6 +10,7 @@
 * [hw4](./doc/lab4.md): Join Optimization [1 day]
 * [hw5](./doc/lab5.md): Advanced Subquery [2 days]
 * [hw6](./doc/lab6.md): B+Tree Indexes [1 day]  (Skip this assignment in fact\)
+* [hw7](./doc/lab7.md): Write-Ahead Logging [1 day]
 
 ## Blogs
 
