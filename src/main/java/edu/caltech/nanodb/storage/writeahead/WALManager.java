@@ -285,15 +285,9 @@ public class WALManager {
         LogSequenceNumber currLSN = recoveryInfo.firstLSN;
         logger.debug("Starting redo processing at LSN " + currLSN);
 
-        LogSequenceNumber prevLSN = null;
         DBFileReader walReader = null;
         while (currLSN.compareTo(recoveryInfo.nextLSN) < 0) {
-            if (prevLSN == null) {
-                if (prevLSN.getLogFileNo() != currLSN.getLogFileNo()) {
-                    walReader.close();
-                }
-                walReader = getWALFileReader(currLSN, walReader);
-            }
+            walReader = getWALFileReader(currLSN, walReader);
 
             // Read the parts of the log record that are always the same.
             byte typeID = walReader.readByte();
@@ -360,7 +354,6 @@ public class WALManager {
                     }
             }
 
-            prevLSN = currLSN;
             currLSN = computeNextLSN(currLSN.getLogFileNo(), walReader.getPosition());
         }
 
@@ -508,33 +501,43 @@ public class WALManager {
             // since the above code will always properly move to the appropriate
             // position for the previous record, based on the value of currLSN.
 
-            logger.debug(String.format(
-                "Undo:  examining WAL record at %s.  Type = %s, TxnID = %d",
+            logger.debug(String.format("Undo:  examining WAL record at %s.  Type = %s, TxnID = %d",
                 currLSN, type, transactionID));
 
-            // TODO:  IMPLEMENT THE REST
-            //
-            //        Use logging statements liberally to help verify and
-            //        debug your work.
-            //
-            //        If you encounter invalid WAL contents, throw a
-            //        WALFileException to indicate the problem immediately.
-            //
-            //        You can use Java enums in a switch statement, like this:
-            //
-            //            switch (type) {
-            //            case START_TXN:
-            //                ...
-            //
-            //            case COMMIT_TXN:
-            //                ...
-            //
-            //            default:
-            //                throw new WALFileException(
-            //                    "Encountered unrecognized WAL record type " +
-            //                    type + " at LSN " + currLSN +
-            //                    " during undo processing!");
-            //            }
+            LogSequenceNumber lastLSN = recoveryInfo.getLastLSN(transactionID);
+
+            switch (type) {
+                case START_TXN:
+                    writeTxnRecord(WALRecordType.ABORT_TXN, transactionID, lastLSN);
+                    recoveryInfo.recordTxnCompleted(transactionID);
+                    break;
+                case UPDATE_PAGE:
+                    walReader.readUnsignedShort();
+                    walReader.readInt();
+                    var prevFilename = walReader.readVarString255();
+                    var modifiedPageNo = walReader.readUnsignedShort();
+                    var numSegments = walReader.readUnsignedShort();
+
+                    var modifiedFile = storageManager.openDBFile(prevFilename);
+                    var modifiedPage = storageManager.loadDBPage(modifiedFile, modifiedPageNo);
+
+                    var changes = applyUndoAndGenRedoOnlyData(walReader, modifiedPage, numSegments);
+
+                    var redoOnlyLSN = writeRedoOnlyUpdatePageRecord(
+                        transactionID, lastLSN, modifiedPage, numSegments, changes);
+
+                    recoveryInfo.updateInfo(transactionID, redoOnlyLSN);
+                    break;
+                case UPDATE_PAGE_REDO_ONLY:
+                    break;
+                default:
+                    try {
+                        throw new WALFileException("Encountered unrecognized WAL record type " +
+                            type + " at LSN " + currLSN + " during undo processing!");
+                    } catch (WALFileException e) {
+                        throw new RuntimeException(e);
+                    }
+            }
         }
 
         logger.debug("Undo processing is complete.");
