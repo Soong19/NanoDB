@@ -341,7 +341,7 @@ public class TransactionManager implements BufferManagerObserver {
                 // Get page's LSN
                 var lsn = pg.getPageLSN();
                 if (lsn == null)
-                    throw new IllegalStateException("Page[" + pg.getPageNo() + "] has no lsn");
+                    logger.debug("Page[" + pg.getPageNo() + "] has no lsn");
 
                 maxLSN = maxLSN == null || maxLSN.compareTo(lsn) < 0 ? lsn : maxLSN;
             }
